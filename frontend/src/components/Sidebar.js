@@ -3,13 +3,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const navItems = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "Trips", path: "/trips" },
-  { label: "Expenses", path: "/expenses" },
-  { label: "Explore", path: "/explore" },
-  { label: "Recommendations", path: "/recommendations" },
-  { label: "AI Assistant", path: "/assistant" },
-  { label: "Profile", path: "/profile" },
+  { label: "Dashboard",   path: "/dashboard" },
+  { label: "Home",        path: "/home" },
+  { label: "Explore",     path: "/explore" },
+  { label: "Planner",     path: "/planner" },
+  { label: "Expenses",    path: "/expenses" },
+  { label: "AI Assistant",path: "/assistant" },
+  { label: "Profile",     path: "/profile" },
 ];
 
 function Sidebar() {
@@ -22,23 +22,21 @@ function Sidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-black/90 border-r border-white/10 flex flex-col p-6 text-white">
-      <div className="mb-10">
-        <h1 className="font-['Cinzel',serif] text-2xl">YatraVerse</h1>
-        <p className="text-xs text-white/50 mt-1">AI Travel Companion</p>
+    <aside className="sidebar">
+      <div>
+        <div className="sidebar-logo">YatraVerse</div>
+        <div className="sidebar-tagline">AI TRAVEL COMPANION</div>
       </div>
 
-      <nav className="flex-1 space-y-1">
+      <hr className="divider" />
+
+      <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2px" }}>
         {navItems.map(({ label, path }) => (
           <NavLink
             key={path}
             to={path}
             className={({ isActive }) =>
-              `block px-4 py-3 rounded-lg transition ${
-                isActive
-                  ? "bg-white/10 text-white"
-                  : "text-white/70 hover:bg-white/5"
-              }`
+              "sidebar-link" + (isActive ? " active" : "")
             }
           >
             {label}
@@ -46,10 +44,9 @@ function Sidebar() {
         ))}
       </nav>
 
-      <button
-        onClick={handleLogout}
-        className="mt-6 px-4 py-3 rounded-lg bg-red-900/40 text-red-300 border border-red-800/50 hover:bg-red-900/60 transition"
-      >
+      <hr className="divider" />
+
+      <button className="btn btn-danger" style={{ width: "100%", textAlign: "center" }} onClick={handleLogout}>
         Logout
       </button>
     </aside>

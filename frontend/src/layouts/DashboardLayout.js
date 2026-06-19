@@ -3,9 +3,13 @@ import Sidebar from "../components/Sidebar";
 
 function DashboardLayout({ children }) {
   return (
-    <div className="flex min-h-screen bg-black">
+    <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg)" }}>
       <Sidebar />
-      <main className="flex-1 p-10 text-white">{children}</main>
+      <main style={{ flex: 1, padding: "3rem 4rem", overflowY: "auto", height: "100vh" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import mountain from "../assets/images/prayering-flag.jpg";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 function Assistant() {
-  const navigate = useNavigate();
-
   const [messages, setMessages] = useState([
     {
       sender: "ai",
@@ -18,11 +15,7 @@ function Assistant() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = {
-      sender: "user",
-      text: input,
-    };
-
+    const userMessage = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
@@ -30,31 +23,18 @@ function Assistant() {
     try {
       const response = await fetch("http://127.0.0.1:5000/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: input,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
       });
 
       const data = await response.json();
 
-      const aiMessage = {
-        sender: "ai",
-        text: data.reply || "No response from server.",
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, { sender: "ai", text: data.reply || "No response from server." }]);
     } catch (error) {
       console.error(error);
-
       setMessages((prev) => [
         ...prev,
-        {
-          sender: "ai",
-          text: "⚠️ Cannot connect to YatraVerse server. Make sure Flask is running.",
-        },
+        { sender: "ai", text: "⚠️ Cannot connect to YatraVerse AI server." },
       ]);
     } finally {
       setLoading(false);
@@ -62,71 +42,46 @@ function Assistant() {
   };
 
   return (
-    <div
-      className="relative min-h-screen p-6 sm:p-10 text-white bg-cover bg-center"
-      style={{ backgroundImage: `url(${mountain})` }}
-    >
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/65" />
-
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <h1 className="font-['Cinzel',serif] text-4xl sm:text-5xl text-center mb-6">
-          YatraVerse AI Assistant
-        </h1>
-
-        {/* CHAT BOX */}
-        <div className="h-[500px] overflow-y-auto p-5 rounded-2xl bg-white/[0.08] backdrop-blur-xl border border-white/15 mb-5">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-3 ${
-                msg.sender === "user" ? "text-right" : "text-left"
-              }`}
-            >
-              <span
-                className={`inline-block px-4 py-3 rounded-2xl max-w-[70%] ${
-                  msg.sender === "user" ? "bg-white/20" : "bg-white/10"
-                }`}
-              >
-                {msg.text}
-              </span>
-            </div>
-          ))}
-
-          {loading && (
-            <p className="opacity-70">YatraVerse AI is typing...</p>
-          )}
+    <DashboardLayout>
+      <div className="fade-up" style={{ maxWidth: "700px", margin: "0 auto", height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <h1 className="section-title">AI Assistant</h1>
+          <p className="section-sub" style={{ marginBottom: 0 }}>Your personal travel guide</p>
         </div>
 
-        {/* INPUT BOX */}
-        <div className="flex gap-3">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about Nepal travel..."
-            className="flex-1 p-4 rounded-xl border-none text-base text-black outline-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
-            }}
-          />
+        <div className="card" style={{ flex: 1, display: "flex", flexDirection: "column", height: "65vh" }}>
+          <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem", marginBottom: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {messages.map((msg, index) => (
+              <div key={index} style={{ display: "flex", justifyContent: msg.sender === "user" ? "flex-end" : "flex-start" }}>
+                <div className={msg.sender === "user" ? "bubble-user" : "bubble-ai"} style={{ padding: "0.85rem 1.25rem", maxWidth: "80%", fontSize: "0.95rem", lineHeight: 1.5, color: "var(--text)" }}>
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div className="bubble-ai" style={{ padding: "0.85rem 1.25rem", color: "var(--text-dim)", fontStyle: "italic", fontSize: "0.9rem" }}>
+                  YatraVerse AI is typing...
+                </div>
+              </div>
+            )}
+          </div>
 
-          <button
-            onClick={sendMessage}
-            className="px-6 py-4 rounded-xl border-none bg-white/20 text-white cursor-pointer font-['Cinzel',serif] hover:bg-white/30 transition"
-          >
-            Send
-          </button>
+          <div style={{ display: "flex", gap: "0.75rem", borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about destinations, budgets, or itineraries..."
+              className="input"
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button onClick={sendMessage} className="btn btn-primary" style={{ padding: "0 1.5rem" }}>
+              Send
+            </button>
+          </div>
         </div>
-
-        {/* BACK BUTTON */}
-        <button
-          onClick={() => navigate("/home")}
-          className="mt-5 px-6 py-3 rounded-xl border-none bg-white/15 text-white cursor-pointer hover:bg-white/25 transition"
-        >
-          Return Home
-        </button>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 
