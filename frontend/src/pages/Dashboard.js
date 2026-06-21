@@ -1,14 +1,58 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
+import API from "../services/api";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) navigate("/");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+
+    Promise.all([API.get("/auth/me"), API.get("/trips/my")])
+      .then(([userRes, tripsRes]) => {
+        setUser(userRes.data);
+        setTrips(tripsRes.data);
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        navigate("/");
+      })
+      .finally(() => setLoading(false));
   }, [navigate]);
+
+  const handleDelete = async (e, tripId, tripName) => {
+    e.stopPropagation(); // prevent the card's onClick (navigate to planner) from firing
+
+    const confirmed = window.confirm(`Delete "${tripName}"? This will remove it for all members and can't be undone.`);
+    if (!confirmed) return;
+
+    try {
+      await API.delete(`/trips/${tripId}`);
+      setTrips((prev) => prev.filter((t) => t.id !== tripId));
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to delete trip");
+    }
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <p style={{ color: "var(--text-dim)" }}>Loading...</p>
+      </DashboardLayout>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <DashboardLayout>
@@ -21,68 +65,85 @@ export default function Dashboard() {
           <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem" }}>
             👤
           </div>
-          <span style={{ fontSize: "0.85rem", color: "var(--text-dim)" }}>Welcome back, Explorer</span>
+          <span style={{ fontSize: "0.85rem", color: "var(--text-dim)" }}>
+            Welcome back, {user.name}
+          </span>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginBottom: "3rem" }}>
-        {[
-          { label: "Total Trips", value: "12", icon: "🗺️" },
-          { label: "AI Suggestions", value: "5", icon: "✨" },
-          { label: "Collaborations", value: "3", icon: "🤝" },
-        ].map(({ label, value, icon }) => (
-          <div key={label} className="card card-hover fade-up">
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem" }}>
-              <span style={{ fontSize: "0.75rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</span>
-              <span style={{ fontSize: "1.2rem" }}>{icon}</span>
-            </div>
-            <p style={{ fontSize: "2.5rem", fontWeight: 600, color: "var(--accent)" }}>{value}</p>
-          </div>
-        ))}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+        <h2 className="cinzel" style={{ fontSize: "1.25rem", color: "var(--text)" }}>Your Trips</h2>
+        <button
+          onClick={() => navigate("/create-trip")}
+          className="btn btn-primary"
+          style={{ padding: "0.6rem 1.2rem", fontSize: "0.85rem" }}
+        >
+          + Create New Trip
+        </button>
       </div>
 
-      <div className="card fade-up-delay">
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-          <span style={{ fontSize: "1.2rem" }}>✨</span>
-          <h2 className="cinzel" style={{ fontSize: "1.25rem", color: "var(--text)" }}>AI Travel Recommendations</h2>
+      {trips.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🗺️</div>
+          <p style={{ color: "var(--text-dim)", marginBottom: "1.5rem" }}>
+            No trips yet. Start planning your first journey.
+          </p>
+          <button
+            onClick={() => navigate("/create-trip")}
+            className="btn btn-primary"
+            style={{ padding: "0.75rem 1.5rem" }}
+          >
+            Create Your First Trip
+          </button>
         </div>
-        
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {[
-            { emoji: "🏔️", place: "Pokhara", desc: "Best for relaxation & adventure", tag: "Nepal" },
-            { emoji: "🏝️", place: "Bali", desc: "Best for beach + budget travel", tag: "Indonesia" },
-            { emoji: "🏙️", place: "Tokyo", desc: "Best for tech + culture experience", tag: "Japan" },
-          ].map(({ emoji, place, desc, tag }) => (
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
+          {trips.map((trip) => (
             <div
-              key={place}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "1.25rem",
-                background: "var(--bg)",
-                border: "1px solid var(--border)",
-                borderRadius: "12px",
-                cursor: "pointer",
-                transition: "border-color 0.2s"
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--border)"}
+              key={trip.id}
+              onClick={() => navigate(`/planner/${trip.id}`)}
+              className="card card-hover"
+              style={{ cursor: "pointer", position: "relative" }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-                <span style={{ fontSize: "1.8rem" }}>{emoji}</span>
-                <div>
-                  <p style={{ fontWeight: 500, color: "var(--text)", marginBottom: "0.25rem" }}>{place}</p>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-dim)" }}>{desc}</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "1.5rem" }}>🧳</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  {trip.role === "admin" && (
+                    <>
+                      <span style={{ fontSize: "0.7rem", padding: "0.25rem 0.6rem", borderRadius: "20px", background: "var(--accent)", color: "#fff" }}>
+                        Admin
+                      </span>
+                      <button
+                        onClick={(e) => handleDelete(e, trip.id, trip.name)}
+                        title="Delete trip"
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: "1rem",
+                          padding: "0.2rem",
+                          color: "var(--text-dim)",
+                          lineHeight: 1,
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = "#e74c3c"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
-              <span style={{ fontSize: "0.75rem", padding: "0.3rem 0.8rem", borderRadius: "20px", background: "var(--border)", color: "var(--text-dim)" }}>
-                {tag}
-              </span>
+              <p style={{ fontWeight: 600, color: "var(--text)", fontSize: "1.1rem", marginBottom: "0.25rem" }}>
+                {trip.name}
+              </p>
+              <p style={{ fontSize: "0.8rem", color: "var(--text-dim)" }}>
+                Tap to view planner
+              </p>
             </div>
           ))}
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 }

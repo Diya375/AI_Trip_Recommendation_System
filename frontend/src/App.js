@@ -12,6 +12,9 @@ import Expenses from "./pages/Expenses";
 import Profile from "./pages/Profile";
 import Results from "./pages/Results";
 import Assistant from "./pages/Assistant";
+import Verify from "./pages/Verify";
+import CreateTrip from "./pages/CreateTrip";
+import JoinTrip from "./pages/JoinTrip";
 
 function App() {
   return (
@@ -30,6 +33,9 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/results" element={<Results />} />
         <Route path="/assistant" element={<Assistant />} />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/create-trip" element={<CreateTrip />} />
+        <Route path="/join/:inviteCode" element={<JoinTrip />} />
       </Routes>
     </BrowserRouter>
   );

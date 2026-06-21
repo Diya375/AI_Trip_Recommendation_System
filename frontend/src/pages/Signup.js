@@ -6,15 +6,16 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSignup = async () => {
+    setError("");
     try {
       await API.post("/auth/signup", { name, email, password });
-      alert("Signup successful");
-      navigate("/");
+      navigate("/verify", { state: { email } });
     } catch (err) {
-      alert("Signup failed");
+      setError(err.response?.data?.error || "Signup failed");
     }
   };
 
@@ -51,6 +52,10 @@ export default function Signup() {
             className="input"
           />
         </div>
+
+        {error && (
+          <p style={{ color: "#e74c3c", fontSize: "0.85rem", marginBottom: "1rem" }}>{error}</p>
+        )}
 
         <button onClick={handleSignup} className="btn btn-primary" style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}>
           Create Account

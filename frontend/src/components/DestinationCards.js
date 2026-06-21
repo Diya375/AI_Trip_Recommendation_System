@@ -1,8 +1,8 @@
 const places = [
   { name: "Pokhara", tag: "Nepal", note: "Lakes & Himalayas" },
-  { name: "Bali", tag: "Indonesia", note: "Temples & Beaches" },
-  { name: "Tokyo", tag: "Japan", note: "Culture & Energy" },
-  { name: "Paris", tag: "France", note: "Art & Romance" },
+  {name: "Kathmandu", tag: "Nepal", note: "Temples & Heritage"  },
+  { name: "Bhaktapur", tag: "Nepal", note: "Ancient Newari City" },
+  {  name: "Bandipur", tag: "Nepal", note: "Quiet Hill Town"},
 ];
 
 export default function DestinationCards() {

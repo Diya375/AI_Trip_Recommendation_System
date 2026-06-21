@@ -5,17 +5,27 @@ import { useNavigate, Link } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");         
+  const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      const res = await API.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      navigate("/dashboard");
-    } catch (err) {
-      alert("Login failed");
+const handleLogin = async () => {
+  setError("");
+  setLoading(true);
+  try {
+    const res = await API.post("/auth/login", { email, password });
+    localStorage.setItem("token", res.data.token);
+    navigate("/dashboard");
+  } catch (err) {
+    if (err.response?.data?.needsVerification) {
+      navigate("/verify", { state: { email } });
+    } else {
+      setError(err.response?.data?.error || "Login failed. Try again.");
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -44,8 +54,19 @@ export default function Login() {
           />
         </div>
 
-        <button onClick={handleLogin} className="btn btn-primary" style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}>
-          Enter YatraVerse
+        {error && (
+          <p style={{ color: "#e57373", marginBottom: "1rem", fontSize: "0.85rem" }}>
+            {error}
+          </p>
+        )}
+
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="btn btn-primary"
+          style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}
+        >
+          {loading ? "Entering..." : "Enter YatraVerse"}
         </button>
 
         <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
