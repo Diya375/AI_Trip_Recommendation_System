@@ -1,19 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import anthem from "../assets/audio/reshamfiriri.mp3";
+// import anthem from "../assets/audio/reshamfiriri.mp3";
 
 function Splash() {
   const navigate = useNavigate();
 
-  const beginJourney = () => {
-    const audio = new Audio(anthem);
-    audio.volume = 0.75;
-    audio.play().catch((err) => console.log(err));
+  // const beginJourney = () => {
+  //   const audio = new Audio(anthem);
+  //   audio.volume = 0.75;
+  //   audio.play().catch((err) => console.log(err));
     
-    setTimeout(() => {
-      navigate("/login");
-    }, 2500);
-  };
+  //   setTimeout(() => {
+  //     navigate("/login");
+  //   }, 2500);
+  // };
 
   return (
     <div style={{
@@ -39,9 +39,9 @@ function Splash() {
           Beyond Maps. Beyond Travel.
         </p>
 
-        <button onClick={beginJourney} className="btn btn-primary" style={{ padding: "1rem 3rem", fontSize: "1.1rem" }}>
+        {/* <button onClick={beginJourney} className="btn btn-primary" style={{ padding: "1rem 3rem", fontSize: "1.1rem" }}>
           Enter YatraVerse
-        </button>
+        </button> */}
       </div>
     </div>
   );
