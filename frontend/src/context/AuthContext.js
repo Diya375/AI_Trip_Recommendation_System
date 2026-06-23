@@ -4,26 +4,26 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() =>
-    localStorage.getItem("yatraverse_token")
+    localStorage.getItem("token")
   );
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("yatraverse_user");
+    const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
 
   // Call this after a successful /login response
   const login = (newToken, userData) => {
-    localStorage.setItem("yatraverse_token", newToken);
+    localStorage.setItem("token", newToken);
     if (userData) {
-      localStorage.setItem("yatraverse_user", JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(userData));
     }
     setToken(newToken);
     setUser(userData || null);
   };
 
   const logout = () => {
-    localStorage.removeItem("yatraverse_token");
-    localStorage.removeItem("yatraverse_user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setToken(null);
     setUser(null);
   };

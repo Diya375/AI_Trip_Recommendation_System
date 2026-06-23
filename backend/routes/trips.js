@@ -172,4 +172,74 @@ router.delete("/:id", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Failed to delete trip" });
   }
 });
+// Save or update my preferences for a trip
+router.post("/:id/preferences", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { budget, trip_types, food_preference, accommodation, notes } = req.body;
+
+  try {
+    // must be a member
+    const membership = await pool.query(
+      "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
+      [id, req.userId]
+    );
+    if (membership.rows.length === 0) {
+      return res.status(403).json({ error: "You are not a member of this trip" });
+    }
+
+    // upsert — insert if first time, update if they're editing
+    await pool.query(
+      `INSERT INTO trip_preferences (trip_id, user_id, budget, trip_types, food_preference, accommodation, notes, submitted_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+       ON CONFLICT (trip_id, user_id)
+       DO UPDATE SET budget=$3, trip_types=$4, food_preference=$5, accommodation=$6, notes=$7, submitted_at=NOW()`,
+      [id, req.userId, budget, trip_types, food_preference, accommodation, notes]
+    );
+
+    res.json({ message: "Preferences saved" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to save preferences" });
+  }
+});
+
+// Get all preferences for a trip (all members see own, admin sees all)
+router.get("/:id/preferences", verifyToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const membership = await pool.query(
+      "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
+      [id, req.userId]
+    );
+    if (membership.rows.length === 0) {
+      return res.status(403).json({ error: "You are not a member of this trip" });
+    }
+
+    const isAdmin = membership.rows[0].role === "admin";
+
+    if (isAdmin) {
+      // admin gets everyone's preferences joined with their name
+      const result = await pool.query(
+        `SELECT users.name, users.email, trip_preferences.*
+         FROM trip_preferences
+         JOIN users ON trip_preferences.user_id = users.id
+         WHERE trip_preferences.trip_id = $1
+         ORDER BY trip_preferences.submitted_at ASC`,
+        [id]
+      );
+      res.json({ role: "admin", preferences: result.rows });
+    } else {
+      // member gets only their own
+      const result = await pool.query(
+        "SELECT * FROM trip_preferences WHERE trip_id=$1 AND user_id=$2",
+        [id, req.userId]
+      );
+      res.json({ role: "member", preferences: result.rows[0] || null });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to load preferences" });
+  }
+});
 module.exports = router;

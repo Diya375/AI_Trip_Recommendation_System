@@ -8,25 +8,36 @@ const pool = require("./db");
 
 const app = express();
 
-app.use(cors());
+// CORS FIX (ALLOW BOTH PORTS)
+app.use(cors({
+  origin: ["http://localhost:3001", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
+  credentials: true
+}));
+
+// SAFE preflight handler
+app.options(/.*/, cors());
+
 app.use(express.json());
 
-// test route
 app.get("/", (req, res) => {
-  res.send("AI Trip Backend Running 🚀");
+  res.send("AI Trip Backend Running");
 });
 
-// DB test
 app.get("/db-test", async (req, res) => {
-  const result = await pool.query("SELECT NOW()");
-  res.json(result.rows[0]);
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "DB connection failed" });
+  }
 });
 
-// routes
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripsRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

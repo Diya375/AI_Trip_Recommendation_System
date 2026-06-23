@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,13 +9,14 @@ export default function Login() {
   const [error, setError] = useState("");         
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
 const handleLogin = async () => {
   setError("");
   setLoading(true);
   try {
     const res = await API.post("/auth/login", { email, password });
-    localStorage.setItem("token", res.data.token);
+    login(res.data.token);
     navigate("/dashboard");
   } catch (err) {
     if (err.response?.data?.needsVerification) {

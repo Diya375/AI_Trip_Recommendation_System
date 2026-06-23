@@ -36,6 +36,7 @@ function App() {
         <Route path="/verify" element={<Verify />} />
         <Route path="/create-trip" element={<CreateTrip />} />
         <Route path="/join/:inviteCode" element={<JoinTrip />} />
+        <Route path="/planner/:id" element={<Planner />} />
       </Routes>
     </BrowserRouter>
   );
