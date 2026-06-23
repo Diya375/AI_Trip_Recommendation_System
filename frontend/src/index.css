@@ -182,3 +182,14 @@ body {
 /* ── Chat bubble ─────────────────────────────────────────── */
 .bubble-ai   { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px 12px 12px 4px; }
 .bubble-user { background: var(--accent); color: white !important; border: 1px solid var(--accent); border-radius: 12px 12px 4px 12px; box-shadow: 0 4px 10px rgba(75, 119, 98, 0.2); }
+
+/* Smoothly animate the transition state */
+.features-grid .card {
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+}
+
+/* Apply the floating lift effect on hover */
+.features-grid .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(75, 119, 98, 0.15); /* Tinted with your project's green */
+}
