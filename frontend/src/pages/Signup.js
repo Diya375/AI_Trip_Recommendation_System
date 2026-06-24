@@ -1,19 +1,22 @@
 import { useState } from "react";
 import API from "../services/api";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo;
 
   const handleSignup = async () => {
     setError("");
     try {
       await API.post("/auth/signup", { name, email, password });
-      navigate("/verify", { state: { email } });
+      navigate("/verify", { state: { email, redirectTo } });
     } catch (err) {
       setError(err.response?.data?.error || "Signup failed");
     }
@@ -44,13 +47,33 @@ export default function Signup() {
             onChange={(e) => setEmail(e.target.value)}
             className="input"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-          />
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+              style={{ width: "100%", paddingRight: "40px" }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.2rem",
+                color: "var(--text-dim)",
+              }}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -63,7 +86,7 @@ export default function Signup() {
 
         <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
           Already a traveler?{" "}
-          <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none" }}>
+          <Link to="/login" state={{ redirectTo }} style={{ color: "var(--accent)", textDecoration: "none" }}>
             Login here
           </Link>
         </p>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
 
@@ -10,6 +10,7 @@ const ACCOMMODATION_OPTIONS = ["No preference", "Hotel", "Camping", "Homestay", 
 export default function Planner() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [trip, setTrip] = useState(null);
   const [members, setMembers] = useState([]);
@@ -29,7 +30,12 @@ export default function Planner() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) { navigate("/"); return; }
+    if (!token) { navigate("/login", { state: { redirectTo: location.pathname } }); return; }
+    
+    if (!id) {
+      navigate("/dashboard");
+      return;
+    }
 
     Promise.all([
       API.get(`/trips/${id}`),

@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../db");
 const verifyToken = require("../middleware/authmiddleware");  
-const { sendVerificationEmail } = require("../utils/mailer");
+const { sendVerificationEmail, sendPasswordResetEmail } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -165,6 +165,65 @@ router.post("/resend-code", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to resend code" });
+  }
+});
+
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Generate a 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await pool.query(
+      "UPDATE users SET reset_code=$1, reset_expires=$2 WHERE email=$3",
+      [code, expires, email]
+    );
+
+    await sendPasswordResetEmail(email, code);
+
+    res.json({ message: "Password reset code sent to your email" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to process forgot password request" });
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  const { email, code, newPassword } = req.body;
+
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE email=$1", [email]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = result.rows[0];
+
+    if (!user.reset_code || user.reset_code !== code) {
+      return res.status(400).json({ error: "Invalid reset code" });
+    }
+    if (new Date() > new Date(user.reset_expires)) {
+      return res.status(400).json({ error: "Reset code expired, please request a new one" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      "UPDATE users SET password=$1, reset_code=NULL, reset_expires=NULL WHERE email=$2",
+      [hashedPassword, email]
+    );
+
+    res.json({ message: "Password reset successfully. You can now log in." });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to reset password" });
   }
 });
 

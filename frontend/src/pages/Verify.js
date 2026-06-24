@@ -6,6 +6,7 @@ export default function Verify() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state?.email || "";
+  const redirectTo = location.state?.redirectTo;
 
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -17,7 +18,7 @@ export default function Verify() {
     try {
       await API.post("/auth/verify", { email, code });
       setMessage("Email verified! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1500);
+      setTimeout(() => navigate("/login", { state: { redirectTo } }), 1500);
     } catch (err) {
       setError(err.response?.data?.error || "Verification failed");
     }

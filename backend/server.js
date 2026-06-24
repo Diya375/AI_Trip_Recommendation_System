@@ -8,9 +8,12 @@ const pool = require("./db");
 
 const app = express();
 
-// CORS FIX (ALLOW BOTH PORTS)
+// CORS FIX (ALLOW ALL ORIGINS DYNAMICALLY FOR LOCAL/NGROK)
 app.use(cors({
-  origin: ["http://localhost:3001", "http://localhost:3000"],
+  origin: function (origin, callback) {
+    // Allow any origin
+    callback(null, true);
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
   credentials: true

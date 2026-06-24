@@ -1,15 +1,19 @@
 import { useState } from "react";
 import API from "../services/api";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");         
   const [loading, setLoading] = useState(false); 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+
+  const redirectTo = location.state?.redirectTo || "/dashboard";
 
 const handleLogin = async () => {
   setError("");
@@ -17,10 +21,10 @@ const handleLogin = async () => {
   try {
     const res = await API.post("/auth/login", { email, password });
     login(res.data.token);
-    navigate("/dashboard");
+    navigate(redirectTo);
   } catch (err) {
     if (err.response?.data?.needsVerification) {
-      navigate("/verify", { state: { email } });
+      navigate("/verify", { state: { email, redirectTo } });
     } else {
       setError(err.response?.data?.error || "Login failed. Try again.");
     }
@@ -47,13 +51,39 @@ const handleLogin = async () => {
             onChange={(e) => setEmail(e.target.value)}
             className="input"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input"
-          />
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+              style={{ width: "100%", paddingRight: "40px" }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "1.2rem",
+                color: "var(--text-dim)",
+              }}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+          <Link to="/forgot-password" style={{ color: "var(--accent)", fontSize: "0.85rem", textDecoration: "none" }}>
+            Forgot Password?
+          </Link>
         </div>
 
         {error && (
@@ -73,7 +103,7 @@ const handleLogin = async () => {
 
         <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
           New here?{" "}
-          <Link to="/signup" style={{ color: "var(--accent)", textDecoration: "none" }}>
+          <Link to="/signup" state={{ redirectTo }} style={{ color: "var(--accent)", textDecoration: "none" }}>
             Create Account
           </Link>
         </p>
