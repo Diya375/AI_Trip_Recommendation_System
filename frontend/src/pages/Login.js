@@ -2,36 +2,37 @@ import { useState } from "react";
 import API from "../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");         
-  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
   const redirectTo = location.state?.redirectTo || "/dashboard";
 
-const handleLogin = async () => {
-  setError("");
-  setLoading(true);
-  try {
-    const res = await API.post("/auth/login", { email, password });
-    login(res.data.token);
-    navigate(redirectTo);
-  } catch (err) {
-    if (err.response?.data?.needsVerification) {
-      navigate("/verify", { state: { email, redirectTo } });
-    } else {
-      setError(err.response?.data?.error || "Login failed. Try again.");
+  const handleLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await API.post("/auth/login", { email, password });
+      login(res.data.token);
+      navigate(redirectTo);
+    } catch (err) {
+      if (err.response?.data?.needsVerification) {
+        navigate("/verify", { state: { email, redirectTo } });
+      } else {
+        setError(err.response?.data?.error || "Login failed. Try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -58,7 +59,7 @@ const handleLogin = async () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input"
-              style={{ width: "100%", paddingRight: "40px" }}
+              style={{ width: "100%", paddingRight: "44px" }}
             />
             <button
               type="button"
@@ -71,11 +72,13 @@ const handleLogin = async () => {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                fontSize: "1.2rem",
                 color: "var(--text-dim)",
+                display: "flex",
+                alignItems: "center",
+                padding: 0,
               }}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>

@@ -62,7 +62,7 @@ export default function Planner() {
       })
       .catch(() => navigate("/dashboard"))
       .finally(() => setLoading(false));
-  }, [id, navigate]);
+  }, [id, navigate, location.pathname]);
 
   const toggleTripType = (type) => {
     setTripTypes((prev) =>

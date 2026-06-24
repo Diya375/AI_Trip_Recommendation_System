@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import API from "../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import anthem from "../assets/audio/reshamfiriri.mp3";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -61,7 +62,7 @@ export default function Signup() {
             className="input"
           />
 
-          {/* Password field with show/hide toggle */}
+          {/* Password with Lucide Eye toggle */}
           <div style={{ position: "relative" }}>
             <input
               type={showPassword ? "text" : "password"}
@@ -69,7 +70,7 @@ export default function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input"
-              style={{ width: "100%", paddingRight: "40px" }}
+              style={{ width: "100%", paddingRight: "44px" }}
             />
             <button
               type="button"
@@ -82,11 +83,13 @@ export default function Signup() {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                fontSize: "1.2rem",
                 color: "var(--text-dim)",
+                display: "flex",
+                alignItems: "center",
+                padding: 0,
               }}
             >
-              {showPassword ? "🙈" : "👁️"}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
