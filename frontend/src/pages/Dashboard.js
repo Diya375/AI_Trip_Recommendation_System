@@ -106,7 +106,7 @@ export default function Dashboard() {
               style={{ cursor: "pointer", position: "relative" }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                <span style={{ fontSize: "1.5rem" }}>🧳</span>
+                <span style={{ fontSize: "1.5rem" }}>🛣️</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   {trip.role === "admin" && (
                     <>
@@ -128,7 +128,7 @@ export default function Dashboard() {
                         onMouseEnter={(e) => e.currentTarget.style.color = "#e74c3c"}
                         onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
                       >
-                        🗑️
+                        ⛔
                       </button>
                     </>
                   )}

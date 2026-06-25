@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
+import { Copy, Check, Link2 } from "lucide-react";
+import TripPlaces from "../components/TripPlaces";
 
 const TRIP_TYPES = ["Adventure", "Hiking", "Trekking", "Relaxing", "Cultural", "Beach", "Wildlife", "Road Trip"];
 const FOOD_OPTIONS = ["No preference", "Vegetarian", "Non-Vegetarian", "Vegan", "Halal"];
@@ -20,8 +22,8 @@ export default function Planner() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // form state
   const [budget, setBudget] = useState("");
   const [tripTypes, setTripTypes] = useState([]);
   const [food, setFood] = useState("No preference");
@@ -31,11 +33,8 @@ export default function Planner() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login", { state: { redirectTo: location.pathname } }); return; }
-    
-    if (!id) {
-      navigate("/dashboard");
-      return;
-    }
+
+    if (!id) { navigate("/dashboard"); return; }
 
     Promise.all([
       API.get(`/trips/${id}`),
@@ -64,6 +63,8 @@ export default function Planner() {
       .finally(() => setLoading(false));
   }, [id, navigate, location.pathname]);
 
+  const inviteLink = trip ? `${window.location.origin}/join/${trip.invite_code}` : "";
+
   const toggleTripType = (type) => {
     setTripTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
@@ -83,8 +84,6 @@ export default function Planner() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-
-      // refresh admin view if admin
       if (role === "admin") {
         const prefRes = await API.get(`/trips/${id}/preferences`);
         setAllPreferences(prefRes.data.preferences);
@@ -98,12 +97,7 @@ export default function Planner() {
 
   const handleSendToAI = () => {
     navigate(`/assistant`, {
-      state: {
-        tripId: id,
-        tripName: trip?.name,
-        preferences: allPreferences,
-        members,
-      }
+      state: { tripId: id, tripName: trip?.name, preferences: allPreferences, members },
     });
   };
 
@@ -138,14 +132,13 @@ export default function Planner() {
           </p>
         </div>
 
-        {/* Send to AI button — admin only, only when there are preferences */}
         {role === "admin" && allPreferences.length > 0 && (
           <button
             onClick={handleSendToAI}
             className="btn btn-primary"
             style={{ padding: "0.75rem 1.5rem", fontSize: "0.9rem" }}
           >
-            ✨ Send to AI Assistant
+            🌐 Send to AI Assistant
           </button>
         )}
       </div>
@@ -153,6 +146,48 @@ export default function Planner() {
       {/* ── ADMIN VIEW ── */}
       {role === "admin" && (
         <>
+          {/* Invite link — always visible to admin */}
+          {inviteLink && (
+            <div
+              className="card"
+              style={{
+                marginBottom: "2rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "1rem",
+                flexWrap: "wrap",
+                padding: "1rem 1.25rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
+                <Link2 size={16} color="var(--text-dim)" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: "0.82rem", color: "var(--text)", wordBreak: "break-all" }}>
+                  {inviteLink}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(inviteLink);
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }}
+                className="btn btn-primary"
+                style={{
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  flexShrink: 0,
+                }}
+              >
+                {copiedLink ? <Check size={15} /> : <Copy size={15} />}
+                {copiedLink ? "Copied!" : "Copy Link"}
+              </button>
+            </div>
+          )}
+
           {/* Who hasn't filled yet */}
           {membersWithoutPrefs.length > 0 && (
             <div className="card" style={{ marginBottom: "2rem", background: "var(--bg)", border: "1px solid var(--border)" }}>
@@ -169,7 +204,7 @@ export default function Planner() {
             </div>
           )}
 
-          {/* All preferences side by side */}
+          {/* All preferences */}
           {allPreferences.length === 0 ? (
             <div className="card" style={{ textAlign: "center", padding: "3rem 2rem" }}>
               <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📋</div>
@@ -188,35 +223,35 @@ export default function Planner() {
                       <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", margin: 0 }}>{pref.email}</p>
                     </div>
                   </div>
-
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                    <PrefRow icon="💰" label="Budget" value={pref.budget ? `Rs. ${pref.budget.toLocaleString()}` : "Not specified"} />
+                    <PrefRow icon="💲" label="Budget" value={pref.budget ? `Rs. ${pref.budget.toLocaleString()}` : "Not specified"} />
                     <PrefRow icon="🏕️" label="Trip type" value={pref.trip_types?.length ? pref.trip_types.join(", ") : "Not specified"} />
                     <PrefRow icon="🍽️" label="Food" value={pref.food_preference || "Not specified"} />
                     <PrefRow icon="🏨" label="Stay" value={pref.accommodation || "Not specified"} />
-                    {pref.notes && (
-                      <PrefRow icon="📝" label="Notes" value={pref.notes} />
-                    )}
+                    {pref.notes && <PrefRow icon="📝" label="Notes" value={pref.notes} />}
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Admin fills their own preferences too */}
-          <div style={{ marginTop: "2.5rem" }}>
-            <h3 className="cinzel" style={{ fontSize: "1.1rem", color: "var(--text)", marginBottom: "1.5rem" }}>
-              Your Preferences
-            </h3>
-            <PreferenceForm
-              budget={budget} setBudget={setBudget}
-              tripTypes={tripTypes} toggleTripType={toggleTripType}
-              food={food} setFood={setFood}
-              accommodation={accommodation} setAccommodation={setAccommodation}
-              notes={notes} setNotes={setNotes}
-              onSave={handleSave} saving={saving} saved={saved}
-            />
-          </div>
+          {/* Admin's own preferences */}
+<div style={{ marginTop: "2.5rem" }}>
+  <h3 className="cinzel" style={{ fontSize: "1.1rem", color: "var(--text)", marginBottom: "1.5rem" }}>
+    Your Preferences
+  </h3>
+  <PreferenceForm
+    budget={budget} setBudget={setBudget}
+    tripTypes={tripTypes} toggleTripType={toggleTripType}
+    food={food} setFood={setFood}
+    accommodation={accommodation} setAccommodation={setAccommodation}
+    notes={notes} setNotes={setNotes}
+    onSave={handleSave} saving={saving} saved={saved}
+  />
+</div>
+
+ 
+<TripPlaces tripId={id} />
         </>
       )}
 
@@ -236,13 +271,13 @@ export default function Planner() {
             notes={notes} setNotes={setNotes}
             onSave={handleSave} saving={saving} saved={saved}
           />
-        </div>
-      )}
+      
+    <TripPlaces tripId={id} />
+  </div>
+)}
     </DashboardLayout>
   );
 }
-
-// ── small helper components ──
 
 function PrefRow({ icon, label, value }) {
   return (
@@ -259,8 +294,6 @@ function PrefRow({ icon, label, value }) {
 function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, setFood, accommodation, setAccommodation, notes, setNotes, onSave, saving, saved }) {
   return (
     <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-
-      {/* Budget */}
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.5rem" }}>
           💰 Budget (Rs.)
@@ -275,7 +308,6 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
         />
       </div>
 
-      {/* Trip type */}
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem" }}>
           🏕️ Trip Type (select all that apply)
@@ -286,15 +318,11 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
               key={type}
               onClick={() => toggleTripType(type)}
               style={{
-                padding: "0.4rem 0.9rem",
-                borderRadius: "20px",
-                border: "1px solid",
+                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
                 borderColor: tripTypes.includes(type) ? "var(--accent)" : "var(--border)",
                 background: tripTypes.includes(type) ? "var(--accent)" : "transparent",
                 color: tripTypes.includes(type) ? "#fff" : "var(--text-dim)",
-                cursor: "pointer",
-                fontSize: "0.85rem",
-                transition: "all 0.2s",
+                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
               }}
             >
               {type}
@@ -303,7 +331,6 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
         </div>
       </div>
 
-      {/* Food preference */}
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem" }}>
           🍽️ Food Preference
@@ -314,15 +341,11 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
               key={option}
               onClick={() => setFood(option)}
               style={{
-                padding: "0.4rem 0.9rem",
-                borderRadius: "20px",
-                border: "1px solid",
+                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
                 borderColor: food === option ? "var(--accent)" : "var(--border)",
                 background: food === option ? "var(--accent)" : "transparent",
                 color: food === option ? "#fff" : "var(--text-dim)",
-                cursor: "pointer",
-                fontSize: "0.85rem",
-                transition: "all 0.2s",
+                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
               }}
             >
               {option}
@@ -331,7 +354,6 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
         </div>
       </div>
 
-      {/* Accommodation */}
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem" }}>
           🏨 Accommodation
@@ -342,15 +364,11 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
               key={option}
               onClick={() => setAccommodation(option)}
               style={{
-                padding: "0.4rem 0.9rem",
-                borderRadius: "20px",
-                border: "1px solid",
+                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
                 borderColor: accommodation === option ? "var(--accent)" : "var(--border)",
                 background: accommodation === option ? "var(--accent)" : "transparent",
                 color: accommodation === option ? "#fff" : "var(--text-dim)",
-                cursor: "pointer",
-                fontSize: "0.85rem",
-                transition: "all 0.2s",
+                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
               }}
             >
               {option}
@@ -359,7 +377,6 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
         </div>
       </div>
 
-      {/* Notes */}
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.5rem" }}>
           📝 Additional Notes
@@ -370,16 +387,9 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           style={{
-            width: "100%",
-            background: "var(--bg)",
-            border: "1px solid var(--border)",
-            borderRadius: "10px",
-            padding: "0.75rem 1rem",
-            color: "var(--text)",
-            fontSize: "0.9rem",
-            resize: "vertical",
-            fontFamily: "inherit",
-            boxSizing: "border-box",
+            width: "100%", background: "var(--bg)", border: "1px solid var(--border)",
+            borderRadius: "10px", padding: "0.75rem 1rem", color: "var(--text)",
+            fontSize: "0.9rem", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box",
           }}
         />
       </div>

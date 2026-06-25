@@ -17,6 +17,7 @@ import Assistant from "./pages/Assistant";
 import Verify from "./pages/Verify";
 import CreateTrip from "./pages/CreateTrip";
 import JoinTrip from "./pages/JoinTrip";
+import Map from "./pages/Map";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/create-trip" element={<CreateTrip />} />
         <Route path="/join/:inviteCode" element={<JoinTrip />} />
         <Route path="/planner/:id" element={<Planner />} />
+        <Route path="/map" element={<Map />} />
       </Routes>
     </BrowserRouter>
   );
