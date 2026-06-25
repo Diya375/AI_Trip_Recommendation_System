@@ -43,6 +43,7 @@ function App() {
         <Route path="/join/:inviteCode" element={<JoinTrip />} />
         <Route path="/planner/:id" element={<Planner />} />
         <Route path="/map" element={<Map />} />
+      
       </Routes>
     </BrowserRouter>
   );

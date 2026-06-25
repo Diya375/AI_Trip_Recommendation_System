@@ -1,6 +1,7 @@
 const express = require("express");
 const Groq = require("groq-sdk");
 const verifyToken = require("../middleware/authmiddleware");
+const pool = require("../db");
 
 const router = express.Router();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -103,6 +104,55 @@ Format with clear sections and emojis.`,
     res
       .status(500)
       .json({ error: "Failed to generate trip plan", details: err.message });
+  }
+});
+
+// Get chat history
+router.get("/history", verifyToken, async (req, res) => {
+  const { trip_id } = req.query;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM ai_messages 
+       WHERE user_id = $1 AND ($2::integer IS NULL OR trip_id = $2)
+       ORDER BY created_at ASC`,
+      [req.userId, trip_id || null]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load history" });
+  }
+});
+
+// Save a message
+router.post("/history", verifyToken, async (req, res) => {
+  const { sender, message, trip_id } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO ai_messages (user_id, trip_id, sender, message)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [req.userId, trip_id || null, sender, message]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save message" });
+  }
+});
+
+// Clear history
+router.delete("/history", verifyToken, async (req, res) => {
+  const { trip_id } = req.query;
+  try {
+    await pool.query(
+      `DELETE FROM ai_messages 
+       WHERE user_id = $1 AND ($2::integer IS NULL OR trip_id = $2)`,
+      [req.userId, trip_id || null]
+    );
+    res.json({ message: "History cleared" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to clear history" });
   }
 });
 

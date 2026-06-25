@@ -2,38 +2,77 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
+import { Trash2 } from "lucide-react";
 
 function Assistant() {
   const location = useLocation();
   const tripData = location.state;
   const messagesEndRef = useRef(null);
 
-  const [messages, setMessages] = useState([
-    {
-      sender: "ai",
-      text: tripData?.tripName
-        ? `Namaste 🙏 I have received preferences for "${tripData.tripName}" from ${tripData.preferences?.length} members. Click "Generate Group Trip Plan" to get started!`
-        : "Namaste 🙏 I am YatraVerse AI. Ask me anything about traveling in Nepal.",
-    },
-  ]);
+  const [trips, setTrips] = useState([]);
+  const [selectedTripId, setSelectedTripId] = useState(tripData?.tripId || null);
+  const [selectedTripName, setSelectedTripName] = useState(tripData?.tripName || null);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  // load user's trips for selector
+  useEffect(() => {
+    API.get("/trips/my").then((res) => setTrips(res.data)).catch(() => {});
+  }, []);
+
+  // load history whenever selectedTripId changes
+  useEffect(() => {
+    setHistoryLoading(true);
+    const url = selectedTripId
+      ? `/ai/history?trip_id=${selectedTripId}`
+      : "/ai/history";
+
+    API.get(url)
+      .then((res) => {
+        if (res.data.length > 0) {
+          setMessages(res.data.map((m) => ({ sender: m.sender, text: m.message })));
+        } else {
+          setMessages([{
+            sender: "ai",
+            text: selectedTripId
+              ? `Namaste 🙏 This is the chat history for "${selectedTripName}". Ask me anything or generate a trip plan!`
+              : "Namaste 🙏 I am YatraVerse AI. Ask me anything about traveling in Nepal.",
+          }]);
+        }
+      })
+      .catch(() => {
+        setMessages([{ sender: "ai", text: "Namaste 🙏 I am YatraVerse AI. Ask me anything about traveling in Nepal." }]);
+      })
+      .finally(() => setHistoryLoading(false));
+  }, [selectedTripId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  const saveMessage = async (sender, message) => {
+    try {
+      await API.post("/ai/history", { sender, message, trip_id: selectedTripId });
+    } catch (err) {
+      console.error("Failed to save message:", err);
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
-    const userMsg = { sender: "user", text: input };
-    setMessages((prev) => [...prev, userMsg]);
+    const userText = input.trim();
+    setMessages((prev) => [...prev, { sender: "user", text: userText }]);
     setInput("");
     setLoading(true);
+    await saveMessage("user", userText);
     try {
-      const res = await API.post("/ai/chat", { message: input });
+      const res = await API.post("/ai/chat", { message: userText });
       setMessages((prev) => [...prev, { sender: "ai", text: res.data.reply }]);
-    } catch (err) {
+      await saveMessage("ai", res.data.reply);
+    } catch {
       setMessages((prev) => [...prev, { sender: "ai", text: "⚠️ Something went wrong. Please try again." }]);
     } finally {
       setLoading(false);
@@ -43,10 +82,9 @@ function Assistant() {
   const generateTripPlan = async () => {
     if (!tripData?.preferences?.length) return;
     setGenerating(true);
-    setMessages((prev) => [...prev, {
-      sender: "user",
-      text: `Generate a group trip plan for "${tripData.tripName}" based on all members' preferences.`,
-    }]);
+    const userText = `Generate a group trip plan for "${tripData.tripName}" based on all members' preferences.`;
+    setMessages((prev) => [...prev, { sender: "user", text: userText }]);
+    await saveMessage("user", userText);
     try {
       const res = await API.post("/ai/trip-plan", {
         tripName: tripData.tripName,
@@ -54,10 +92,25 @@ function Assistant() {
         preferences: tripData.preferences,
       });
       setMessages((prev) => [...prev, { sender: "ai", text: res.data.plan }]);
-    } catch (err) {
-      setMessages((prev) => [...prev, { sender: "ai", text: "⚠️ Failed to generate trip plan. Please try again." }]);
+      await saveMessage("ai", res.data.plan);
+    } catch {
+      setMessages((prev) => [...prev, { sender: "ai", text: "⚠️ Failed to generate trip plan." }]);
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const clearHistory = async () => {
+    if (!window.confirm("Clear this chat history?")) return;
+    try {
+      const url = selectedTripId ? `/ai/history?trip_id=${selectedTripId}` : "/ai/history";
+      await API.delete(url);
+      setMessages([{
+        sender: "ai",
+        text: "Namaste 🙏 I am YatraVerse AI. Ask me anything about traveling in Nepal.",
+      }]);
+    } catch {
+      alert("Failed to clear history");
     }
   };
 
@@ -71,24 +124,65 @@ function Assistant() {
     <DashboardLayout>
       <div className="fade-up" style={{ maxWidth: "760px", margin: "0 auto", display: "flex", flexDirection: "column" }}>
 
-        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-          <h1 className="section-title">AI Assistant</h1>
-          <p className="section-sub" style={{ marginBottom: 0 }}>Your personal travel guide</p>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
+          <div>
+            <h1 className="section-title" style={{ margin: 0 }}>AI Assistant</h1>
+            <p className="section-sub" style={{ margin: 0 }}>Your personal travel guide</p>
+          </div>
+          <button
+            onClick={clearHistory}
+            style={{
+              background: "none", border: "1px solid var(--border)", borderRadius: "8px",
+              padding: "0.4rem 0.75rem", color: "var(--text-dim)", cursor: "pointer",
+              fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.4rem",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "#e74c3c"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-dim)"}
+          >
+            <Trash2 size={13} /> Clear History
+          </button>
         </div>
 
-        {/* Group plan banner */}
-        {tripData?.preferences?.length > 0 && (
+        {/* Trip selector */}
+        <div style={{
+          marginBottom: "1.25rem", padding: "0.85rem 1.25rem",
+          background: "var(--bg-card)", border: "1px solid var(--border)",
+          borderRadius: "12px", display: "flex", alignItems: "center",
+          gap: "1rem", flexWrap: "wrap",
+        }}>
+          <p style={{ fontSize: "0.82rem", color: "var(--text-dim)", margin: 0, whiteSpace: "nowrap" }}>
+            📂 Viewing history for:
+          </p>
+          <select
+            value={selectedTripId || ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              const trip = trips.find((t) => t.id === parseInt(val));
+              setSelectedTripId(val ? parseInt(val) : null);
+              setSelectedTripName(trip?.name || null);
+            }}
+            style={{
+              background: "var(--bg)", border: "1px solid var(--border)",
+              borderRadius: "8px", padding: "0.4rem 0.75rem",
+              color: "var(--text)", fontSize: "0.85rem",
+              cursor: "pointer", flex: 1, minWidth: "160px",
+            }}
+          >
+            <option value="">General Chat</option>
+            {trips.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Generate plan banner — only when navigated from planner with preferences */}
+        {tripData?.preferences?.length > 0 && selectedTripId === tripData?.tripId && (
           <div style={{
-            marginBottom: "1.25rem",
-            padding: "1rem 1.25rem",
-            background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
+            marginBottom: "1.25rem", padding: "1rem 1.25rem",
+            background: "var(--bg-card)", border: "1px solid var(--border)",
+            borderRadius: "12px", display: "flex", alignItems: "center",
+            justifyContent: "space-between", gap: "1rem", flexWrap: "wrap",
           }}>
             <div>
               <p style={{ fontWeight: 600, color: "var(--text)", margin: 0, fontSize: "0.9rem" }}>
@@ -109,19 +203,29 @@ function Assistant() {
           </div>
         )}
 
-        {/* Chat */}
-        <div className="card" style={{ display: "flex", flexDirection: "column", height: "65vh" }}>
-          <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem", marginBottom: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {messages.map((msg, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: msg.sender === "user" ? "flex-end" : "flex-start" }}>
-                <div
-                  className={msg.sender === "user" ? "bubble-user" : "bubble-ai"}
-                  style={{ padding: "0.85rem 1.25rem", maxWidth: "85%", fontSize: "0.92rem", lineHeight: 1.6, color: "var(--text)" }}
-                >
-                  {renderText(msg.text)}
+        {/* Chat window */}
+        <div className="card" style={{ display: "flex", flexDirection: "column", height: "62vh" }}>
+          <div style={{
+            flex: 1, overflowY: "auto", paddingRight: "0.5rem",
+            marginBottom: "1rem", display: "flex", flexDirection: "column", gap: "1rem",
+          }}>
+            {historyLoading ? (
+              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", textAlign: "center", marginTop: "2rem" }}>
+                Loading history...
+              </p>
+            ) : (
+              messages.map((msg, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: msg.sender === "user" ? "flex-end" : "flex-start" }}>
+                  <div
+                    className={msg.sender === "user" ? "bubble-user" : "bubble-ai"}
+                    style={{ padding: "0.85rem 1.25rem", maxWidth: "85%", fontSize: "0.92rem", lineHeight: 1.6, color: "var(--text)" }}
+                  >
+                    {renderText(msg.text)}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
+
             {(loading || generating) && (
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <div className="bubble-ai" style={{ padding: "0.85rem 1.25rem", color: "var(--text-dim)", fontStyle: "italic", fontSize: "0.9rem" }}>
@@ -132,15 +236,16 @@ function Assistant() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Input */}
           <div style={{ display: "flex", gap: "0.75rem", borderTop: "1px solid var(--border)", paddingTop: "1.25rem" }}>
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about destinations, budgets, or itineraries..."
+              placeholder={selectedTripId ? `Ask about ${selectedTripName}...` : "Ask about destinations, budgets, or itineraries..."}
               className="input"
               style={{ flex: 1 }}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              disabled={loading || generating}
+              disabled={loading || generating || historyLoading}
             />
             <button
               onClick={sendMessage}
@@ -152,6 +257,7 @@ function Assistant() {
             </button>
           </div>
         </div>
+
       </div>
     </DashboardLayout>
   );

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import API from "../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Eye, EyeOff } from "lucide-react";
+import anthem from "../assets/audio/reshamfiriri.mp3";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,7 +15,25 @@ export default function Login() {
   const location = useLocation();
   const { login } = useAuth();
 
-  const redirectTo = location.state?.redirectTo || "/dashboard";
+  // read redirectTo from state OR query param (expired token redirect)
+  const params = new URLSearchParams(location.search);
+  const redirectTo =
+    location.state?.redirectTo ||
+    params.get("redirectTo") ||
+    "/dashboard";
+
+  useEffect(() => {
+    const audio = new Audio(anthem);
+    audio.volume = 0.75;
+    audio.play().catch(() => {});
+    return () => { audio.pause(); audio.currentTime = 0; };
+  }, []);
+
+  useEffect(() => {
+    // already logged in — skip login page
+    const token = localStorage.getItem("token");
+    if (token) navigate(redirectTo);
+  }, []);
 
   const handleLogin = async () => {
     setError("");
@@ -35,78 +54,62 @@ export default function Login() {
   };
 
   return (
-    <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="card fade-up" style={{ width: "100%", maxWidth: "420px", padding: "3rem 2.5rem", textAlign: "center" }}>
-        <h1 className="cinzel" style={{ fontSize: "2.5rem", color: "var(--accent)", marginBottom: "0.5rem" }}>
-          YatraVerse
-        </h1>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2.5rem", fontSize: "0.9rem", letterSpacing: "0.05em" }}>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
+      <div className="card fade-up w-full max-w-md px-10 py-12 text-center">
+
+        <h1 className="cinzel text-4xl text-[var(--accent)] mb-2">YatraVerse</h1>
+        <p className="text-sm text-[var(--text-dim)] tracking-widest mb-10">
           Welcome Back Explorer
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div className="flex flex-col gap-4 mb-6">
           <input
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            type="email" placeholder="Email Address"
+            value={email} onChange={(e) => setEmail(e.target.value)}
+            className="input w-full"
           />
-          <div style={{ position: "relative" }}>
+          <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input"
-              style={{ width: "100%", paddingRight: "44px" }}
+              value={password} onChange={(e) => setPassword(e.target.value)}
+              className="input w-full pr-11"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                right: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--text-dim)",
-                display: "flex",
-                alignItems: "center",
-                padding: 0,
-              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--text-dim)] flex items-center p-0"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
 
-        <div style={{ textAlign: "right", marginBottom: "1rem" }}>
-          <Link to="/forgot-password" style={{ color: "var(--accent)", fontSize: "0.85rem", textDecoration: "none" }}>
+        <div className="text-right mb-4">
+          <Link to="/forgot-password" className="text-[var(--accent)] text-sm no-underline hover:underline">
             Forgot Password?
           </Link>
         </div>
 
         {error && (
-          <p style={{ color: "#e57373", marginBottom: "1rem", fontSize: "0.85rem" }}>
-            {error}
-          </p>
+          <p className="text-red-400 text-sm mb-4">{error}</p>
         )}
 
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="btn btn-primary"
-          style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}
+          className="btn btn-primary w-full py-3 text-base disabled:opacity-60"
         >
           {loading ? "Entering..." : "Enter YatraVerse"}
         </button>
 
-        <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
+        <p className="mt-8 text-sm text-[var(--text-dim)]">
           New here?{" "}
-          <Link to="/signup" state={{ redirectTo }} style={{ color: "var(--accent)", textDecoration: "none" }}>
+          <Link
+            to="/signup"
+            state={{ redirectTo }}
+            className="text-[var(--accent)] no-underline hover:underline"
+          >
             Create Account
           </Link>
         </p>

@@ -319,4 +319,83 @@ router.delete("/:id/places/:placeId", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Failed to delete place" });
   }
 });
+
+// Get all expenses for a trip
+router.get("/:id/expenses", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const membership = await pool.query(
+      "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
+      [id, req.userId]
+    );
+    if (membership.rows.length === 0)
+      return res.status(403).json({ error: "Not a member" });
+
+    const result = await pool.query(
+      `SELECT expenses.*, users.name AS added_by
+       FROM expenses
+       JOIN users ON expenses.user_id = users.id
+       WHERE expenses.trip_id = $1
+       ORDER BY expenses.created_at ASC`,
+      [id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load expenses" });
+  }
+});
+
+// Add expense
+router.post("/:id/expenses", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const { name, amount, paid_by_name, category, split_among } = req.body;
+  try {
+    const membership = await pool.query(
+      "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
+      [id, req.userId]
+    );
+    if (membership.rows.length === 0)
+      return res.status(403).json({ error: "Not a member" });
+
+    const result = await pool.query(
+      `INSERT INTO expenses (trip_id, user_id, name, amount, paid_by_name, category, split_among)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [id, req.userId, name, amount, paid_by_name, category, split_among]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add expense" });
+  }
+});
+
+// Delete expense
+router.delete("/:id/expenses/:expenseId", verifyToken, async (req, res) => {
+  const { id, expenseId } = req.params;
+  try {
+    const membership = await pool.query(
+      "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
+      [id, req.userId]
+    );
+    if (membership.rows.length === 0)
+      return res.status(403).json({ error: "Not a member" });
+
+    const expense = await pool.query("SELECT * FROM expenses WHERE id=$1", [expenseId]);
+    if (expense.rows.length === 0)
+      return res.status(404).json({ error: "Expense not found" });
+
+    const isAdmin = membership.rows[0].role === "admin";
+    const isOwner = expense.rows[0].user_id === req.userId;
+    if (!isAdmin && !isOwner)
+      return res.status(403).json({ error: "Not allowed" });
+
+    await pool.query("DELETE FROM expenses WHERE id=$1", [expenseId]);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete expense" });
+  }
+});
+
 module.exports = router;
