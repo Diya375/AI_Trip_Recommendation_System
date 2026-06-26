@@ -34,7 +34,7 @@ export default function Planner() {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login", { state: { redirectTo: location.pathname } }); return; }
 
-    if (!id) { navigate("/dashboard"); return; }
+    if (!id) { navigate("/planner"); return; }
 
     Promise.all([
       API.get(`/trips/${id}`),

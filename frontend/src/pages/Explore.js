@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
-import { MapPin, Clock, DollarSign, Mountain, Plus, Check, Filter } from "lucide-react";
+import { MapPin, Clock, Mountain, Plus, Check } from "lucide-react";
+
+import raraImg     from "../assets/explore/rara.png";
+import ilamImg     from "../assets/explore/ilam.png";
+import bandipurImg from "../assets/explore/bandipur.png";
+import khaptadImg  from "../assets/explore/khaptad.png";
+import mustangImg  from "../assets/explore/uppermustang.png";
+import panchImg    from "../assets/explore/panchpokhari.png";
+import pokharaImg  from "../assets/explore/pokhara.png";
+import chitwanImg  from "../assets/explore/chitwan.png";
+import langtangImg from "../assets/explore/langtang.png";
 
 const places = [
   {
     name: "Rara Lake",
     region: "Karnali",
-    desc: "Nepal's hidden blue jewel — the largest lake in Nepal, untouched and serene.",
+    desc: "Nepal's hidden blue jewel — the largest lake, untouched and serene.",
     bestTime: "Oct – Nov",
     days: "7–10 days",
     cost: "Rs. 25,000–40,000",
     difficulty: "Moderate",
     type: ["Trekking", "Nature"],
-    emoji: "🏔️",
     highlight: "Deepest blue lake in Nepal",
+    img: raraImg,
   },
   {
     name: "Ilam",
@@ -25,8 +35,8 @@ const places = [
     cost: "Rs. 8,000–15,000",
     difficulty: "Easy",
     type: ["Nature", "Cultural", "Relaxing"],
-    emoji: "🍵",
     highlight: "Nepal's tea capital",
+    img: ilamImg,
   },
   {
     name: "Bandipur",
@@ -37,8 +47,8 @@ const places = [
     cost: "Rs. 5,000–12,000",
     difficulty: "Easy",
     type: ["Cultural", "Relaxing"],
-    emoji: "🏘️",
     highlight: "Frozen in time medieval town",
+    img: bandipurImg,
   },
   {
     name: "Khaptad",
@@ -49,8 +59,8 @@ const places = [
     cost: "Rs. 20,000–35,000",
     difficulty: "Moderate",
     type: ["Trekking", "Cultural"],
-    emoji: "🌿",
     highlight: "Sacred plateau at 3,300m",
+    img: khaptadImg,
   },
   {
     name: "Upper Mustang",
@@ -61,8 +71,8 @@ const places = [
     cost: "Rs. 80,000–1,20,000",
     difficulty: "Hard",
     type: ["Adventure", "Trekking", "Cultural"],
-    emoji: "🏜️",
     highlight: "Last forbidden kingdom of Nepal",
+    img: mustangImg,
   },
   {
     name: "Panch Pokhari",
@@ -73,8 +83,8 @@ const places = [
     cost: "Rs. 15,000–25,000",
     difficulty: "Hard",
     type: ["Trekking", "Adventure"],
-    emoji: "💧",
     highlight: "Five sacred Himalayan lakes",
+    img: panchImg,
   },
   {
     name: "Pokhara",
@@ -85,8 +95,8 @@ const places = [
     cost: "Rs. 10,000–25,000",
     difficulty: "Easy",
     type: ["Relaxing", "Adventure", "Nature"],
-    emoji: "⛵",
     highlight: "Gateway to the Annapurnas",
+    img: pokharaImg,
   },
   {
     name: "Chitwan",
@@ -97,8 +107,8 @@ const places = [
     cost: "Rs. 12,000–30,000",
     difficulty: "Easy",
     type: ["Wildlife", "Nature"],
-    emoji: "🦏",
     highlight: "UNESCO World Heritage jungle",
+    img: chitwanImg,
   },
   {
     name: "Langtang Valley",
@@ -109,23 +119,18 @@ const places = [
     cost: "Rs. 20,000–35,000",
     difficulty: "Moderate",
     type: ["Trekking", "Adventure"],
-    emoji: "🗻",
     highlight: "Closest trekking from Kathmandu",
+    img: langtangImg,
   },
 ];
 
 const ALL_TYPES = ["All", "Trekking", "Adventure", "Nature", "Cultural", "Relaxing", "Wildlife"];
-const DIFFICULTIES = ["All", "Easy", "Moderate", "Hard"];
-
-const difficultyColor = {
-  Easy: "text-green-500 bg-green-500/10",
-  Moderate: "text-yellow-500 bg-yellow-500/10",
-  Hard: "text-red-400 bg-red-400/10",
-};
+ 
+ 
 
 export default function Explore() {
   const [selectedType, setSelectedType] = useState("All");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+   
   const [trips, setTrips] = useState([]);
   const [addedPlaces, setAddedPlaces] = useState({});
   const [addingTo, setAddingTo] = useState(null);
@@ -135,11 +140,9 @@ export default function Explore() {
     API.get("/trips/my").then((res) => setTrips(res.data)).catch(() => {});
   }, []);
 
-  const filtered = places.filter((p) => {
-    const typeMatch = selectedType === "All" || p.type.includes(selectedType);
-    const diffMatch = selectedDifficulty === "All" || p.difficulty === selectedDifficulty;
-    return typeMatch && diffMatch;
-  });
+ const filtered = places.filter((p) =>
+  selectedType === "All" || p.type.includes(selectedType)
+);
 
   const handleAddToTrip = async (tripId, place) => {
     setAddingTo(`${tripId}-${place.name}`);
@@ -147,9 +150,7 @@ export default function Explore() {
       await API.post(`/trips/${tripId}/places`, {
         name: place.name,
         address: `${place.region}, Nepal`,
-        lat: null,
-        lng: null,
-        place_id: null,
+        lat: null, lng: null, place_id: null,
       });
       setAddedPlaces((prev) => ({ ...prev, [`${tripId}-${place.name}`]: true }));
       setShowTripPicker(null);
@@ -171,189 +172,140 @@ export default function Explore() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-8 p-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)]">
-          <div className="flex items-center gap-2">
-            <Filter size={14} className="text-[var(--text-dim)]" />
-            <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest">Type</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)]">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest mr-1">Type</span>
             {ALL_TYPES.map((type) => (
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`px-3 py-1 rounded-full text-sm border transition-all duration-200 cursor-pointer
+                className={`px-3 py-1 rounded-full text-sm border transition-all cursor-pointer
                   ${selectedType === type
                     ? "bg-[var(--accent)] border-[var(--accent)] text-white"
-                    : "border-[var(--border)] text-[var(--text-dim)] bg-transparent hover:border-[var(--accent)]"
-                  }`}
+                    : "border-[var(--border)] text-[var(--text-dim)] bg-transparent hover:border-[var(--accent)]"}`}
               >
                 {type}
               </button>
             ))}
           </div>
-
-          <div className="w-px bg-[var(--border)] hidden sm:block" />
-
-          <div className="flex items-center gap-2">
-            <Mountain size={14} className="text-[var(--text-dim)]" />
-            <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest">Difficulty</span>
-          </div>
-          <div className="flex gap-2">
-            {DIFFICULTIES.map((d) => (
-              <button
-                key={d}
-                onClick={() => setSelectedDifficulty(d)}
-                className={`px-3 py-1 rounded-full text-sm border transition-all duration-200 cursor-pointer
-                  ${selectedDifficulty === d
-                    ? "bg-[var(--accent)] border-[var(--accent)] text-white"
-                    : "border-[var(--border)] text-[var(--text-dim)] bg-transparent hover:border-[var(--accent)]"
-                  }`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Results count */}
-        <p className="text-sm text-[var(--text-dim)] mb-4">
-          Showing {filtered.length} destination{filtered.length !== 1 ? "s" : ""}
-        </p>
-
-        {/* Cards grid */}
-        <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+        {/* Cards — 2 per row */}
+        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))" }}>
           {filtered.map((place) => (
-            <div
-              key={place.name}
-              className="card card-hover flex flex-col"
-              style={{ padding: 0, overflow: "hidden" }}
-            >
-              {/* Card header */}
-              <div
-                className="flex items-center justify-between px-5 pt-5 pb-3"
-                style={{ borderBottom: "1px solid var(--border)" }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{place.emoji}</span>
-                  <div>
-                    <h2 className="cinzel text-lg text-[var(--accent)] leading-tight">
-                      {place.name}
-                    </h2>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <MapPin size={11} className="text-[var(--text-dim)]" />
-                      <span className="text-xs text-[var(--text-dim)]">{place.region}</span>
-                    </div>
+            <div key={place.name} className="card card-hover overflow-hidden flex flex-col" style={{ padding: 0 }}>
+
+              {/* Photo */}
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src={place.img}
+                  alt={place.name}
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+
+                {/* Name overlay on photo bottom */}
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <h2 className="cinzel text-2xl font-bold text-white leading-tight">{place.name}</h2>
+                  <div className="flex items-center gap-1 mt-1">
+                    <MapPin size={12} className="text-white/70" />
+                    <span className="text-xs text-white/70">{place.region}</span>
                   </div>
                 </div>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${difficultyColor[place.difficulty]}`}>
-                  {place.difficulty}
-                </span>
               </div>
 
-              {/* Body */}
-              <div className="px-5 py-4 flex flex-col gap-3 flex-1">
-                {/* Highlight badge */}
-                <div className="inline-flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs px-3 py-1 rounded-full w-fit font-medium">
+              {/* Content */}
+              <div className="p-5 flex flex-col gap-4 flex-1">
+
+                {/* Highlight */}
+                <div className="inline-flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs px-3 py-1.5 rounded-full w-fit font-medium">
                   ✨ {place.highlight}
                 </div>
 
+                {/* Description */}
                 <p className="text-sm text-[var(--text-dim)] leading-relaxed">{place.desc}</p>
 
-                {/* Info grid */}
-                <div className="grid grid-cols-3 gap-2 mt-1">
-                  {[
-                    { icon: <Clock size={12} />, label: "Best Time", value: place.bestTime },
-                    { icon: <Mountain size={12} />, label: "Duration", value: place.days },
-                    { icon: <DollarSign size={12} />, label: "Budget", value: place.cost },
-                  ].map((info, i) => (
-                    <div key={i} className="bg-[var(--bg)] rounded-lg p-2 text-center border border-[var(--border)]">
-                      <div className="flex items-center justify-center gap-1 text-[var(--text-dim)] mb-1">
-                        {info.icon}
-                        <span className="text-[0.6rem] uppercase tracking-wider">{info.label}</span>
-                      </div>
-                      <p className="text-xs text-[var(--text)] font-medium leading-tight">{info.value}</p>
+                {/* Two key facts */}
+                <div className="flex gap-3">
+                  <div className="flex items-center gap-2 bg-[var(--bg)] border border-[var(--border)] rounded-xl px-3 py-2 flex-1">
+                    <Clock size={13} className="text-[var(--accent)] shrink-0" />
+                    <div>
+                      <p className="text-[0.6rem] text-[var(--text-dim)] uppercase tracking-wider">Best Time</p>
+                      <p className="text-xs text-[var(--text)] font-medium">{place.bestTime}</p>
                     </div>
-                  ))}
+                  </div>
+                  <div className="flex items-center gap-2 bg-[var(--bg)] border border-[var(--border)] rounded-xl px-3 py-2 flex-1">
+                    <Mountain size={13} className="text-[var(--accent)] shrink-0" />
+                    <div>
+                      <p className="text-[0.6rem] text-[var(--text-dim)] uppercase tracking-wider">Duration</p>
+                      <p className="text-xs text-[var(--text)] font-medium">{place.days}</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Type tags */}
-                <div className="flex flex-wrap gap-1.5 mt-1">
+                <div className="flex flex-wrap gap-1.5">
                   {place.type.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs px-2 py-0.5 rounded-full border border-[var(--border)] text-[var(--text-dim)]"
-                    >
+                    <span key={t} className="text-xs px-2.5 py-0.5 rounded-full border border-[var(--border)] text-[var(--text-dim)]">
                       {t}
                     </span>
                   ))}
                 </div>
-              </div>
 
-              {/* Add to trip button */}
-              <div className="px-5 pb-5">
-                {showTripPicker === place.name ? (
-                  <div className="border border-[var(--border)] rounded-xl overflow-hidden">
-                    <p className="text-xs text-[var(--text-dim)] px-3 py-2 border-b border-[var(--border)]">
-                      Add to which trip?
-                    </p>
-                    {trips.length === 0 ? (
-                      <p className="text-xs text-[var(--text-dim)] px-3 py-2">No trips yet.</p>
-                    ) : (
-                      trips.map((trip) => {
-                        const key = `${trip.id}-${place.name}`;
-                        const done = addedPlaces[key];
-                        return (
-                          <button
-                            key={trip.id}
-                            onClick={() => !done && handleAddToTrip(trip.id, place)}
-                            disabled={addingTo === key || done}
-                            className="w-full text-left px-3 py-2 text-sm flex items-center justify-between
-                              hover:bg-[var(--bg)] transition-colors border-b border-[var(--border)] last:border-0
-                              text-[var(--text)] disabled:opacity-60 cursor-pointer"
-                          >
-                            <span>{trip.name}</span>
-                            {done
-                              ? <Check size={14} className="text-green-500" />
-                              : addingTo === key
-                                ? <span className="text-xs text-[var(--text-dim)]">Adding...</span>
-                                : <Plus size={14} className="text-[var(--text-dim)]" />
-                            }
-                          </button>
-                        );
-                      })
-                    )}
+                {/* Add to trip */}
+                <div className="mt-auto">
+                  {showTripPicker === place.name ? (
+                    <div className="border border-[var(--border)] rounded-xl overflow-hidden">
+                      <p className="text-xs text-[var(--text-dim)] px-3 py-2 border-b border-[var(--border)] bg-[var(--bg)]">
+                        Add to which trip?
+                      </p>
+                      {trips.length === 0 ? (
+                        <p className="text-xs text-[var(--text-dim)] px-3 py-3">No trips yet.</p>
+                      ) : (
+                        trips.map((trip) => {
+                          const key = `${trip.id}-${place.name}`;
+                          const done = addedPlaces[key];
+                          return (
+                            <button
+                              key={trip.id}
+                              onClick={() => !done && handleAddToTrip(trip.id, place)}
+                              disabled={addingTo === key || done}
+                              className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-[var(--bg)] transition-colors border-b border-[var(--border)] last:border-0 text-[var(--text)] disabled:opacity-60 cursor-pointer bg-transparent"
+                            >
+                              <span>{trip.name}</span>
+                              {done
+                                ? <Check size={14} className="text-green-500" />
+                                : addingTo === key
+                                  ? <span className="text-xs text-[var(--text-dim)]">Adding...</span>
+                                  : <Plus size={14} className="text-[var(--text-dim)]" />
+                              }
+                            </button>
+                          );
+                        })
+                      )}
+                      <button
+                        onClick={() => setShowTripPicker(null)}
+                        className="w-full text-xs text-[var(--text-dim)] py-2 hover:text-[var(--text)] transition-colors cursor-pointer bg-transparent border-none"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
                     <button
-                      onClick={() => setShowTripPicker(null)}
-                      className="w-full text-xs text-[var(--text-dim)] py-2 hover:text-[var(--text)] transition-colors cursor-pointer bg-transparent border-none"
+                      onClick={() => setShowTripPicker(place.name)}
+                      className="btn btn-primary w-full py-3 text-sm flex items-center justify-center gap-2"
                     >
-                      Cancel
+                      <Plus size={15} /> Add to Trip
                     </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowTripPicker(place.name)}
-                    className="btn btn-primary w-full py-2 text-sm flex items-center justify-center gap-2"
-                  >
-                    <Plus size={15} /> Add to Trip
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {filtered.length === 0 && (
-          <div className="card text-center py-16">
-            <p className="text-4xl mb-4">🗺️</p>
-            <p className="text-[var(--text-dim)]">No destinations match your filters. Try a different combination.</p>
-            <button
-              onClick={() => { setSelectedType("All"); setSelectedDifficulty("All"); }}
-              className="btn btn-primary mt-4 px-6 py-2"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
 
       </div>
     </DashboardLayout>

@@ -18,6 +18,7 @@ import Verify from "./pages/Verify";
 import CreateTrip from "./pages/CreateTrip";
 import JoinTrip from "./pages/JoinTrip";
 import Map from "./pages/Map";
+import PlannerHub from "./pages/plannerhub";
 
 function App() {
   return (
@@ -33,7 +34,8 @@ function App() {
         {/* Dashboard sub-pages */}
         <Route path="/home" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/planner" element={<Planner />} />
+        <Route path="/planner" element={<PlannerHub />} />
+        <Route path="/planner/:id" element={<Planner />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/results" element={<Results />} />
@@ -41,9 +43,7 @@ function App() {
         <Route path="/verify" element={<Verify />} />
         <Route path="/create-trip" element={<CreateTrip />} />
         <Route path="/join/:inviteCode" element={<JoinTrip />} />
-        <Route path="/planner/:id" element={<Planner />} />
         <Route path="/map" element={<Map />} />
-      
       </Routes>
     </BrowserRouter>
   );
