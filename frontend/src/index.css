@@ -242,3 +242,23 @@ html {
   }
 }
 
+/* ☀️ REFINED COOL-GREEN LIGHT MODE */
+:root {
+  --bg: #f4f7f5;              /* A crisp, clean off-white with a subtle, premium mint-green undertone */
+  --bg-card: #ffffff;         /* Pure white cards pop beautifully against the soft green canvas */
+  --text: #0e1a14;            /* A deep, rich forest-charcoal (high contrast, zero orange) */
+  --text-dim: #4a5d53;        /* A muted sage-slate for descriptions and secondary text */
+  --border: rgba(14, 26, 20, 0.08); /* Transparent borders tinted with your brand's deep forest color */
+  --accent: #166b4f;          /* Your gold signature remains intact as a sharp accent highlight */
+  
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 🌙 THE EXISTING DARK MODE (Remains untouched and matching your landing canvas) */
+html.dark {
+  --bg: #131916;              /* Deep, cinematic landscape base */
+  --bg-card: rgba(25, 33, 29, 0.5);
+  --text: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.6);
+  --border: rgba(201, 169, 110, 0.12);
+}

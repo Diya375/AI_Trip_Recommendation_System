@@ -94,8 +94,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import pokharaImg from "../assets/images/top.jpg";
-import kathmanduImg from "../assets/images/Nepali_mountain.jpg";
+import pokharaImg from "../assets/images/Nepali_mountain.jpg";
+import kathmanduImg from "../assets/images/Nepal-mountain.jpg";
 import bhaktapurImg from "../assets/images/Janaki-temple.jpg";
 import bandipurImg from "../assets/images/VALLEY.jpg";
 
