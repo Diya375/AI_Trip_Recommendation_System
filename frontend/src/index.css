@@ -23,6 +23,15 @@
   padding: 0;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Prevent any accidental sideways layout jiggle */
+  background-color: #131916; /* Matches your premium deep theme fallback */
+}
+
+
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -31,11 +40,33 @@ body {
 }
 
 /* ── Scrollbar ───────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: var(--bg); }
-::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-2); }
 
+
+/* Customizes the scrollbar for Chrome, Edge, Safari, and Brave */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  background-color: #131916; /* Blends the track background into your theme */
+}
+
+
+::-webkit-scrollbar-track  { background: var(--bg); }
+/* The actual moving handle/thumb */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(201, 169, 110, 0.3); /* Subtle, translucent gold/accent tint */
+  border-radius: 10px;
+  border: 2px solid #131916; /* Adds an invisible gutter around the thumb */
+}
+
+/* Hover effect on the scrollbar handle */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent, #c9a96e); /* Lights up nicely when the user hovers */
+}
+
+/* Standard support for Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 169, 110, 0.3) #131916;
+}
 /* ── Reusable Utility Classes ────────────────────────────── */
 .page {
   min-height: 100vh;
@@ -193,3 +224,21 @@ body {
   transform: translateY(-6px);
   box-shadow: 0 12px 30px rgba(75, 119, 98, 0.15); /* Tinted with your project's green */
 }
+
+/* ================= HERO ================= */
+
+@media (max-width: 1024px) {
+  .hero-floating-card {
+    position: absolute;
+    right: 50px;
+    bottom: 70px;
+    width: 340px;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,.18);
+  }
+}
+
