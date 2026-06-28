@@ -3,6 +3,8 @@ import API from "../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import anthem from "../assets/audio/reshamfiriri.mp3";
 import { Eye, EyeOff } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -13,8 +15,8 @@ export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.redirectTo;
-
-  useEffect(() => {
+   const {login} = useAuth();
+     useEffect(() => {
     const audio = new Audio(anthem);
     audio.volume = 0.75;
     audio.play().catch((err) => {
@@ -36,17 +38,84 @@ export default function Signup() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await API.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      login(res.data.token);
+      navigate(redirectTo || "/dashboard");
+    } catch (err) {
+      setError("Google sign-in failed. Please try again.");
+    }
+  };
+
   return (
-    <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="card fade-up" style={{ width: "100%", maxWidth: "420px", padding: "3rem 2.5rem", textAlign: "center" }}>
-        <h1 className="cinzel" style={{ fontSize: "2.2rem", color: "var(--accent)", marginBottom: "0.5rem" }}>
+    <div
+      className="page"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        className="card fade-up"
+        style={{
+          width: "100%",
+          maxWidth: "420px",
+          padding: "3rem 2.5rem",
+          textAlign: "center",
+        }}
+      >
+        <h1
+          className="cinzel"
+          style={{
+            fontSize: "2.2rem",
+            color: "var(--accent)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Join YatraVerse
         </h1>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2.5rem", fontSize: "0.9rem", letterSpacing: "0.05em" }}>
+        <p
+          style={{
+            color: "var(--text-dim)",
+            marginBottom: "2.5rem",
+            fontSize: "0.9rem",
+            letterSpacing: "0.05em",
+          }}
+        >
           Begin Your Journey
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError("Google sign-in failed.")}
+            theme="filled_black"
+            shape="pill"
+            text="signup_with"
+            size="large"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest">
+            or
+          </span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            marginBottom: "1.5rem",
+          }}
+        >
           <input
             type="text"
             placeholder="Full Name"
@@ -95,7 +164,13 @@ export default function Signup() {
         </div>
 
         {error && (
-          <p style={{ color: "#e74c3c", fontSize: "0.85rem", marginBottom: "1rem" }}>
+          <p
+            style={{
+              color: "#e74c3c",
+              fontSize: "0.85rem",
+              marginBottom: "1rem",
+            }}
+          >
             {error}
           </p>
         )}
@@ -108,9 +183,18 @@ export default function Signup() {
           Create Account
         </button>
 
-        <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
+        <p
+          style={{
+            marginTop: "2rem",
+            fontSize: "0.85rem",
+            color: "var(--text-dim)",
+          }}
+        >
           Already a traveler?{" "}
-          <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none" }}>
+          <Link
+            to="/login"
+            style={{ color: "var(--accent)", textDecoration: "none" }}
+          >
             Login here
           </Link>
         </p>

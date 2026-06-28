@@ -41,6 +41,12 @@ app.get("/db-test", async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripsRoutes);
 app.use("/api/ai", aiRoutes);
+// add this before app.use(express.json())
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
+  next();
+});
 
 const PORT = process.env.PORT || 5001;
 

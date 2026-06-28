@@ -1,3 +1,4 @@
+import { GoogleLogin } from "@react-oauth/google";
 import { useState, useEffect } from "react";
 import API from "../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -15,12 +16,8 @@ export default function Login() {
   const location = useLocation();
   const { login } = useAuth();
 
-  // read redirectTo from state OR query param (expired token redirect)
   const params = new URLSearchParams(location.search);
-  const redirectTo =
-    location.state?.redirectTo ||
-    params.get("redirectTo") ||
-    "/dashboard";
+  const redirectTo = location.state?.redirectTo || params.get("redirectTo") || "/dashboard";
 
   useEffect(() => {
     const audio = new Audio(anthem);
@@ -30,7 +27,6 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    // already logged in — skip login page
     const token = localStorage.getItem("token");
     if (token) navigate(redirectTo);
   }, []);
@@ -53,26 +49,61 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await API.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      login(res.data.token);
+      navigate(redirectTo);
+    } catch (err) {
+      setError("Google sign-in failed. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
       <div className="card fade-up w-full max-w-md px-10 py-12 text-center">
 
         <h1 className="cinzel text-4xl text-[var(--accent)] mb-2">YatraVerse</h1>
-        <p className="text-sm text-[var(--text-dim)] tracking-widest mb-10">
+        <p className="text-sm text-[var(--text-dim)] tracking-widest mb-8">
           Welcome Back Explorer
         </p>
 
+        {/* Google Sign In */}
+        <div className="flex justify-center mb-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError("Google sign-in failed.")}
+            theme="filled_black"
+            shape="pill"
+            text="signin_with"
+            size="large"
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest">or</span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
+        </div>
+
+        {/* Email/password form */}
         <div className="flex flex-col gap-4 mb-6">
           <input
-            type="email" placeholder="Email Address"
-            value={email} onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="input w-full"
           />
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              value={password} onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="input w-full pr-11"
             />
             <button
@@ -91,25 +122,19 @@ export default function Login() {
           </Link>
         </div>
 
-        {error && (
-          <p className="text-red-400 text-sm mb-4">{error}</p>
-        )}
+        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="btn btn-primary w-full py-3 text-base disabled:opacity-60"
+          className="btn btn-primary w-full py-3 text-base disabled:opacity-60 mb-6"
         >
           {loading ? "Entering..." : "Enter YatraVerse"}
         </button>
 
-        <p className="mt-8 text-sm text-[var(--text-dim)]">
+        <p className="text-sm text-[var(--text-dim)]">
           New here?{" "}
-          <Link
-            to="/signup"
-            state={{ redirectTo }}
-            className="text-[var(--accent)] no-underline hover:underline"
-          >
+          <Link to="/signup" state={{ redirectTo }} className="text-[var(--accent)] no-underline hover:underline">
             Create Account
           </Link>
         </p>
