@@ -168,7 +168,6 @@ import pokharaImg from "../assets/images/Fewalake.jpg";
 import kathmanduImg from "../assets/images/Swayambhunath.jpg";
 import bhaktapurImg from "../assets/images/Bhaktapur.jpg";
 import bandipurImg from "../assets/images/Bandipur.jpg";
-
 // 2. Assign the imported variables directly to the image properties
 const places = [
   { 
