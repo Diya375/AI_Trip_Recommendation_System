@@ -81,7 +81,7 @@ export default function Features() {
             fontWeight: "700",
             letterSpacing: "0.03em"
           }}>
-            Explore Your <span style={{ color: "var(--accent)" }}>Dashboard Tools.</span>
+            <span style={{ color: "var(--accent)" }}>Explore Your Dashboard Tools.</span>
           </h2>
           <div style={{
             width: "50px",
