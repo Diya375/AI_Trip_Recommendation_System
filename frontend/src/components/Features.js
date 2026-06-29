@@ -57,7 +57,7 @@ export default function Features() {
     <section style={{
       width: "100%",
       padding: "6rem 2rem",
-      backgroundColor: "#131916", 
+      backgroundColor: "#ffffff", 
       color: "#ffffff",
     }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>

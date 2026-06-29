@@ -131,7 +131,7 @@ export default function Hero() {
   padding: "7rem 2rem 4rem", // Increased top padding (7rem) to accommodate the absolute header
   position: "relative",
   overflow: "hidden",
-  background: "#131916", 
+ background: "#ffffff",
 }}>
       
       {/* 1. SLIDESHOW LAYER CONTAINER */}
@@ -174,7 +174,7 @@ export default function Hero() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8) 100%)",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8),#ffffff 110%)",
           zIndex: 1,
         }} />
       </div>

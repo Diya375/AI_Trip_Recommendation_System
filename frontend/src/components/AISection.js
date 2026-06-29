@@ -1,206 +1,38 @@
-// // export default function AISection() {
-// //   return (
-// //     <section style={{
-// //       padding: "5rem 2.5rem",
-// //       background: "var(--bg-card)",
-// //       borderTop: "1px solid var(--border)",
-// //       borderBottom: "1px solid var(--border)",
-// //     }}>
-// //       <div style={{
-// //         maxWidth: "700px",
-// //         margin: "0 auto",
-// //         textAlign: "center",
-// //       }}>
-// //         <span style={{
-// //           display: "inline-block",
-// //           padding: "0.3rem 0.9rem",
-// //           border: "1px solid rgba(201,169,110,0.3)",
-// //           borderRadius: "20px",
-// //           fontSize: "0.75rem",
-// //           color: "var(--accent)",
-// //           letterSpacing: "0.12em",
-// //           textTransform: "uppercase",
-// //           marginBottom: "1.5rem",
-// //         }}>
-// //           Powered by AI
-// //         </span>
-
-// //         <h2 className="cinzel" style={{
-// //           fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-// //           color: "var(--text)",
-// //           marginBottom: "1rem",
-// //           letterSpacing: "0.04em",
-// //           lineHeight: 1.3,
-// //         }}>
-// //           Recommendations that understand you
-// //         </h2>
-
-// //         <p style={{
-// //           color: "var(--text-dim)",
-// //           fontSize: "1rem",
-// //           lineHeight: 1.8,
-// //         }}>
-// //           Our AI analyzes your interests, budget, travel history, and group preferences
-// //           to suggest destinations that truly match who you are — not just what's trending.
-// //         </p>
-
-// //         <div style={{
-// //           display: "grid",
-// //           gridTemplateColumns: "repeat(3, 1fr)",
-// //           gap: "1rem",
-// //           marginTop: "2.5rem",
-// //         }}>
-// //           {["500+ Destinations", "Smart Itineraries", "Real-time Pricing"].map((stat) => (
-// //             <div
-// //               key={stat}
-// //               style={{
-// //                 padding: "1rem",
-// //                 border: "1px solid var(--border)",
-// //                 borderRadius: "10px",
-// //                 color: "var(--text-dim)",
-// //                 fontSize: "0.82rem",
-// //               }}
-// //             >
-// //               {stat}
-// //             </div>
-// //           ))}
-// //         </div>
-// //       </div>
-// //     </section>
-// //   );
-// // }
-
-// // AISection.js
-// export default function AISection() {
-//   return (
-//     <section style={{
-//       padding: "6rem 2.5rem 8rem", // Expanded bottom margin padding to space out the upcoming destination element below
-//       background: "var(--bg-card)",
-//       borderTop: "1px solid var(--border)",
-//       borderBottom: "1px solid var(--border)",
-//     }}>
-//       <div style={{
-//         maxWidth: "700px",
-//         margin: "0 auto",
-//         textAlign: "center",
-//       }}>
-//         <span style={{
-//           display: "inline-block",
-//           padding: "0.3rem 0.9rem",
-//           border: "1px solid rgba(201,169,110,0.3)",
-//           borderRadius: "20px",
-//           fontSize: "0.75rem",
-//           color: "var(--accent)",
-//           letterSpacing: "0.12em",
-//           textTransform: "uppercase",
-//           marginBottom: "1.5rem",
-//         }}>
-//           Powered by AI
-//         </span>
-
-//         <h2 className="cinzel" style={{
-//           fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-//           color: "var(--text)",
-//           marginBottom: "1.25rem",
-//           letterSpacing: "0.04em",
-//           lineHeight: 1.3,
-//         }}>
-//           Recommendations that understand you
-//         </h2>
-
-//         <p style={{
-//           color: "var(--text-dim)",
-//           fontSize: "1rem",
-//           lineHeight: 1.8,
-//           marginBottom: "3rem"
-//         }}>
-//           Our AI analyzes your interests, budget, travel history, and group preferences
-//           to suggest destinations that truly match who you are — not just what's trending.
-//         </p>
-
-//         <div style={{
-//           display: "grid",
-//           gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", // Adaptive grid framework
-//           gap: "1rem",
-//           maxWidth: "600px",
-//           margin: "0 auto"
-//         }}>
-//           {["500+ Destinations", "Smart Itineraries", "Real-time Pricing"].map((stat) => (
-//             <div
-//               key={stat}
-//               style={{
-//                 padding: "0.6rem 1rem",
-//                 // Subtle color tint inside the existing design borders so it behaves like static informational badges
-//                 background: "rgba(75, 119, 98, 0.04)", 
-//                 border: "1px solid rgba(75, 119, 98, 0.15)",
-//                 borderRadius: "30px", // Rounded layout matches tag formats
-//                 color: "var(--text)",
-//                 fontSize: "0.82rem",
-//                 fontWeight: "500",
-//                 display: "flex",
-//                 alignItems: "center",
-//                 justifyContent: "center",
-//                 gap: "0.4rem"
-//               }}
-//             >
-//               <span style={{ color: "var(--accent)", fontSize: "0.9rem" }}>✓</span> {stat}
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
 // AISection.js
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const statsData = [
+const characteristicsData = [
   {
-    label: "500+ Destinations",
+    id: "personalization",
+    label: "Hyper-Personalized Engine",
     path: "/explore",
-    description: "Instantly discover hidden base camps, historic shrines, and local viewpoints analyzed specifically for your pacing.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-    )
+    description: "Moves beyond generic trending feeds. Our system cross-references your pacing preferences, historical depth choices, and group dynamics to map spots uniquely tailored to your taste.",
+    badge: "Tailored AI"
   },
   {
-    label: "Smart Itineraries",
+    id: "itineraries",
+    label: "Adaptive Matrix Planner",
     path: "/planner",
-    description: "Generate adaptive daily trail matrices, travel timelines, and route schedules mapped seamlessly around your styles.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    )
+    description: "Builds responsive, multi-day route blocks that sync geographic density with logical travel times, eliminating back-tracking automatically.",
+    badge: "Smart Routing"
   },
   {
-    label: "Real-time Pricing",
+    id: "pricing",
+    label: "Live Cost Indexing",
     path: "/expenses",
-    description: "Monitor localized tracking indexes, project budget forecasts, and calculate live currency estimates effortlessly.",
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    )
+    description: "Provides fully transparent, community-verified price forecasting and live localized expense modeling, keeping budgets accurate down to the dollar.",
+    badge: "Zero Estimate Hidden"
   }
 ];
 
 export default function AISection() {
   const navigate = useNavigate();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  // 🔒 Replace with your global authentication state logic (e.g., from useAuth)
   const isLoggedIn = true; 
 
-  const handleStatClick = (destinationPath) => {
+  const handleCardClick = (destinationPath) => {
     if (isLoggedIn) {
       navigate(destinationPath);
     } else {
@@ -211,117 +43,145 @@ export default function AISection() {
   return (
     <section style={{
       width: "100%",
-      padding: "6rem 2rem 8rem", 
-      backgroundColor: "#131916", // Seamless dark-palette base matching Features.js
-      color: "#ffffff",
-      borderTop: "1px solid rgba(201, 169, 110, 0.05)",
-      borderBottom: "1px solid rgba(201, 169, 110, 0.05)",
-    
+      padding: "8rem 2rem 10rem", 
+      backgroundColor: "#ffffff", // Crisp Wanderlog Pure White
+      color: "#0f172a",
+      position: "relative",
+      overflow: "hidden"
     }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+      {/* Soft Premium Architectural Backdrop Mesh */}
+      <div style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "600px",
+        background: "radial-gradient(120% 120% at 50% 0%, rgba(45, 90, 67, 0.03) 0%, rgba(255, 255, 255, 0) 80%)",
+        pointerEvents: "none"
+      }} />
+
+      <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative", zIndex: 1 }}>
         
-        {/* Section Header */}
-        {/* <div style={{ textAlign: "center", marginBottom: "4.5rem" }}> */}
-         
-          <h2 className="cinzel" style={{
-            fontSize: "clamp(2rem, 5vw, 2.8rem)",
-            fontWeight: "700",
-            letterSpacing: "0.03em",
-               marginBottom: "1rem",
-             marginTop: "-2.5rem"
+        {/* Editorial Section Header */}
+        <div style={{ marginBottom: "5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
+            <span style={{ width: "24px", height: "1px", backgroundColor: "#2d5a43" }} />
+            <span style={{
+              fontSize: "0.75rem",
+              color: "#2d5a43",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              fontWeight: "700"
+            }}>
+              Core Platform DNA
+            </span>
+          </div>
+          
+          <h2 style={{
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            fontSize: "clamp(2.2rem, 5vw, 3.2rem)",
+            fontWeight: "800",
+            letterSpacing: "-0.03em",
+            color: "#0f172a",
+            lineHeight: 1.15,
+            maxWidth: "800px"
           }}>
-            Recommendations that <span style={{ color: "var(--accent)" }}>understand you.</span>
+            An intelligent ecosystem built for <span style={{ color: "#2d5a43" }}>intentional exploration.</span>
           </h2>
-          
-          <p style={{
-            color: "rgba(255, 255, 255, 0.65)",
-            fontSize: "1rem",
-            lineHeight: "1.8",
-            fontWeight: "300",
-            maxWidth: "640px",
-            margin: "1.5rem auto 0"
-          }}>
-            Our AI analyzes your interests, budget, travel history, and group preferences
-            to suggest destinations that truly match who you are—not just what's trending.
-          </p>
-          
-          <div style={{
-            width: "50px",
-            height: "1px",
-            backgroundColor: "var(--accent)",
-            margin: "2rem auto 0",
-            opacity: 0.3
-          }} />
         </div>
 
-        {/* Cohesive Elegant Grid Layout */}
+        {/* Premium Grid Layout */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
-          gap: "2.5rem"
+          gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", 
+          gap: "2rem"
         }}>
-          {statsData.map((stat) => (
-            <div
-              key={stat.label}
-              onClick={() => handleStatClick(stat.path)}
-              style={{
-                background: "linear-gradient(145deg, rgba(25, 33, 29, 0.4) 0%, rgba(19, 25, 22, 0.6) 100%)",
-                border: "1px solid rgba(201, 169, 110, 0.08)",
-                borderRadius: "16px",
-                padding: "2.5rem 2rem",
-                backdropFilter: "blur(4px)",
-                transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.08)";
-              }}
-            >
-              {/* Premium Icon Container */}
-              <div style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "12px",
-                background: "rgba(201, 169, 110, 0.04)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "1.75rem",
-                border: "1px solid rgba(201, 169, 110, 0.12)"
-              }}>
-                {stat.icon}
+          {characteristicsData.map((item, index) => {
+            const isHovered = hoveredIndex === index;
+            return (
+              <div
+                key={item.id}
+                onClick={() => handleCardClick(item.path)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                style={{
+                  background: "#ffffff",
+                  border: isHovered ? "1px solid #2d5a43" : "1px solid #e2e8f0",
+                  borderRadius: "16px",
+                  padding: "3rem 2.5rem",
+                  transform: isHovered ? "translateY(-6px)" : "translateY(0)",
+                  boxShadow: isHovered 
+                    ? "0 30px 60px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(45, 90, 67, 0.05)" 
+                    : "0 4px 20px rgba(15, 23, 42, 0.015)",
+                  transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                  cursor: "pointer",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between"
+                }}
+              >
+                <div>
+                  {/* Pill Badge */}
+                  <span style={{
+                    display: "inline-block",
+                    padding: "0.3rem 0.75rem",
+                    backgroundColor: isHovered ? "#eaf2ed" : "#f1f5f9",
+                    borderRadius: "6px",
+                    fontSize: "0.7rem",
+                    color: isHovered ? "#2d5a43" : "#64748b",
+                    fontWeight: "600",
+                    letterSpacing: "0.02em",
+                    marginBottom: "2rem",
+                    transition: "all 0.3s ease"
+                  }}>
+                    {item.badge}
+                  </span>
+
+                  {/* Character Title */}
+                  <h3 style={{
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontSize: "1.35rem",
+                    fontWeight: "700",
+                    letterSpacing: "-0.01em",
+                    marginBottom: "1rem",
+                    color: "#0f172a"
+                  }}>
+                    {item.label}
+                  </h3>
+
+                  {/* Character Description */}
+                  <p style={{
+                    fontSize: "0.95rem",
+                    color: "#475569",
+                    lineHeight: "1.7",
+                    fontWeight: "400",
+                    margin: 0
+                  }}>
+                    {item.description}
+                  </p>
+                </div>
+
+                {/* Micro Action Trigger */}
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  marginTop: "2.5rem",
+                  fontSize: "0.85rem",
+                  fontWeight: "600",
+                  color: "#2d5a43",
+                  opacity: isHovered ? 1 : 0,
+                  transform: isHovered ? "translateX(0)" : "translateX(-8px)",
+                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)"
+                }}>
+                  Explore capabilities <span>➔</span>
+                </div>
               </div>
-
-              {/* Card Label */}
-              <h3 className="cinzel" style={{
-                fontSize: "1.2rem",
-                fontWeight: "600",
-                marginBottom: "0.85rem",
-                letterSpacing: "0.03em"
-              }}>
-                {stat.label}
-              </h3>
-
-              {/* Card Sub-Description */}
-              <p style={{
-                fontSize: "0.92rem",
-                color: "rgba(255, 255, 255, 0.6)",
-                lineHeight: "1.7",
-                fontWeight: "300",
-                margin: 0
-              }}>
-                {stat.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-      
+      </div>
     </section>
   );
 }

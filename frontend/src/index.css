@@ -243,14 +243,18 @@ html {
 }
 
 /* ☀️ REFINED COOL-GREEN LIGHT MODE */
-:root {
-  --bg: #f4f7f5;              /* A crisp, clean off-white with a subtle, premium mint-green undertone */
-  --bg-card: #ffffff;         /* Pure white cards pop beautifully against the soft green canvas */
-  --text: #0e1a14;            /* A deep, rich forest-charcoal (high contrast, zero orange) */
-  --text-dim: #4a5d53;        /* A muted sage-slate for descriptions and secondary text */
-  --border: rgba(14, 26, 20, 0.08); /* Transparent borders tinted with your brand's deep forest color */
-  --accent: #166b4f;          /* Your gold signature remains intact as a sharp accent highlight */
+html.light {
+  --bg: #ffffff;                       /* Pure white canvas background */
+  --bg-card: #ffffff;                  /* Cards stay pure white */
+  --text: #1e293b;                     /* Sharp slate-900 typography */
+  --text-dim: #64748b;                 /* Clear slate-500 descriptive text */
+  --accent: #059669;                   /* Vibrant crisp emerald green */
+  --border: #f1f5f9;                   /* Subtle separator lines */
   
+  /* 🌤️ WANDERLOG LIGHT MASK: Lets full picture opacity pop out without muddy dark gradients */
+  --hero-overlay: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.5) 70%, #ffffff 100%);
+  --hero-shadow: none;
+
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
