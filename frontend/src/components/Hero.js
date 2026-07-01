@@ -94,16 +94,18 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import pokharaImg from "../assets/images/Nepali_mountain.jpg";
+import npmountImg from "../assets/images/Nepali_mountain.jpg";
 import kathmanduImg from "../assets/images/Nepal-mountain.jpg";
-import bhaktapurImg from "../assets/images/Janaki-temple.jpg";
+import janakiImg from "../assets/images/Janaki-temple.jpg";
 import bandipurImg from "../assets/images/VALLEY.jpg";
+import everImg from "../assets/images/Mount_Everest.jpg"
 
 const slideshowImages = [
-  { src: pokharaImg, alt: "Top of the World - Lakes & Himalayas" },
+  { src: npmountImg, alt: "Top of the World - Lakes & Himalayas" },
   { src: kathmanduImg, alt: "Mountain of Nepal - Natural Heritage" },
-  { src: bhaktapurImg, alt: "Janaki Temple - Cultural Splendor" },
-  { src: bandipurImg, alt: "Valley - Deep valley of Nepal" }
+  { src: janakiImg, alt: "Janaki Temple - Cultural Splendor" },
+  { src: bandipurImg, alt: "Valley - Deep valley of Nepal" },
+  { src: everImg, alt: "Mount Everest"}
 ];
 
 export default function Hero() {
