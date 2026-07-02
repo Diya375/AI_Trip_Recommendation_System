@@ -542,99 +542,16 @@ html.light .input:focus {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SELECT / DROPDOWN — Themed
-   ═══════════════════════════════════════════════════════════ */
-select {
-  background: var(--bg-card-solid);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.45rem 0.85rem;
-  font-family: 'Inter', sans-serif;
-  font-size: 0.875rem;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  appearance: none;
-  -webkit-appearance: none;
-}
-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TABLE / LIST ITEMS
-   ═══════════════════════════════════════════════════════════ */
-.list-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0.85rem 1.1rem;
-  transition: var(--transition);
-}
-.list-item:hover {
-  border-color: var(--border-accent);
-  background: var(--bg-elevated);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FILTER PILLS
-   ═══════════════════════════════════════════════════════════ */
-.filter-bar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 0.85rem 1.1rem;
-  backdrop-filter: blur(8px);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   AVATAR
-   ═══════════════════════════════════════════════════════════ */
-.avatar {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
-  border: 2px solid var(--border-accent);
-  box-shadow: 0 0 0 3px rgba(26, 128, 96, 0.15);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
-  color: #fff;
-  font-size: 1.2rem;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TOOLTIP / HINT OVERLAY
-   ═══════════════════════════════════════════════════════════ */
-.hint-overlay {
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  border-radius: 6px;
-  padding: 2px 8px;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.85);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   LOADING / SKELETON
-   ═══════════════════════════════════════════════════════════ */
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--bg-card) 0%,
-    rgba(26, 128, 96, 0.08) 50%,
-    var(--bg-card) 100%
-  );
-  background-size: 200% auto;
-  animation: shimmer 1.8s linear infinite;
-  border-radius: 8px;
+/* ☀️ REFINED COOL-GREEN LIGHT MODE */
+:root {
+  --bg: #f4f7f5;              /* A crisp, clean off-white with a subtle, premium mint-green undertone */
+  --bg-card: #ffffff;         /* Pure white cards pop beautifully against the soft green canvas */
+  --text: #0e1a14;            /* A deep, rich forest-charcoal (high contrast, zero orange) */
+  --text-dim: #4a5d53;        /* A muted sage-slate for descriptions and secondary text */
+  --border: rgba(14, 26, 20, 0.08); /* Transparent borders tinted with your brand's deep forest color */
+  --accent: #166b4f;          /* Your gold signature remains intact as a sharp accent highlight */
+  
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ═══════════════════════════════════════════════════════════

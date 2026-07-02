@@ -18,7 +18,7 @@ export default function Signup() {
    const {login} = useAuth();
      useEffect(() => {
     const audio = new Audio(anthem);
-    audio.volume = 0.75;
+    audio.volume = 0.25;
     audio.play().catch((err) => {
       console.log("Audio play failed:", err);
     });

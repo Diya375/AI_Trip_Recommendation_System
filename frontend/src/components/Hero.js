@@ -94,16 +94,18 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import pokharaImg from "../assets/images/Nepali_mountain.jpg";
+import npmountImg from "../assets/images/Nepali_mountain.jpg";
 import kathmanduImg from "../assets/images/Nepal-mountain.jpg";
-import bhaktapurImg from "../assets/images/Janaki-temple.jpg";
+import janakiImg from "../assets/images/Janaki-temple.jpg";
 import bandipurImg from "../assets/images/VALLEY.jpg";
+import everImg from "../assets/images/Mount_Everest.jpg"
 
 const slideshowImages = [
-  { src: pokharaImg, alt: "Top of the World - Lakes & Himalayas" },
+  { src: npmountImg, alt: "Top of the World - Lakes & Himalayas" },
   { src: kathmanduImg, alt: "Mountain of Nepal - Natural Heritage" },
-  { src: bhaktapurImg, alt: "Janaki Temple - Cultural Splendor" },
-  { src: bandipurImg, alt: "Valley - Deep valley of Nepal" }
+  { src: janakiImg, alt: "Janaki Temple - Cultural Splendor" },
+  { src: bandipurImg, alt: "Valley - Deep valley of Nepal" },
+  { src: everImg, alt: "Mount Everest"}
 ];
 
 export default function Hero() {
@@ -131,7 +133,7 @@ export default function Hero() {
   padding: "7rem 2rem 4rem", // Increased top padding (7rem) to accommodate the absolute header
   position: "relative",
   overflow: "hidden",
-  background: "#131916", 
+ background: "#ffffff",
 }}>
       
       {/* 1. SLIDESHOW LAYER CONTAINER */}
@@ -174,7 +176,7 @@ export default function Hero() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8) 100%)",
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8),#ffffff 110%)",
           zIndex: 1,
         }} />
       </div>

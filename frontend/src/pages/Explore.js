@@ -191,7 +191,11 @@ export default function Explore() {
         </div>
 
         {/* Cards — 2 per row */}
-        <div className="grid gap-6" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(480px, 1fr))" }}>
+        <div style={{ 
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+          gap: "2rem",
+          }}>
           {filtered.map((place) => (
             <div key={place.name} className="card card-hover overflow-hidden flex flex-col" style={{ padding: 0 }}>
 
@@ -254,54 +258,58 @@ export default function Explore() {
                   ))}
                 </div>
 
-                {/* Add to trip */}
-                <div className="mt-auto">
-                  {showTripPicker === place.name ? (
-                    <div className="border border-[var(--border)] rounded-xl overflow-hidden">
-                      <p className="text-xs text-[var(--text-dim)] px-3 py-2 border-b border-[var(--border)] bg-[var(--bg)]">
-                        Add to which trip?
-                      </p>
-                      {trips.length === 0 ? (
-                        <p className="text-xs text-[var(--text-dim)] px-3 py-3">No trips yet.</p>
-                      ) : (
-                        trips.map((trip) => {
-                          const key = `${trip.id}-${place.name}`;
-                          const done = addedPlaces[key];
-                          return (
-                            <button
-                              key={trip.id}
-                              onClick={() => !done && handleAddToTrip(trip.id, place)}
-                              disabled={addingTo === key || done}
-                              className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-[var(--bg)] transition-colors border-b border-[var(--border)] last:border-0 text-[var(--text)] disabled:opacity-60 cursor-pointer bg-transparent"
-                            >
-                              <span>{trip.name}</span>
-                              {done
-                                ? <Check size={14} className="text-green-500" />
-                                : addingTo === key
-                                  ? <span className="text-xs text-[var(--text-dim)]">Adding...</span>
-                                  : <Plus size={14} className="text-[var(--text-dim)]" />
-                              }
-                            </button>
-                          );
-                        })
-                      )}
-                      <button
-                        onClick={() => setShowTripPicker(null)}
-                        className="w-full text-xs text-[var(--text-dim)] py-2 hover:text-[var(--text)] transition-colors cursor-pointer bg-transparent border-none"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowTripPicker(place.name)}
-                      className="btn btn-primary w-full py-3 text-sm flex items-center justify-center gap-2"
-                    >
-                      <Plus size={15} /> Add to Trip
-                    </button>
-                  )}
-                </div>
-              </div>
+              {/* Add to trip Section Container */}
+<div className="mt-auto pt-4">
+  {showTripPicker === place.name ? (
+    // 1. THIS LAYOUT SHOWS ONLY WHEN PICKER IS ACTIVE
+    <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-white shadow-sm">
+      <p className="text-xs text-[var(--text-dim)] px-3 py-2 border-b border-[var(--border)] bg-[var(--bg)] font-medium">
+        Add to which trip?
+      </p>
+      {trips.length === 0 ? (
+        <p className="text-xs text-[var(--text-dim)] px-3 py-3">No trips yet.</p>
+      ) : (
+        trips.map((trip) => {
+          const key = `${trip.id}-${place.name}`;
+          const done = addedPlaces[key];
+          return (
+            <button
+              key={trip.id}
+              onClick={() => !done && handleAddToTrip(trip.id, place)}
+              disabled={addingTo === key || done}
+              className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-[var(--bg)] transition-colors border-b border-[var(--border)] last:border-0 text-[var(--text)] disabled:opacity-60 cursor-pointer bg-transparent"
+            >
+              <span>{trip.name}</span>
+              {done ? (
+                <Check size={14} className="text-green-500" />
+              ) : addingTo === key ? (
+                <span className="text-xs text-[var(--text-dim)]">Adding...</span>
+              ) : (
+                <Plus size={14} className="text-[var(--text-dim)]" />
+              )}
+            </button>
+          );
+        })
+      )}
+      <button
+        onClick={() => setShowTripPicker(null)}
+        className="w-full text-xs text-red-500 py-2 hover:bg-gray-50 transition-colors cursor-pointer bg-transparent border-none font-medium"
+      >
+        Cancel
+      </button>
+    </div>
+  ) : (
+    // 2. THE GREEN BUTTON ONLY RENDERS WHEN THE PICKER IS NOT ACTIVE
+    <button
+      onClick={() => setShowTripPicker(place.name)}
+      className="w-full bg-[#4d7c68] hover:bg-[#3d6353] text-white py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 border-none cursor-pointer"
+    >
+      <Plus size={16} />
+      Add to Trip
+    </button>
+  )}
+</div>
+   </div>
             </div>
           ))}
         </div>
