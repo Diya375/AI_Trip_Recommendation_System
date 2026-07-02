@@ -42,6 +42,8 @@
 //   }
 // ];
 // src/data/destinationsData.js
+
+
 import everImg from "../assets/images/prayering-flag.jpg";
 import lumImg from "../assets/images/Lumbini.jpg";
 import pokharaImg from "../assets/images/Fewalake.jpg";
