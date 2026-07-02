@@ -555,7 +555,7 @@ export default function DestinationCards() {
           }}>
             Popular Destinations
           </h2>
-          <p style={{ color: "var(--text-dim)", fontSize: "0.95rem" }}>
+          <p style={{ color: "var(--text-dim)",fontFamily: "'Playfair Display', 'Georgia', serif",fontSize: "0.95rem" }}>
             Start exploring some of the world's most beloved locations
           </p>
         </div>
