@@ -62,8 +62,42 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <div className="card fade-up w-full max-w-md px-10 py-12 text-center">
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--bg)",
+        padding: "2rem 1rem",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Ambient glow — bottom left */}
+      <div style={{
+        position: "absolute",
+        bottom: "-100px",
+        left: "-80px",
+        width: "500px",
+        height: "500px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(26,128,96,0.09) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+      {/* Ambient glow — top right */}
+      <div style={{
+        position: "absolute",
+        top: "-80px",
+        right: "-60px",
+        width: "400px",
+        height: "400px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(22,107,79,0.07) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      <div className="card fade-up" style={{ width: "100%", maxWidth: "420px", padding: "3rem 2.5rem", textAlign: "center", position: "relative", zIndex: 1 }}>
 
         <h1 className="cinzel text-4xl text-[var(--accent)] mb-2">YatraVerse</h1>
         <p className="text-sm text-[var(--text-dim)] tracking-widest mb-8">

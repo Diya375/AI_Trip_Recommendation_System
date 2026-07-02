@@ -2,72 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
 
-/* ── Design Tokens (Earthy Sage & Sand Theme) ─────────────── */
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — Dark Cinematic Forest Theme
+   Matched to the Hero section's premium aesthetic
+   ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg:        #faf9f6;   /* Warm alabaster/sand */
-  --bg-card:   #ffffff;   /* Pure white cards */
-  --bg-subtle: #f2f0e6;   /* Subtle sand background */
-  --border:    #e6e4d9;   /* Soft beige-gray border */
-  --accent:    #4b7762;   /* Deep Sage/Emerald */
-  --accent-2:  #6a9a83;   /* Lighter Sage */
-  --text:      #2c3531;   /* Deep charcoal-green text */
-  --text-dim:  #737c76;   /* Muted gray-green */
-  --danger:    #d65a47;
+  /* Base surfaces — deep forest dark like the Hero background */
+  --bg:           #0f1612;   /* Deepest forest — matches Hero's #131916 */
+  --bg-mid:       #131916;   /* Mid layer — exact Hero background */
+  --bg-card:      rgba(22, 31, 26, 0.85);  /* Glassmorphic card surface */
+  --bg-card-solid:#171f1b;   /* Solid card for inputs/forms */
+  --bg-subtle:    rgba(22, 107, 79, 0.08); /* Subtle emerald-tinted bg */
+  --bg-elevated:  rgba(28, 38, 33, 0.9);   /* Elevated components */
+
+  /* Borders — luminous, translucent */
+  --border:       rgba(255, 255, 255, 0.07);
+  --border-accent:rgba(22, 107, 79, 0.35);
+  --border-glow:  rgba(22, 107, 79, 0.6);
+
+  /* Accent — Emerald Sage (Hero's signature green) */
+  --accent:       #1a8060;   /* Primary emerald — vibrant */
+  --accent-2:     #22a876;   /* Lighter emerald highlight */
+  --accent-3:     #166b4f;   /* Deep forest emerald — matching Hero */
+  --accent-glow:  rgba(26, 128, 96, 0.4);
+
+  /* Text — crisp on dark */
+  --text:         #e8f0eb;   /* Soft near-white with green undertone */
+  --text-bright:  #ffffff;   /* Pure white for headings */
+  --text-dim:     rgba(232, 240, 235, 0.5); /* Muted secondary text */
+  --text-muted:   rgba(232, 240, 235, 0.3); /* Tertiary / placeholder */
+
+  /* Status */
+  --danger:       #e05c4b;
+  --success:      #2dd4a0;
+  --warning:      #f0a832;
+
+  /* Shadows */
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md:    0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg:    0 20px 48px rgba(0, 0, 0, 0.6);
+  --shadow-accent:0 8px 32px rgba(26, 128, 96, 0.25);
+
+  /* Transitions */
+  --transition:   all 0.22s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-* {
+/* ═══════════════════════════════════════════════════════════
+   LIGHT MODE — Elegant mint-tinted light (on toggle)
+   ═══════════════════════════════════════════════════════════ */
+html.light {
+  --bg:           #f0f5f2;
+  --bg-mid:       #e8f0eb;
+  --bg-card:      #ffffff;
+  --bg-card-solid:#ffffff;
+  --bg-subtle:    rgba(22, 107, 79, 0.06);
+  --bg-elevated:  #ffffff;
+  --border:       rgba(14, 26, 20, 0.1);
+  --border-accent:rgba(22, 107, 79, 0.3);
+  --border-glow:  rgba(22, 107, 79, 0.5);
+  --accent:       #166b4f;
+  --accent-2:     #1a8060;
+  --accent-3:     #0f5038;
+  --accent-glow:  rgba(22, 107, 79, 0.2);
+  --text:         #0e1a14;
+  --text-bright:  #091009;
+  --text-dim:     #4a5d53;
+  --text-muted:   #8aa396;
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:    0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg:    0 20px 48px rgba(0, 0, 0, 0.1);
+  --shadow-accent:0 8px 32px rgba(22, 107, 79, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════ */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden; /* Prevent any accidental sideways layout jiggle */
-  background-color: #131916; /* Matches your premium deep theme fallback */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 128, 96, 0.4) #0f1612;
+  scroll-behavior: smooth;
 }
 
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
 
 body {
   background-color: var(--bg);
   color: var(--text);
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────── */
-
-
-/* Customizes the scrollbar for Chrome, Edge, Safari, and Brave */
+/* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 10px; /* Width of the scrollbar */
-  background-color: #131916; /* Blends the track background into your theme */
+  width: 6px;
+  height: 6px;
 }
-
-
-::-webkit-scrollbar-track  { background: var(--bg); }
-/* The actual moving handle/thumb */
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(201, 169, 110, 0.3); /* Subtle, translucent gold/accent tint */
+  background: rgba(26, 128, 96, 0.35);
   border-radius: 10px;
-  border: 2px solid #131916; /* Adds an invisible gutter around the thumb */
+  transition: background 0.2s;
 }
-
-/* Hover effect on the scrollbar handle */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--accent, #c9a96e); /* Lights up nicely when the user hovers */
+  background: var(--accent);
 }
 
-/* Standard support for Firefox */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(201, 169, 110, 0.3) #131916;
-}
-/* ── Reusable Utility Classes ────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT UTILITIES
+   ═══════════════════════════════════════════════════════════ */
 .page {
   min-height: 100vh;
   background-color: var(--bg);
@@ -75,77 +133,160 @@ html {
   padding: 2.5rem;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   CARD SYSTEM — Glassmorphic Forest Cards
+   ═══════════════════════════════════════════════════════════ */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1.75rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle luminous inner edge */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    transparent 50%,
+    rgba(26, 128, 96, 0.03) 100%
+  );
+  pointer-events: none;
 }
 
 .card-hover {
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+  cursor: pointer;
 }
 .card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(0,0,0,0.06);
-  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), var(--shadow-accent);
+  border-color: var(--border-accent);
 }
 
+/* ═══════════════════════════════════════════════════════════
+   BUTTON SYSTEM
+   ═══════════════════════════════════════════════════════════ */
 .btn {
-  display: inline-block;
-  padding: 0.7rem 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.5rem;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: var(--bg-card);
+  background: var(--bg-elevated);
   color: var(--text);
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  transition: var(--transition);
+  white-space: nowrap;
+  text-decoration: none;
+  letter-spacing: 0.01em;
 }
-.btn:hover { background: var(--bg-subtle); border-color: var(--accent-2); }
+.btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-accent);
+  color: var(--text-bright);
+}
 
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
+  border-color: transparent;
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(75, 119, 98, 0.25);
+  box-shadow: var(--shadow-accent);
+  position: relative;
+  overflow: hidden;
 }
-.btn-primary:hover { background: #3c5e4e; border-color: #3c5e4e; box-shadow: 0 6px 16px rgba(75, 119, 98, 0.35); }
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(26, 128, 96, 0.45);
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
 
 .btn-danger {
   background: transparent;
-  border-color: rgba(229, 62, 62, 0.3);
+  border-color: rgba(224, 92, 75, 0.3);
   color: var(--danger);
 }
-.btn-danger:hover { background: rgba(229, 62, 62, 0.05); border-color: var(--danger); }
+.btn-danger:hover {
+  background: rgba(224, 92, 75, 0.08);
+  border-color: var(--danger);
+  color: var(--danger);
+}
 
+/* ═══════════════════════════════════════════════════════════
+   INPUT SYSTEM
+   ═══════════════════════════════════════════════════════════ */
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background: var(--bg-card);
+  padding: 0.8rem 1.1rem;
+  background: var(--bg-card-solid);
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text);
   font-family: 'Inter', sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
-.input::placeholder { color: var(--text-dim); }
-.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(75, 119, 98, 0.15); }
+.input::placeholder {
+  color: var(--text-muted);
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: rgba(22, 31, 26, 0.95);
+}
 
-.cinzel { font-family: 'Cinzel', serif; }
+html.light .input {
+  background: #ffffff;
+}
+html.light .input:focus {
+  background: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════ */
+.cinzel {
+  font-family: 'Cinzel', serif;
+}
 
 .section-title {
   font-family: 'Cinzel', serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--text);
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  color: var(--text-bright);
   letter-spacing: 0.02em;
   margin-bottom: 0.4rem;
+  line-height: 1.2;
 }
 
 .section-sub {
@@ -157,108 +298,421 @@ html {
 .divider {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
 }
 
-/* ── Sidebar ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR — Dark Forest Navigation
+   ═══════════════════════════════════════════════════════════ */
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: var(--bg-card);
+  background: linear-gradient(
+    180deg,
+    rgba(15, 22, 18, 0.98) 0%,
+    rgba(12, 18, 14, 0.99) 100%
+  );
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   padding: 2rem 1.25rem;
   flex-shrink: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+}
+
+/* Vertical accent stripe */
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 80px;
+  right: 0;
+  width: 1px;
+  height: calc(100% - 160px);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--accent-glow),
+    transparent
+  );
+  pointer-events: none;
 }
 
 .sidebar-logo {
   font-family: 'Cinzel', serif;
-  font-size: 1.4rem;
-  color: var(--accent);
-  margin-bottom: 0.25rem;
+  font-size: 1.35rem;
+  color: var(--text-bright);
+  margin-bottom: 0.2rem;
   font-weight: 700;
+  letter-spacing: 0.03em;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .sidebar-tagline {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--accent-2);
-  margin-bottom: 2rem;
-  letter-spacing: 0.06em;
-  font-weight: 500;
+  margin-bottom: 1.75rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 .sidebar-link {
-  display: block;
-  padding: 0.6rem 0.9rem;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
   color: var(--text-dim);
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition: var(--transition);
   margin-bottom: 2px;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  position: relative;
 }
-.sidebar-link:hover { background: var(--bg-subtle); color: var(--text); }
-.sidebar-link.active { background: var(--bg-subtle); color: var(--accent); border-left: 3px solid var(--accent); }
+.sidebar-link:hover {
+  background: rgba(26, 128, 96, 0.1);
+  color: var(--text);
+  border-color: var(--border-accent);
+}
+.sidebar-link.active {
+  background: rgba(26, 128, 96, 0.15);
+  color: var(--accent-2);
+  border-color: var(--border-accent);
+  font-weight: 600;
+}
 
-/* ── Animations ──────────────────────────────────────────── */
+/* Active left accent bar */
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--accent-2), var(--accent));
+  border-radius: 0 2px 2px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD LAYOUT — Main content area
+   ═══════════════════════════════════════════════════════════ */
+
+/* Decorative background for inner pages */
+.dashboard-bg {
+  background:
+    radial-gradient(ellipse at 10% 20%, rgba(26, 128, 96, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(22, 107, 79, 0.05) 0%, transparent 50%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAT CARDS — Glowing accent counters
+   ═══════════════════════════════════════════════════════════ */
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  backdrop-filter: blur(12px);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.stat-card:hover::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BADGE / PILL COMPONENTS
+   ═══════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.badge-accent {
+  background: rgba(26, 128, 96, 0.18);
+  color: var(--accent-2);
+  border: 1px solid var(--border-accent);
+}
+.badge-dim {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════ */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp 0.5s ease both; }
-.fade-up-delay { animation: fadeUp 0.5s ease 0.15s both; }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
 
-/* ── Chat bubble ─────────────────────────────────────────── */
-.bubble-ai   { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px 12px 12px 4px; }
-.bubble-user { background: var(--accent); color: white !important; border: 1px solid var(--accent); border-radius: 12px 12px 4px 12px; box-shadow: 0 4px 10px rgba(75, 119, 98, 0.2); }
+.fade-up          { animation: fadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; }
+.fade-up-delay    { animation: fadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.15s both; }
+.fade-up-delay-2  { animation: fadeUp 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.3s both; }
+.fade-in          { animation: fadeIn 0.4s ease both; }
 
-/* Smoothly animate the transition state */
+/* ═══════════════════════════════════════════════════════════
+   CHAT BUBBLES — AI Assistant
+   ═══════════════════════════════════════════════════════════ */
+.bubble-ai {
+  background: rgba(22, 31, 26, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 14px 14px 14px 4px;
+  backdrop-filter: blur(8px);
+}
+.bubble-user {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
+  color: white !important;
+  border: 1px solid transparent;
+  border-radius: 14px 14px 4px 14px;
+  box-shadow: 0 4px 16px rgba(26, 128, 96, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FEATURES GRID — Landing page
+   ═══════════════════════════════════════════════════════════ */
 .features-grid .card {
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
 }
-
-/* Apply the floating lift effect on hover */
 .features-grid .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(75, 119, 98, 0.15); /* Tinted with your project's green */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(26, 128, 96, 0.15);
 }
 
-/* ================= HERO ================= */
-
+/* ═══════════════════════════════════════════════════════════
+   HERO — Full-screen cinematic backdrop
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
   .hero-floating-card {
     position: absolute;
     right: 50px;
     bottom: 70px;
     width: 340px;
-    background: rgba(255,255,255,0.82);
+    background: rgba(22, 31, 26, 0.82);
     backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,.45);
+    border: 1px solid rgba(255,255,255,.1);
     border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 30px 60px rgba(0,0,0,.18);
+    box-shadow: 0 30px 60px rgba(0,0,0,.4);
   }
 }
 
-/* ☀️ REFINED COOL-GREEN LIGHT MODE */
-:root {
-  --bg: #f4f7f5;              /* A crisp, clean off-white with a subtle, premium mint-green undertone */
-  --bg-card: #ffffff;         /* Pure white cards pop beautifully against the soft green canvas */
-  --text: #0e1a14;            /* A deep, rich forest-charcoal (high contrast, zero orange) */
-  --text-dim: #4a5d53;        /* A muted sage-slate for descriptions and secondary text */
-  --border: rgba(14, 26, 20, 0.08); /* Transparent borders tinted with your brand's deep forest color */
-  --accent: #166b4f;          /* Your gold signature remains intact as a sharp accent highlight */
-  
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+/* ═══════════════════════════════════════════════════════════
+   SELECT / DROPDOWN — Themed
+   ═══════════════════════════════════════════════════════════ */
+select {
+  background: var(--bg-card-solid);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-/* 🌙 THE EXISTING DARK MODE (Remains untouched and matching your landing canvas) */
-html.dark {
-  --bg: #131916;              /* Deep, cinematic landscape base */
-  --bg-card: rgba(25, 33, 29, 0.5);
-  --text: #ffffff;
-  --text-dim: rgba(255, 255, 255, 0.6);
-  --border: rgba(201, 169, 110, 0.12);
+/* ═══════════════════════════════════════════════════════════
+   TABLE / LIST ITEMS
+   ═══════════════════════════════════════════════════════════ */
+.list-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.85rem 1.1rem;
+  transition: var(--transition);
+}
+.list-item:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-elevated);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FILTER PILLS
+   ═══════════════════════════════════════════════════════════ */
+.filter-bar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 0.85rem 1.1rem;
+  backdrop-filter: blur(8px);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AVATAR
+   ═══════════════════════════════════════════════════════════ */
+.avatar {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
+  border: 2px solid var(--border-accent);
+  box-shadow: 0 0 0 3px rgba(26, 128, 96, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOOLTIP / HINT OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+.hint-overlay {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING / SKELETON
+   ═══════════════════════════════════════════════════════════ */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 0%,
+    rgba(26, 128, 96, 0.08) 50%,
+    var(--bg-card) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 1.8s linear infinite;
+  border-radius: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES — Keep things readable on light bg
+   ═══════════════════════════════════════════════════════════ */
+html.light .card {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+html.light .card::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 60%);
+}
+html.light .sidebar {
+  background: linear-gradient(180deg, #f8faf9 0%, #f0f5f2 100%);
+  border-right-color: rgba(14, 26, 20, 0.1);
+}
+html.light .sidebar::after {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(22, 107, 79, 0.2),
+    transparent
+  );
+}
+html.light .sidebar-logo {
+  background: linear-gradient(135deg, #0e1a14 0%, #166b4f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+html.light .sidebar-link:hover {
+  background: rgba(22, 107, 79, 0.08);
+}
+html.light .sidebar-link.active {
+  background: rgba(22, 107, 79, 0.1);
+}
+html.light .bubble-ai {
+  background: rgba(240, 245, 242, 0.95);
+  border-color: rgba(14, 26, 20, 0.1);
+}
+html.light select {
+  background: #ffffff;
+}
+html.light .filter-bar {
+  background: #ffffff;
+}
+html.light .list-item {
+  background: #ffffff;
+}
+html.light .list-item:hover {
+  background: #f8faf9;
+}
+html.light .skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f5f2 0%,
+    rgba(22, 107, 79, 0.06) 50%,
+    #f0f5f2 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 1.8s linear infinite;
+}
+html.light ::-webkit-scrollbar-track  { background: #f0f5f2; }
+html.light ::-webkit-scrollbar-thumb  { background: rgba(22, 107, 79, 0.3); }
+
+/* ═══════════════════════════════════════════════════════════
+   TRANSITIONS — smooth theme toggle
+   ═══════════════════════════════════════════════════════════ */
+body,
+.card,
+.sidebar,
+.btn,
+.input,
+.sidebar-link,
+.list-item,
+.bubble-ai {
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              color 0.3s ease,
+              box-shadow 0.3s ease;
 }

@@ -171,19 +171,22 @@ function Sidebar() {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
 
-  // 🌓 1. INIT STATE & READING INITIAL BROWSER PREFERENCE
+  // 🌓 1. INIT STATE — default dark (matches the Hero cinematic aesthetic)
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains("dark");
+    // If user hasn't set a preference, default to dark (no .light class = dark)
+    return !document.documentElement.classList.contains("light");
   });
 
-  // 🌓 2. TOGGLE ACTION THAT FLIPS THE GLOBAL HTML CLASS
+  // 🌓 2. TOGGLE ACTION — uses .light class approach (default is dark)
   const toggleTheme = () => {
     const nextMode = !isDarkMode;
     setIsDarkMode(nextMode);
     if (nextMode) {
-      document.documentElement.classList.add("dark");
+      // Going dark — remove light class
+      document.documentElement.classList.remove("light");
     } else {
-      document.documentElement.classList.remove("dark");
+      // Going light — add light class
+      document.documentElement.classList.add("light");
     }
   };
 
@@ -223,8 +226,8 @@ function Sidebar() {
           onClick={toggleTheme}
           title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           style={{
-            background: isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
-            border: `1px solid ${isDarkMode ? "rgba(201, 169, 110, 0.3)" : "rgba(0, 0, 0, 0.08)"}`,
+            background: isDarkMode ? "rgba(26, 128, 96, 0.1)" : "rgba(22, 107, 79, 0.08)",
+            border: `1px solid ${isDarkMode ? "rgba(26, 128, 96, 0.35)" : "rgba(22, 107, 79, 0.25)"}`,
             borderRadius: "50%",
             width: "36px",
             height: "36px",
@@ -242,9 +245,9 @@ function Sidebar() {
           }}
         >
           {isDarkMode ? (
-            <Sun size={16} color="var(--accent, #c9a96e)" fill="var(--accent, #c9a96e)" />
+            <Sun size={16} color="var(--accent-2, #22a876)" fill="var(--accent-2, #22a876)" />
           ) : (
-            <Moon size={16} color="#131916" fill="#131916" />
+            <Moon size={16} color="var(--accent-3, #166b4f)" fill="var(--accent-3, #166b4f)" />
           )}
         </button>
       </div>
