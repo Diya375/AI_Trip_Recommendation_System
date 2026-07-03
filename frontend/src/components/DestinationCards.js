@@ -548,15 +548,16 @@ export default function DestinationCards() {
         {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 className="cinzel" style={{
-            fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", // Slightly boosted title size for the larger layout
+            fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
+            fontWeight: "700", // Slightly boosted title size for the larger layout
             color: "var(--text)",
             marginBottom: "0.6rem",
             letterSpacing: "0.04em",
           }}>
             Popular Destinations
           </h2>
-          <p style={{ color: "var(--text-dim)",fontFamily: "'Playfair Display', 'Georgia', serif",fontSize: "0.95rem" }}>
-            Start exploring some of the world's most beloved locations
+          <p style={{ color: "var(--text-dim)",fontFamily: "'Playfair Display', 'Georgia', serif",fontSize: "1rem" }}>
+            Start exploring some of the world's most beloved locations of Nepal
           </p>
         </div>
 

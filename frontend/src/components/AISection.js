@@ -97,7 +97,7 @@ export default function AISection() {
             Core Platform DNA
           </p>
           <h2 className="cinzel" style={{
-            fontSize: "clamp(1.8rem, 4vw, 2.3rem)",
+            fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
             fontWeight: "700",
             letterSpacing: "0.01em",
             color: "#2B3E34",
