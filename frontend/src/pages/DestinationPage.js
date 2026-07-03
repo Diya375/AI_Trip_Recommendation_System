@@ -419,10 +419,54 @@ export default function DestinationPage() {
           >
             ← Back
           </button> */}
-          
+          {/* Top Right Navigation */}
+<div
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+  }}
+>
+  <button
+    onClick={() => navigate("/login")}
+    style={{
+      background: "transparent",
+      border: "none",
+      color: "#fff",
+      fontWeight: "600",
+      fontSize: "0.9rem",
+      cursor: "pointer",
+    }}
+  >
+    Login
+  </button>
+
+  <button
+    onClick={() => navigate("/signup")}
+    style={{
+      background: "#fff",
+      color: "#2B3E34",
+      border: "none",
+      borderRadius: "24px",
+      padding: "8px 18px",
+      fontWeight: "600",
+      cursor: "pointer",
+    }}
+  >
+    Sign Up
+  </button>
+</div>
           <h1 className="cinzel" style={{ 
             color: "#ffffff", 
-            fontSize: "3.2rem", 
+            fontSize:
+  place.name.length > 18
+    ? "2.4rem"
+    : place.name.length > 12
+    ? "2.8rem"
+    : "3.2rem", 
             fontWeight: "700",
             margin: "0 0 1rem 0", 
             textTransform: "uppercase", 
@@ -500,5 +544,6 @@ export default function DestinationPage() {
         <MapComponent selectedDestination={place.name} />
       </div>
     </div>
+    
   );
 }
