@@ -102,6 +102,7 @@ export default function Header() {
       background: "transparent",
       border: "none",
       color: "#fff",
+      fontFamily: "'Playfair Display', 'Georgia', serif",
       fontWeight: "600",
       fontSize: "0.9rem",
       cursor: "pointer",

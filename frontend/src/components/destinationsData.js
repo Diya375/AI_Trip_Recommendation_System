@@ -197,7 +197,7 @@ export const places = [
     note: "World's 3rd Highest Peak",
     image: kanchImg,
     description: "Towering at 8,586 meters, Kanchenjunga is the third-highest mountain on Earth and one of Nepal's most awe-inspiring natural wonders. Revered as a sacred mountain by local communities, its snow-covered peaks rise dramatically above the eastern Himalayas. The Kanchenjunga Conservation Area is home to pristine forests, alpine meadows, rare wildlife such as the red panda and snow leopard, and remote villages rich in Limbu and Rai culture.",
-    todo: ["Trekking", "Mountain Views", "Wildlife Spotting", "Conservation Tours", "Photography"],
+    todo: ["Trekking", "Mountain Views", "Wildlife Spotting", "Conservation Tours", "Photography", "Rai & Limbu Cultural Experiences"],
     eat: ["Limbu Traditional Dishes", "Tongba (Millet Beer)", "Rai Local Delicacies", "Alpine Wild Berry Jams"],
     stay: ["Remote Wilderness Camps", "Community Tea Houses", "Taplejung Guest Houses", "Eco-Lodges"]
   },

@@ -182,7 +182,14 @@ export default function Hero() {
       </div>
 
       {/* 3. HERO CONTENT LAYER */}
-      <div className="fade-up" style={{ position: "relative", zIndex: 2 }}>
+     <div
+  className="fade-up"
+  style={{
+    position: "relative",
+    zIndex: 2,
+    marginTop: "3rem",
+  }}
+>
         <p style={{
           fontFamily: "'Cinzel', serif",
           fontSize: "0.75rem",
@@ -200,13 +207,13 @@ export default function Hero() {
           fontSize: "clamp(2.8rem, 7vw, 4.5rem)",
           fontWeight: 700,
           lineHeight: 1.2,
-          color: "#ffffff", // Pure white typography breaks through the image darkness
+          color: "#ffffff", // Pure typography breaks through the image darkness
           marginBottom: "1.75rem",
           letterSpacing: "0.02em",
           textShadow: "0 4px 16px rgba(0,0,0,0.6)",
         }}>
-          Plan Smarter.<br />
-          <span style={{ color: "var(--accent)" }}>Travel Deeper.</span>
+          Plan Smarter,<br />
+          <span style={{ color: "#ffffff" }}>Travel Deeper.</span>
         </h1>
 
     
