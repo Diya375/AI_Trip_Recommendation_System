@@ -74,7 +74,7 @@ export default function Dashboard() {
             <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-1">
               {greeting} 🙏
             </p>
-            <h1 className="cinzel text-4xl text-[var(--accent)] mb-1">
+            <h1 className="cinzel text-4xl mb-1" style={{ color: 'var(--accent-2)' }}>
               {user.name.split(" ")[0]}'s Dashboard
             </h1>
             <p className="text-sm text-[var(--text-dim)]">
@@ -83,7 +83,7 @@ export default function Dashboard() {
           </div>
 
           {/* Avatar */}
-          <div className="w-14 h-14 rounded-full bg-[var(--accent)] flex items-center justify-center cinzel text-xl font-bold text-white shrink-0">
+          <div className="avatar w-14 h-14 cinzel text-xl font-bold">
             {initials}
           </div>
         </div>

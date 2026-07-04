@@ -57,8 +57,33 @@ export default function Signup() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Ambient glow — top left */}
+      <div style={{
+        position: "absolute",
+        top: "-80px",
+        left: "-80px",
+        width: "450px",
+        height: "450px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(26,128,96,0.09) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+      {/* Ambient glow — bottom right */}
+      <div style={{
+        position: "absolute",
+        bottom: "-100px",
+        right: "-60px",
+        width: "400px",
+        height: "400px",
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(22,107,79,0.07) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
       <div
         className="card fade-up"
         style={{
@@ -66,6 +91,8 @@ export default function Signup() {
           maxWidth: "420px",
           padding: "3rem 2.5rem",
           textAlign: "center",
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <h1
