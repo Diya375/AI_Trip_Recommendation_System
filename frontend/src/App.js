@@ -8,6 +8,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 
 import Home from "./pages/Home";
+
 import Explore from "./pages/Explore";
 import DestinationPage from "./pages/DestinationPage";
 import Planner from "./pages/Planner";
@@ -38,7 +39,7 @@ function App() {
         <Route path="/explore" element={<Explore />} />
 
         {/* Your primary page containing your newly configured 2-in-a-row layout */}
-        
+        <Route path="/landingPage" element={<LandingPage />} />
         
         {/* Dynamic target router matching the `to={`/explore/${p.id}`}` pathing */}
         <Route path="/explore/:id" element={<DestinationPage />} />
@@ -51,6 +52,7 @@ function App() {
         <Route path="/verify" element={<Verify />} />
         <Route path="/create-trip" element={<CreateTrip />} />
         <Route path="/join/:inviteCode" element={<JoinTrip />} />
+        
         <Route path="/map" element={<Map />} />
 
          

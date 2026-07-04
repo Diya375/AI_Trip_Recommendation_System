@@ -37,6 +37,7 @@
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  const token = localStorage.getItem("token");
   return (
     <header style={{
       position: "absolute",  // 1. Sits directly on top of the slideshow layers
@@ -93,15 +94,68 @@ export default function Header() {
 
       {/* Action Buttons */}
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-        <Link to="/login" style={{ color: "#ffffff", textDecoration: "none", fontSize: "0.9rem" }}>
-          Login
-        </Link>
-        <Link to="/signup">
-          <button className="btn btn-primary" style={{ padding: "0.5rem 1.25rem", fontSize: "0.85rem" }}>
-            Sign Up
-          </button>
-        </Link>
-      </div>
+  {token ? (
+    <>
+      <Link
+        to="/dashboard"
+       style={{
+      background: "transparent",
+      border: "none",
+      color: "#fff",
+      fontWeight: "600",
+      fontSize: "0.9rem",
+      cursor: "pointer",
+    }}
+      >
+        Dashboard
+      </Link>
+
+      <button
+        className="btn"
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.href = "/";
+        }}
+        style={{background: "#fff",
+      color: "#2B3E34",
+      border: "none",
+      borderRadius: "24px",
+      padding: "8px 18px",
+      fontWeight: "600",
+      cursor: "pointer",fontFamily: "'Playfair Display', 'Georgia', serif"}}
+      >
+        Logout
+      </button>
+    </>
+  ) : (
+    <>
+      <Link
+        to="/login"
+        style={{
+          color: "#ffffff",
+          textDecoration: "none",
+          fontFamily: "'Playfair Display', 'Georgia', serif",
+          fontSize: "0.9rem",
+        }}
+      >
+        Login
+      </Link>
+
+      <Link to="/signup">
+        <button
+          className="btn btn-primary"
+          style={{
+            padding: "0.5rem 1.25rem",
+            fontFamily: "'Playfair Display', 'Georgia', serif",
+            fontSize: "0.85rem",
+          }}
+        >
+          Sign Up
+        </button>
+      </Link>
+    </>
+  )}
+</div>
     </header>
   );
 }

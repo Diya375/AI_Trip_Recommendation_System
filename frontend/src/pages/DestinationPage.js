@@ -333,6 +333,7 @@ import MapComponent from "../components/MapComponent";
 export default function DestinationPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [activeTab, setActiveTab] = useState("todo"); // Values: "todo", "eat", "stay"
   
   useEffect(() => {
@@ -420,7 +421,7 @@ export default function DestinationPage() {
             ← Back
           </button> */}
           {/* Top Right Navigation */}
-<div
+{/* <div
   style={{
     position: "absolute",
     top: "20px",
@@ -458,15 +459,97 @@ export default function DestinationPage() {
   >
     Sign Up
   </button>
+</div> */}
+
+<div
+  style={{
+    position: "absolute",
+    top: "8px",
+    right: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+  }}
+>
+  {token ? (
+    <>
+      <button
+        onClick={() => navigate("/dashboard")}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "#fff",
+          fontWeight: "600",
+          fontSize: "0.9rem",
+          cursor: "pointer",
+        }}
+      >
+        Dashboard
+      </button>
+
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }}
+        style={{
+          background: "#fff",
+          color: "#2B3E34",
+          border: "none",
+          borderRadius: "24px",
+          padding: "8px 18px",
+          fontWeight: "600",
+          cursor: "pointer",
+        }}
+      >
+        Logout
+      </button>
+    </>
+  ) : (
+    <>
+      <button
+        onClick={() => navigate("/login")}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "#fff",
+          fontWeight: "600",
+          fontSize: "0.9rem",
+          cursor: "pointer",
+        }}
+      >
+        Login
+      </button>
+
+      <button
+        onClick={() => navigate("/signup")}
+        style={{
+          background: "#fff",
+          color: "#2B3E34",
+          border: "none",
+          borderRadius: "24px",
+          padding: "8px 18px",
+          fontWeight: "600",
+          cursor: "pointer",
+        }}
+      >
+        Sign Up
+      </button>
+    </>
+  )}
 </div>
+
           <h1 className="cinzel" style={{ 
             color: "#ffffff", 
             fontSize:
-  place.name.length > 18
-    ? "2.4rem"
-    : place.name.length > 12
-    ? "2.8rem"
-    : "3.2rem", 
+  place.name.length > 20
+    ? "2rem"
+    : place.name.length > 15
+    ? "2.3rem"
+    : place.name.length > 10
+    ? "2.6rem"
+    : "3.2rem",
+    maxWidth: "70%",
             fontWeight: "700",
             margin: "0 0 1rem 0", 
             textTransform: "uppercase", 
