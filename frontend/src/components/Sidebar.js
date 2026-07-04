@@ -7,11 +7,12 @@ import { Expand } from "lucide-react";
 const navItems = [
   { label: "Dashboard",    path: "/dashboard" },
   { label: "Home",         path: "/home" },
+   {label: "View website",      path: "/landingPage" },
   { label: "Explore",      path: "/explore" },
   { label: "Planner",      path: "/planner" },
   { label: "Expenses",     path: "/expenses" },
   { label: "AI Assistant", path: "/assistant" },
-  {label: "View website",      path: "/landingPage" },
+ 
   { label: "Profile",      path: "/profile" }
   
 ];

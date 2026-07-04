@@ -110,6 +110,7 @@ const slideshowImages = [
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     // Rotates the images every 6 seconds
@@ -237,22 +238,24 @@ export default function Hero() {
 </p>
 
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <Link to="/signup" style={{ textDecoration: "none" }}>
-            {/* 🖋️ NEW ELEGANT BUTTON STYLING */}
-            <button className="btn btn-primary" style={{ 
-              padding: "1.1rem 3rem", 
-              fontSize: "1.2rem",
-              // Elegant, handwriting/serif presentation fallback:
-              fontFamily: "'Playfair Display', 'Georgia', serif", 
-              fontStyle: "bold",
-              textTransform: "none", // Keeps natural casing intact
-              letterSpacing: "0.04em",
-              borderRadius: "30px", // Rounded button coordinates with handwriting/curves
-              boxShadow: "0 4px 15px rgba(0,0,0,0.3)"
-            }}>
-              Begin Your Journey
-            </button>
-          </Link>
+        <Link
+  to={token ? "/dashboard" : "/signup"}
+  style={{ textDecoration: "none" }}
+>
+  <button
+    className="btn btn-primary"
+    style={{
+      padding: "1.1rem 3rem",
+      fontSize: "1.2rem",
+      fontFamily: "'Playfair Display', 'Georgia', serif",
+      letterSpacing: "0.04em",
+      borderRadius: "30px",
+      boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
+    }}
+  >
+    {token ? "Go to Dashboard" : "Begin Your Journey"}
+  </button>
+</Link>
         </div>
       </div>
     </section>
