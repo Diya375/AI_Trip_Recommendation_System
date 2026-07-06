@@ -31,7 +31,7 @@ export default function Footer() {
           width: "240px",
           height: "1px",
           background:
-            "linear-gradient(90deg, transparent, rgba(22,107,79,0.3), transparent)",
+            "linear-gradient(90deg, transparent, rgba(10, 148, 136, 0.4), transparent)",
         }}
       />
 
@@ -160,7 +160,7 @@ export default function Footer() {
                 gap: "0.5rem",
                 padding: "0.65rem 1.5rem",
                 borderRadius: "50px",
-                border: "1px solid rgba(22,107,79,0.3)",
+                border: "1px solid rgba(10, 148, 136, 0.35)",
                 color: "var(--accent)",
                 textDecoration: "none",
                 fontSize: "0.78rem",
@@ -171,12 +171,12 @@ export default function Footer() {
                 transition: "all 0.25s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(22,107,79,0.08)";
+                e.currentTarget.style.background = "rgba(10, 148, 136, 0.08)";
                 e.currentTarget.style.borderColor = "var(--accent)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = "rgba(22,107,79,0.3)";
+                e.currentTarget.style.borderColor = "rgba(10, 148, 136, 0.35)";
               }}
             >
               Sign Up Free

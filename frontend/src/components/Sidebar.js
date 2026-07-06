@@ -19,16 +19,18 @@ const navItems = [
 
 const LIBRARIES = ["places"];
 
-const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#2c2c54" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0d1b2a" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
+const tealMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#060f0e" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#060f0e" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#3d6b65" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#0a1f1c" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#071c19" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#7aa8a3" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#041413" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#14b8a6" }] },
+  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#0a2320" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#0d2924" }] },
+  { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
   { featureType: "transit", stylers: [{ visibility: "off" }] },
 ];
 
@@ -37,28 +39,6 @@ function Sidebar() {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
 
-<<<<<<< HEAD
-=======
-  // 🌓 1. INIT STATE — default dark (matches the Hero cinematic aesthetic)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // If user hasn't set a preference, default to dark (no .light class = dark)
-    return !document.documentElement.classList.contains("light");
-  });
-
-  // 🌓 2. TOGGLE ACTION — uses .light class approach (default is dark)
-  const toggleTheme = () => {
-    const nextMode = !isDarkMode;
-    setIsDarkMode(nextMode);
-    if (nextMode) {
-      // Going dark — remove light class
-      document.documentElement.classList.remove("light");
-    } else {
-      // Going light — add light class
-      document.documentElement.classList.add("light");
-    }
-  };
-
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
@@ -81,51 +61,10 @@ function Sidebar() {
   return (
     <aside className="sidebar flex flex-col h-screen overflow-y-auto">
 
-<<<<<<< HEAD
       {/* Logo */}
       <div>
         <div className="sidebar-logo">YatraVerse</div>
         <div className="sidebar-tagline">AI TRAVEL COMPANION</div>
-=======
-      {/* Header Container grouping Logo + Toggle */}
-      <div className="flex items-center justify-between pr-2">
-        <div>
-          <div className="sidebar-logo">
-            
-            YatraVerse</div>
-          <div className="sidebar-tagline">AI TRAVEL COMPANION</div>
-        </div>
-
-        {/* 🌓 3. EYE-CATCHING THEME TOGGLE SWITCH BUTTON */}
-        <button
-          onClick={toggleTheme}
-          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          style={{
-            background: isDarkMode ? "rgba(26, 128, 96, 0.1)" : "rgba(22, 107, 79, 0.08)",
-            border: `1px solid ${isDarkMode ? "rgba(26, 128, 96, 0.35)" : "rgba(22, 107, 79, 0.25)"}`,
-            borderRadius: "50%",
-            width: "36px",
-            height: "36px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            transition: "all 0.25s ease"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          {isDarkMode ? (
-            <Sun size={16} color="var(--accent-2, #22a876)" fill="var(--accent-2, #22a876)" />
-          ) : (
-            <Moon size={16} color="var(--accent-3, #166b4f)" fill="var(--accent-3, #166b4f)" />
-          )}
-        </button>
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
       </div>
 
       <hr className="divider" />
@@ -165,7 +104,7 @@ function Sidebar() {
                 zoomControl: false,
                 scrollwheel: false,
                 gestureHandling: "none",
-                styles: darkMapStyle,
+                styles: tealMapStyle,
               }}
             >
               <Marker position={userLocation} />

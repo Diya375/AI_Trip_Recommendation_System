@@ -229,8 +229,8 @@ export default function Features() {
     <section style={{
       width: "100%",
       padding: "6rem 2rem",
-      backgroundColor: "#131916", 
-      color: "#ffffff",
+      backgroundColor: "var(--bg)", 
+      color: "var(--text)",
     }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
         
@@ -240,7 +240,7 @@ export default function Features() {
             fontFamily: "'Cinzel', serif",
             fontSize: "0.75rem",
             letterSpacing: "0.25em",
-            color: "var(--accent)",
+            color: "#14b8a6",
             textTransform: "uppercase",
             fontWeight: "600",
             marginBottom: "1rem",
@@ -253,7 +253,7 @@ export default function Features() {
             fontWeight: "700",
             letterSpacing: "0.03em"
           }}>
-            Explore Your <span style={{ color: "var(--accent)" }}>Dashboard Tools.</span>
+            Explore Your <span style={{ color: "#14b8a6" }}>Dashboard Tools.</span>
           </h2>
 
           <p
@@ -283,8 +283,8 @@ export default function Features() {
               key={index}
               onClick={() => handleCardClick(feature.path)}
               style={{
-                background: "linear-gradient(145deg, rgba(25, 33, 29, 0.4) 0%, rgba(19, 25, 22, 0.6) 100%)",
-                border: "1px solid rgba(201, 169, 110, 0.08)",
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
                 borderRadius: "16px",
                 padding: "2.5rem 2rem",
                 backdropFilter: "blur(4px)",
@@ -293,11 +293,11 @@ export default function Features() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.3)";
+                e.currentTarget.style.borderColor = "rgba(20, 184, 166, 0.4)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.08)";
+                e.currentTarget.style.borderColor = "var(--border)";
               }}
             >
               {/* Icon Holder */}
@@ -305,12 +305,12 @@ export default function Features() {
                 width: "52px",
                 height: "52px",
                 borderRadius: "12px",
-                background: "rgba(201, 169, 110, 0.04)",
+                background: "rgba(20, 184, 166, 0.1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: "1.75rem",
-                border: "1px solid rgba(201, 169, 110, 0.12)"
+                border: "1px solid rgba(20, 184, 166, 0.22)"
               }}>
                 {feature.icon}
               </div>
@@ -328,7 +328,7 @@ export default function Features() {
               {/* Description */}
               <p style={{
                 fontSize: "0.95rem",
-                color: "rgba(255, 255, 255, 0.6)",
+                color: "var(--text-dim)",
                 lineHeight: "1.75",
                 fontWeight: "300"
               }}>

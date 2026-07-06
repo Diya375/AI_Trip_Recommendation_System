@@ -82,7 +82,7 @@ export default function Login() {
         width: "500px",
         height: "500px",
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(26,128,96,0.09) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(10, 148, 136, 0.1) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
       {/* Ambient glow — top right */}
@@ -93,7 +93,7 @@ export default function Login() {
         width: "400px",
         height: "400px",
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(22,107,79,0.07) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 

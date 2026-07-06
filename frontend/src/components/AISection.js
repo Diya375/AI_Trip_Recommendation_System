@@ -57,10 +57,10 @@ export default function AISection() {
     <section style={{
       width: "100%",
       padding: "6rem 2rem 8rem", 
-      backgroundColor: "#131916", // Seamless dark-palette base matching Features.js
-      color: "#ffffff",
-      borderTop: "1px solid rgba(201, 169, 110, 0.05)",
-      borderBottom: "1px solid rgba(201, 169, 110, 0.05)",
+      backgroundColor: "var(--bg-mid)",
+      color: "var(--text)",
+      borderTop: "1px solid rgba(10, 148, 136, 0.1)",
+      borderBottom: "1px solid rgba(10, 148, 136, 0.1)",
     
     }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
@@ -69,11 +69,7 @@ export default function AISection() {
         {/* <div style={{ textAlign: "center", marginBottom: "4.5rem" }}> */}
          
           <h2 className="cinzel" style={{
-<<<<<<< HEAD
             fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
-=======
-            fontSize: "clamp(2rem, 5vw, 2.8rem)",
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
             fontWeight: "700",
             letterSpacing: "0.03em",
                marginBottom: "1rem",
@@ -83,7 +79,7 @@ export default function AISection() {
           </h2>
           
           <p style={{
-            color: "rgba(255, 255, 255, 0.65)",
+            color: "var(--text-dim)",
             fontSize: "1rem",
             lineHeight: "1.8",
             fontWeight: "300",
@@ -114,8 +110,8 @@ export default function AISection() {
               key={stat.label}
               onClick={() => handleStatClick(stat.path)}
               style={{
-                background: "linear-gradient(145deg, rgba(25, 33, 29, 0.4) 0%, rgba(19, 25, 22, 0.6) 100%)",
-                border: "1px solid rgba(201, 169, 110, 0.08)",
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
                 borderRadius: "16px",
                 padding: "2.5rem 2rem",
                 backdropFilter: "blur(4px)",
@@ -124,11 +120,11 @@ export default function AISection() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.3)";
+                e.currentTarget.style.borderColor = "rgba(10, 148, 136, 0.4)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.08)";
+                e.currentTarget.style.borderColor = "var(--border)";
               }}
             >
               {/* Premium Icon Container */}
@@ -136,12 +132,12 @@ export default function AISection() {
                 width: "52px",
                 height: "52px",
                 borderRadius: "12px",
-                background: "rgba(201, 169, 110, 0.04)",
+                background: "rgba(10, 148, 136, 0.1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: "1.75rem",
-                border: "1px solid rgba(201, 169, 110, 0.12)"
+                border: "1px solid rgba(10, 148, 136, 0.25)"
               }}>
                 {stat.icon}
               </div>
@@ -159,7 +155,7 @@ export default function AISection() {
               {/* Card Sub-Description */}
               <p style={{
                 fontSize: "0.92rem",
-                color: "rgba(255, 255, 255, 0.6)",
+                color: "var(--text-dim)",
                 lineHeight: "1.7",
                 fontWeight: "300",
                 margin: 0

@@ -533,6 +533,7 @@
 
 
 // 1. Import your local images first
+import { useState } from "react";
 import pokharaImg from "../assets/images/Fewalake.jpg";
 import kathmanduImg from "../assets/images/Swayambhunath.jpg";
 import bhaktapurImg from "../assets/images/Bhaktapur.jpg";
@@ -576,25 +577,16 @@ export default function DestinationCards() {
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 className="cinzel" style={{
-<<<<<<< HEAD
             fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
             fontWeight: "700", // Slightly boosted title size for the larger layout
-=======
-            fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
             color: "var(--text)",
             marginBottom: "0.6rem",
             letterSpacing: "0.04em",
           }}>
             Popular Destinations
           </h2>
-<<<<<<< HEAD
           <p style={{ color: "var(--text-dim)",fontFamily: "'Playfair Display', 'Georgia', serif",fontSize: "1rem" }}>
             Start exploring some of the world's most beloved locations of Nepal
-=======
-          <p style={{ color: "var(--text-dim)", fontSize: "0.95rem" }}>
-            Start exploring some of the world's most beloved locations
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
           </p>
         </div>
 
