@@ -27,9 +27,10 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate(redirectTo);
-  }, []);
+  if (redirectTo) {
+    navigate(redirectTo);
+  }
+}, [navigate, redirectTo]);
 
   const handleLogin = async () => {
     setError("");
