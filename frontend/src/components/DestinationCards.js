@@ -533,7 +533,6 @@
 
 
 // 1. Import your local images first
-import { useState } from "react";
 import pokharaImg from "../assets/images/Fewalake.jpg";
 import kathmanduImg from "../assets/images/Swayambhunath.jpg";
 import bhaktapurImg from "../assets/images/Bhaktapur.jpg";
@@ -567,14 +566,14 @@ const places = [
 ];
 
 export default function DestinationCards() {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
-
   return (
-    <section style={{
-      padding: "5rem 2.5rem",
-      background: "var(--bg)",
+    <section style={{ 
+      padding: "2rem 2.5rem 5rem", // Reduced top padding from 5rem to 2rem to move it upper
+      background: "var(--bg)" 
     }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        
+        {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <h2 className="cinzel" style={{
             fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
@@ -590,57 +589,68 @@ export default function DestinationCards() {
           </p>
         </div>
 
+        {/* 2-Column Responsive Grid Layout */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", 
-          gap: "1.5rem",
+          gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", // Forces 2 items per row on desktop, scales nicely on tablets
+          gap: "2rem", // Increased gap slightly to match the larger box style
         }}>
           {places.map((p) => (
-            <div 
-              key={p.name} 
-              className="card card-hover" 
-              style={{ 
+            <Link to={`/explore/${p.id}`} key={p.id} style={{ textDecoration: "none" }}>
+              <div className="card card-hover" style={{ 
                 padding: "0",          
                 overflow: "hidden",     
                 display: "flex",
-                flexDirection: "column"
-              }}
-            >
-              {/* Image Box */}
-              <div style={{ width: "100%", height: "160px", overflow: "hidden" }}>
-                <img 
-                  src={p.image} // This seamlessly handles either local imported paths or web URLs!
-                  alt={`${p.name} scene`} 
-                  style={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    objectFit: "cover", 
-                    transition: "transform 0.5s ease" 
-                  }} 
-                />
-              </div>
-
-              {/* Content Box */}
-              <div style={{ padding: "1.25rem 1.5rem 1.5rem" }}>
-                <div style={{
-                  fontSize: "0.7rem",
-                  color: "var(--accent)",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  marginBottom: "0.5rem",
-                }}>
-                  {p.tag}
+                flexDirection: "column",
+                height: "100%",
+                background: "#ffffff",
+                borderRadius: "20px", // Rounded corners enhanced for the bigger display scale
+                border: "1px solid rgba(0,0,0,0.05)",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.02)"
+              }}>
+                {/* Bigger Image Box */}
+                <div style={{ width: "100%", height: "280px", overflow: "hidden" }}> {/* Increased height from 160px to 280px */}
+                  <img 
+                    src={p.image} 
+                    alt={p.name} 
+                    style={{ 
+                      width: "100%", 
+                      height: "100%", 
+                      objectFit: "cover",
+                      transition: "transform 0.5s ease" 
+                    }} 
+                  />
                 </div>
-                <h3 className="cinzel" style={{
-                  fontSize: "1.25rem",
-                  color: "var(--text)",
-                  marginBottom: "0.4rem",
-                }}>
-                  {p.name}
-                </h3>
-                <p style={{ color: "var(--text-dim)", fontSize: "0.83rem", margin: 0 }}>{p.note}</p>
+
+                {/* Content Box */}
+                <div style={{ padding: "1.75rem 2rem 2rem" }}> {/* Expanded padding for larger look */}
+                  <div style={{
+                    fontSize: "0.75rem",
+                    color: "var(--accent, #374F43)",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    marginBottom: "0.6rem",
+                    fontWeight: "600"
+                  }}>
+                    {p.tag}
+                  </div>
+                  <h3 className="cinzel" style={{
+                    fontSize: "1.5rem", // Made title larger to match the big card format
+                    color: "var(--text)",
+                    marginBottom: "0.5rem",
+                  }}>
+                    {p.name}
+                  </h3>
+                  <p style={{ 
+                    color: "var(--text-dim)", 
+                    fontSize: "0.95rem", // Slightly bigger note text
+                    margin: 0 
+                  }}>
+                    {p.note}
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
