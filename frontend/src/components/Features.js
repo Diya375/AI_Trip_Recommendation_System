@@ -224,8 +224,8 @@ export default function Features() {
     <section style={{
       width: "100%",
       padding: "6rem 2rem",
-      backgroundColor: "#131916", 
-      color: "#ffffff",
+      backgroundColor: "#ffffff", 
+      color: "#2C3E35", // Changed from #ffffff so headers/text render correctly on light layout
     }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
         
@@ -235,7 +235,7 @@ export default function Features() {
             fontFamily: "'Cinzel', serif",
             fontSize: "0.75rem",
             letterSpacing: "0.25em",
-            color: "#14b8a6",
+            color: "var(--accent)",
             textTransform: "uppercase",
             fontWeight: "600",
             marginBottom: "1rem",
@@ -248,7 +248,7 @@ export default function Features() {
             fontWeight: "700",
             letterSpacing: "0.03em"
           }}>
-            Explore Your <span style={{ color: "var(--accent)" }}>Dashboard Tools.</span>
+            <span style={{ color: "var(--accent)" }}>Explore Your Dashboard Tools.</span>
           </h2>
           <div style={{
             width: "50px",
@@ -270,8 +270,9 @@ export default function Features() {
               key={index}
               onClick={() => handleCardClick(feature.path)}
               style={{
-                background: "linear-gradient(145deg, rgba(25, 33, 29, 0.4) 0%, rgba(19, 25, 22, 0.6) 100%)",
-                border: "1px solid rgba(201, 169, 110, 0.08)",
+                // 🎨 Updated to use your brand's dark army green (matches var(--accent) text color)
+                background: "linear-gradient(145deg, #374F43 0%, #2B3E34 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
                 borderRadius: "16px",
                 padding: "2.5rem 2rem",
                 backdropFilter: "blur(4px)",
@@ -281,11 +282,13 @@ export default function Features() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.3)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                e.currentTarget.style.boxShadow = "0 15px 35px rgba(44, 62, 53, 0.25)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.08)";
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.boxShadow = "0 10px 30px rgba(44, 62, 53, 0.15)";
               }}
             >
               {/* Icon Holder */}
@@ -293,12 +296,12 @@ export default function Features() {
                 width: "52px",
                 height: "52px",
                 borderRadius: "12px",
-                background: "rgba(201, 169, 110, 0.04)",
+                background: "rgba(255, 255, 255, 0.1)", 
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: "1.75rem",
-                border: "1px solid rgba(201, 169, 110, 0.12)"
+                border: "1px solid rgba(255, 255, 255, 0.15)"
               }}>
                 {feature.icon}
               </div>
@@ -317,7 +320,8 @@ export default function Features() {
               {/* Description */}
               <p style={{
                 fontSize: "0.95rem",
-                color: "rgba(255, 255, 255, 0.6)",
+                fontFamily: "'Playfair Display', 'Georgia', serif",
+                color: "rgba(255, 255, 255, 0.8)", // Clean readability contrast
                 lineHeight: "1.75",
                 fontWeight: "300"
               }}>

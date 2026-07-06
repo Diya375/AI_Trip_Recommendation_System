@@ -76,12 +76,10 @@ export default function AISection() {
   return (
     <section style={{
       width: "100%",
-      padding: "6rem 2rem 8rem", 
-      backgroundColor: "#131916", // Seamless dark-palette base matching Features.js
-      color: "#ffffff",
-      borderTop: "1px solid rgba(201, 169, 110, 0.05)",
-      borderBottom: "1px solid rgba(201, 169, 110, 0.05)",
-    
+      padding: "0rem 2rem 8rem", // ⚡ Flush 0 top padding removes any visual separation gap
+      backgroundColor: "#ffffff",
+      color: "#2B3E34",
+      position: "relative"
     }}>
       <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
         
@@ -108,7 +106,6 @@ export default function AISection() {
             Maximize your trip planning with YATRAVERSE
           </h2>
           <p style={{
-            color: "rgba(255, 255, 255, 0.65)",
             fontSize: "1rem",
             fontFamily: "'Playfair Display', 'Georgia', serif",
             color: "#5c6660",
@@ -131,34 +128,26 @@ export default function AISection() {
             <div
               key={item.id}
               style={{
-                background: "linear-gradient(145deg, rgba(25, 33, 29, 0.4) 0%, rgba(19, 25, 22, 0.6) 100%)",
-                border: "1px solid rgba(201, 169, 110, 0.08)",
+                backgroundColor: "#F8FAFC", // 🎨 Clean off-white light grey card fill from Wanderlog Pro
                 borderRadius: "16px",
                 padding: "2.5rem 2rem",
-                backdropFilter: "blur(4px)",
-                transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(201, 169, 110, 0.08)";
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                border: "1px solid rgba(241, 245, 249, 0.6)",
+                userSelect: "none" // Ensures unclickable flat structural feel
               }}
             >
               {/* Minimal Vector Icon Block */}
               <div style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "12px",
-                background: "rgba(201, 169, 110, 0.04)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: "1.75rem",
-                border: "1px solid rgba(201, 169, 110, 0.12)"
+                width: "40px",
+                height: "40px",
+                borderRadius: "8px",
+                backgroundColor: "transparent",
+                marginBottom: "0.25rem"
               }}>
                 {item.icon}
               </div>
@@ -177,10 +166,11 @@ export default function AISection() {
 
               {/* Feature Description */}
               <p style={{
-                fontSize: "0.92rem",
-                color: "rgba(255, 255, 255, 0.6)",
-                lineHeight: "1.7",
-                fontWeight: "300",
+                fontFamily: "system-ui, -apple-system, sans-serif",
+                fontSize: "0.95rem",
+                color: "#5c6660",
+                lineHeight: "1.6",
+                fontWeight: "400",
                 margin: 0
               }}>
                 {item.desc}

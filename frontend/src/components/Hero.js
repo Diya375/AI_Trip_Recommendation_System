@@ -134,7 +134,7 @@ export default function Hero() {
   padding: "7rem 2rem 4rem", // Increased top padding (7rem) to accommodate the absolute header
   position: "relative",
   overflow: "hidden",
- background: "var(--bg)",
+ background: "#ffffff",
 }}>
       
       {/* 1. SLIDESHOW LAYER CONTAINER */}
@@ -176,7 +176,9 @@ export default function Hero() {
           top: 0,
           left: 0,
           right: 0,
-          background: "linear-gradient(to bottom, rgba(10,31,28,0.38) 0%, rgba(7,28,25,0.58) 50%, rgba(6,15,14,0.82) 85%, var(--bg) 110%)",
+          bottom: 0,
+          background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8),#ffffff 110%)",
+          zIndex: 1,
         }} />
       </div>
 
@@ -248,7 +250,7 @@ export default function Hero() {
       fontFamily: "'Playfair Display', 'Georgia', serif",
       letterSpacing: "0.04em",
       borderRadius: "30px",
-      boxShadow: "0 4px 20px rgba(10, 148, 136, 0.45)",
+      boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
     }}
   >
     {token ? "Go to Dashboard" : "Begin Your Journey"}

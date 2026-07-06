@@ -1,3 +1,13 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
+const footerLinks = [
+  { label: "Home", to: "/" },
+  { label: "Explore", to: "/explore" },
+  { label: "Plan a Trip", to: "/planner" },
+  { label: "Login", to: "/login" },
+];
+
 export default function Footer() {
   return (
     <footer
