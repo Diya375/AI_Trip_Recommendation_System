@@ -118,7 +118,7 @@ export default function Header() {
           window.location.href = "/";
         }}
         style={{background: "#fff",
-      color: "#2B3E34",
+      color: "#0a1f1c",
       border: "none",
       borderRadius: "24px",
       padding: "8px 18px",

@@ -302,7 +302,7 @@ export default function Explore() {
     // 2. THE GREEN BUTTON ONLY RENDERS WHEN THE PICKER IS NOT ACTIVE
     <button
       onClick={() => setShowTripPicker(place.name)}
-      className="w-full bg-[#4d7c68] hover:bg-[#3d6353] text-white py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 border-none cursor-pointer"
+      className="w-full bg-[var(--accent)] hover:bg-[var(--accent-2)] text-white py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 border-none cursor-pointer"
     >
       <Plus size={16} />
       Add to Trip

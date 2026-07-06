@@ -391,8 +391,7 @@ export default function DestinationPage() {
           flexDirection: "column",
           justifyContent: "center", 
           alignItems: "center",    
-          textAlign: "center",      
-          padding: "3rem 4rem"
+          textAlign: "center",                padding: "3rem 4rem"
         }}>
           
           {/* Back Button */}

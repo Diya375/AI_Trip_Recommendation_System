@@ -19,16 +19,18 @@ const navItems = [
 
 const LIBRARIES = ["places"];
 
-const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#1a1a2e" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#2c2c54" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#0d1b2a" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
+const tealMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#060f0e" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#060f0e" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#3d6b65" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#0a1f1c" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#071c19" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#7aa8a3" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#041413" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#14b8a6" }] },
+  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#0a2320" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#0d2924" }] },
+  { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
   { featureType: "transit", stylers: [{ visibility: "off" }] },
 ];
 
@@ -102,7 +104,7 @@ function Sidebar() {
                 zoomControl: false,
                 scrollwheel: false,
                 gestureHandling: "none",
-                styles: darkMapStyle,
+                styles: tealMapStyle,
               }}
             >
               <Marker position={userLocation} />
