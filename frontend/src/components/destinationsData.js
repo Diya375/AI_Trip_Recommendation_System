@@ -178,6 +178,13 @@ import bandipurImg from "../assets/images/Bandipur.jpg";
 import hattiImg from "../assets/images/haatti.jpg";
 import kanchImg from "../assets/images/Nepali_Mountainn.jpg";
 
+import raraImg from "../assets/explore/rara.png";
+import ilamImg from "../assets/explore/ilam.png";
+import khaptadImg from "../assets/explore/khaptad.png";
+import mustangImg from "../assets/explore/uppermustang.png";
+import panchImg from "../assets/explore/panchpokhari.png";
+import langtangImg from "../assets/explore/langtang.png";
+
 export const places = [
   {
     id: "everest",
@@ -186,7 +193,7 @@ export const places = [
     note: "World's Highest Peak",
     image: everImg,
     description: "Standing at 8,848.86 meters above sea level, Mount Everest is the highest mountain on Earth and Nepal's most iconic natural landmark. Located in the Khumbu region within Sagarmatha National Park, a UNESCO World Heritage Site, Everest attracts adventurers, trekkers, and mountaineers from around the globe. Visitors can experience breathtaking Himalayan panoramas, explore traditional Sherpa villages, visit ancient Buddhist monasteries, and trek to the famous Everest Base Camp, making it one of the world's greatest adventure destinations.",
-    todo: ["Trekking", "Mountain Views", "Everest Base Camp", "Sherpa Culture", "Photography"],
+    todo: ["Trekking", "Mountain Views", "Everest Base Camp", "Sherpa Culture", "Photography", "Himalayan Sunrise Views"],
     eat: ["Sherpa Stew (Syakpa)", "Tsampa Porridge", "High-Altitude Tea Houses", "Yak Cheese Patisseries"],
     stay: ["Namche Bazaar Lodges", "Luxury Everest Resorts", "Base Camp Tea Houses", "Local Sherpa Homestays"]
   },
@@ -266,5 +273,71 @@ export const places = [
     todo: ["Jeep Jungle Safari", "One-Horned Rhino Spotting", "Bird Watching Tours", "Rapti River Canoeing", "Tharu Cultural Dances"],
     eat: ["Tharu Traditional Cuisine", "Riverside Sunset Cafés", "Jungle Lodge Buffets", "Sauraha Village Street Food"],
     stay: ["Luxury Jungle Resorts", "Sauraha Riverside Lodges", "Eco-friendly Nature Camps", "Tharu Community Homestays"]
+  },
+  {
+    id: "rara",
+    name: "Rara Lake",
+    tag: "Karnali Region",
+    note: "Nepal's Hidden Blue Jewel",
+    image: raraImg,
+    description: "Nepal's hidden blue jewel — the largest lake, untouched and serene. Surrounded by Rara National Park, it features pine, spruce, and juniper forests with stunning alpine landscapes.",
+    todo: ["Boating on Rara Lake", "Photography", "Jungle Walking", "Bird Watching", "Horse Riding around Lake"],
+    eat: ["Local Organic Trout Fish", "Thakali Khana Sets", "Himalayan Herbal Teas", "Campfire Barbecues"],
+    stay: ["Lakeside Tented Camps", "National Park Eco-Lodges", "Community Guest Houses", "Homestays in Murma Village"]
+  },
+  {
+    id: "ilam",
+    name: "Ilam",
+    tag: "Eastern Nepal",
+    note: "Nepal's Tea Capital",
+    image: ilamImg,
+    description: "Rolling tea gardens, misty mountains, and the peaceful charm of eastern Nepal. Famed for its agricultural innovations, unique landscape aesthetics, and pleasant climate settings.",
+    todo: ["Tea Garden Walks", "Mai Pokhari Lake Excursions", "Antu Danda Sunrise Views", "Pathibhara Temple Visits"],
+    eat: ["Local Cardamom Treats", "Ilam Tea Tastings", "Authentic Lollipop Sweets", "Chhurpi (Hard Cheese) Specialties"],
+    stay: ["Tea Estate Heritage Resorts", "Fikkal Town Lodges", "Antu Danda Sunrise Homestays", "Agro Eco-farms"]
+  },
+  {
+    id: "khaptad",
+    name: "Khaptad National Park",
+    tag: "Far-Western Nepal",
+    note: "Sacred Highland Plateau",
+    image: khaptadImg,
+    description: "Mystical highland meadows, spiritual ashrams, and untouched wilderness. Home to the legendary Khaptad Baba Ashram, it is an pristine spiritual sanctuary stretching across rolling green paths.",
+    todo: ["Khaptad Baba Ashram Pilgrimage", "Meadow Trekking", "Bird Watching Trails", "Meditation & Retreat Walks"],
+    eat: ["Traditional Far-Western Cuisine", "Organic Millet Roti", "Medicinal Herbal Soups", "High-Altitude Wilderness Packings"],
+    stay: ["National Park Camping Sites", "Pilgrim Guest Houses", "Shed Eco-Lodges", "Community Homestays"]
+  },
+  {
+    id: "mustang",
+    name: "Upper Mustang",
+    tag: "Gandaki Region",
+    note: "The Forbidden Kingdom",
+    image: mustangImg,
+    description: "The forbidden kingdom — ancient caves, Tibetan culture, and surreal arid landscapes. Explore Lo Manthang's medieval walled settlements and cliffside cave wonders.",
+    todo: ["Lo Manthang Walled City Excursions", "Sky Cave Exploration", "Tiji Festival Sightseeing", "Horse Riding Safaris"],
+    eat: ["Tibetan Khapse Biscuits", "Marpha Apricot Brandies", "Butter Tea (Su Chya)", "Himalayan Buckwheat Pancakes"],
+    stay: ["Lo Manthang Traditional Inns", "Marpha Apple Orchards", "Jomsom Mountain Resorts", "Local Tibetan Tea Houses"]
+  },
+  {
+    id: "panchpokhari",
+    name: "Panch Pokhari",
+    tag: "Sindhupalchok",
+    note: "Five Sacred Alpine Lakes",
+    image: panchImg,
+    description: "Five sacred alpine lakes sitting above the clouds, rarely visited and breathtaking. An important religious pilgrimage site for Hindus and Buddhists alike during Janai Purnima.",
+    todo: ["Five Sacred Lakes Circuit Trail", "Himalayan Pass Photography", "Pilgrimage Spiritual Shrining", "High-Altitude Base Camping"],
+    eat: ["Sherpa Stew Snacks", "Energy Trail Mixes", "High-Altitude Mountain Porridges", "Local Sherpa Teas"],
+    stay: ["Remote Wilderness Tents", "Basic High-Altitude Tea Houses", "Bhotang Village Homestays", "Community Shelters"]
+  },
+  {
+    id: "langtang",
+    name: "Langtang Valley",
+    tag: "Bagmati Region",
+    note: "The Valley of Glaciers",
+    image: langtangImg,
+    description: "The valley of glaciers — high alpine meadows, yak pastures, and traditional Tamang culture. Enjoy panoramic views of Langtang Lirung and nearby spectacular mountain valleys.",
+    todo: ["Kyanjin Gompa Trekking", "Kyanjin Ri Peak Climbing", "Langtang Glacier Views", "Yak Cheese Factory Tours"],
+    eat: ["Fresh Local Yak Cheese", "Tamang Butter Tea", "Tibetan Bread with Honey", "Warm Himalayan Thukpa"],
+    stay: ["Kyanjin Gompa Tea Houses", "Lama Hotel Lodges", "Syabrubesi Riverside Hotels", "Tamang Community Heritage Stays"]
   }
 ];

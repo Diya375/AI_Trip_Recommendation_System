@@ -588,7 +588,7 @@ export default function DestinationPage() {
                 color: activeTab === "eat" ? "#FF5A5F" : "#4A5568",
                 border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer"
               }}>
-              🍴 Where to eat
+              🍴 What to eat
             </button>
             <button 
               onClick={() => setActiveTab("stay")}
