@@ -37,28 +37,6 @@ function Sidebar() {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
 
-<<<<<<< HEAD
-=======
-  // 🌓 1. INIT STATE — default dark (matches the Hero cinematic aesthetic)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // If user hasn't set a preference, default to dark (no .light class = dark)
-    return !document.documentElement.classList.contains("light");
-  });
-
-  // 🌓 2. TOGGLE ACTION — uses .light class approach (default is dark)
-  const toggleTheme = () => {
-    const nextMode = !isDarkMode;
-    setIsDarkMode(nextMode);
-    if (nextMode) {
-      // Going dark — remove light class
-      document.documentElement.classList.remove("light");
-    } else {
-      // Going light — add light class
-      document.documentElement.classList.add("light");
-    }
-  };
-
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
@@ -81,51 +59,10 @@ function Sidebar() {
   return (
     <aside className="sidebar flex flex-col h-screen overflow-y-auto">
 
-<<<<<<< HEAD
       {/* Logo */}
       <div>
         <div className="sidebar-logo">YatraVerse</div>
         <div className="sidebar-tagline">AI TRAVEL COMPANION</div>
-=======
-      {/* Header Container grouping Logo + Toggle */}
-      <div className="flex items-center justify-between pr-2">
-        <div>
-          <div className="sidebar-logo">
-            
-            YatraVerse</div>
-          <div className="sidebar-tagline">AI TRAVEL COMPANION</div>
-        </div>
-
-        {/* 🌓 3. EYE-CATCHING THEME TOGGLE SWITCH BUTTON */}
-        <button
-          onClick={toggleTheme}
-          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          style={{
-            background: isDarkMode ? "rgba(26, 128, 96, 0.1)" : "rgba(22, 107, 79, 0.08)",
-            border: `1px solid ${isDarkMode ? "rgba(26, 128, 96, 0.35)" : "rgba(22, 107, 79, 0.25)"}`,
-            borderRadius: "50%",
-            width: "36px",
-            height: "36px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            transition: "all 0.25s ease"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          {isDarkMode ? (
-            <Sun size={16} color="var(--accent-2, #22a876)" fill="var(--accent-2, #22a876)" />
-          ) : (
-            <Moon size={16} color="var(--accent-3, #166b4f)" fill="var(--accent-3, #166b4f)" />
-          )}
-        </button>
->>>>>>> cbaa845b2704deba8ccf60fc0d794253653baa1a
       </div>
 
       <hr className="divider" />
