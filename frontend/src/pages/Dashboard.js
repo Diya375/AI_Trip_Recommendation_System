@@ -109,12 +109,13 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-5">
           <h2 className="cinzel text-xl text-[var(--text)]">Your Trips</h2>
           <button
-            onClick={() => navigate("/create-trip")}
-            className="btn btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+           onClick={() => navigate("/create-trip")}
+            className="btn btn-primary px-5 py-2.5 text-sm"
           >
-            <Plus size={15} /> New Trip
+            + New Trip
           </button>
         </div>
+            
 
         {trips.length === 0 ? (
           <div className="card text-center py-16">
