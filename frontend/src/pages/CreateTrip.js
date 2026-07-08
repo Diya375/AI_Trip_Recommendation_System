@@ -1,20 +1,59 @@
 import { useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { Upload, X, Check, Copy } from "lucide-react";
 
 export default function CreateTrip() {
   const [name, setName] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [inviteLink, setInviteLink] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
 
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be under 5MB");
+      return;
+    }
+
+    setError("");
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleCreate = async () => {
     setError("");
     setLoading(true);
     try {
-      const res = await API.post("/trips", { name });
+      // multipart/form-data so we can send the file alongside the trip name
+      const formData = new FormData();
+      formData.append("name", name);
+      if (imageFile) formData.append("image", imageFile);
+
+      // API's axios instance defaults to "Content-Type: application/json" for every
+      // request — we have to explicitly clear that here so the browser can set the
+      // correct "multipart/form-data; boundary=..." header itself. If we don't,
+      // the request goes out as broken/mislabeled multipart data and the server
+      // can't parse the file (or sometimes not even the other fields).
+      const res = await API.post("/trips", formData, {
+        headers: { "Content-Type": undefined },
+      });
+
       const trip = res.data.trip;
       const link = `${window.location.origin}/join/${trip.invite_code}`;
       setInviteLink(link);
@@ -32,14 +71,10 @@ export default function CreateTrip() {
   };
 
   return (
-    <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="card fade-up" style={{ width: "100%", maxWidth: "480px", padding: "3rem 2.5rem", textAlign: "center" }}>
-        <h1 className="cinzel" style={{ fontSize: "2rem", color: "var(--accent)", marginBottom: "0.5rem" }}>
-          Start a New Trip
-        </h1>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2.5rem", fontSize: "0.9rem" }}>
-          Invite your travel companions
-        </p>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="fade-up w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
+        <h1 className="cinzel text-3xl text-[var(--accent)] mb-1">Start a New Trip</h1>
+        <p className="text-gray-500 text-sm mb-8">Invite your travel companions</p>
 
         {!inviteLink ? (
           <>
@@ -48,59 +83,61 @@ export default function CreateTrip() {
               placeholder="Trip name (e.g. Pokhara Getaway)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input"
-              style={{ marginBottom: "1.5rem" }}
+              className="w-full px-4 py-3 mb-4 rounded-xl border border-gray-200 text-sm
+                text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
             />
 
-            {error && (
-              <p style={{ color: "#e74c3c", fontSize: "0.85rem", marginBottom: "1rem" }}>{error}</p>
+            {/* Cover image upload */}
+            {imagePreview ? (
+              <div className="relative mb-5 rounded-xl overflow-hidden h-40">
+                <img src={imagePreview} alt="Trip cover preview" className="w-full h-full object-cover" />
+                <button
+                  onClick={removeImage}
+                  type="button"
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/70
+                    flex items-center justify-center text-white transition-colors cursor-pointer"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <label
+                className="flex flex-col items-center justify-center gap-2 mb-5 h-40 rounded-xl
+                  border-2 border-dashed border-gray-200 text-gray-400 cursor-pointer
+                  hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors"
+              >
+                <Upload size={20} />
+                <span className="text-xs">Add a cover photo (optional)</span>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+              </label>
             )}
+
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <button
               onClick={handleCreate}
               disabled={loading || !name.trim()}
-              className="btn btn-primary"
-              style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}
+              className="btn btn-primary w-full py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Create Trip"}
             </button>
           </>
         ) : (
           <>
-            <p style={{ color: "var(--text-dim)", marginBottom: "1rem", fontSize: "0.9rem" }}>
-              Share this link with your travel companions:
-            </p>
-            <div
-              style={{
-                background: "var(--bg)",
-                border: "1px solid var(--border)",
-                borderRadius: "10px",
-                padding: "0.85rem 1rem",
-                fontSize: "0.85rem",
-                color: "var(--text)",
-                wordBreak: "break-all",
-                marginBottom: "1rem",
-              }}
-            >
+            <p className="text-gray-500 text-sm mb-3">Share this link with your travel companions:</p>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 break-all mb-4">
               {inviteLink}
             </div>
             <button
               onClick={handleCopy}
-              className="btn btn-primary"
-              style={{ width: "100%", padding: "0.85rem", fontSize: "1rem", marginBottom: "0.75rem" }}
+              className="btn btn-primary w-full py-3.5 text-base mb-3 flex items-center justify-center gap-2"
             >
+              {copied ? <Check size={16} /> : <Copy size={16} />}
               {copied ? "Copied!" : "Copy Link"}
             </button>
             <button
               onClick={() => navigate("/dashboard")}
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--text-dim)",
-                fontSize: "0.85rem",
-                cursor: "pointer",
-                textDecoration: "underline",
-              }}
+              className="text-gray-400 text-sm underline hover:text-gray-600 transition-colors cursor-pointer"
             >
               Go to Dashboard
             </button>
