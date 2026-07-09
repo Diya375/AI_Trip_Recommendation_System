@@ -1,24 +1,57 @@
 const express = require("express");
 const crypto = require("crypto");
+const multer = require("multer");
+const { v2: cloudinary } = require("cloudinary");
 const pool = require("../db");
 const verifyToken = require("../middleware/authmiddleware");
 
 const router = express.Router();
 
+// ── Image upload setup ──
+// multer holds the uploaded file in memory just long enough to forward it to
+// Cloudinary — nothing gets written to your server's disk.
+const upload = multer({ storage: multer.memoryStorage() });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+function uploadToCloudinary(fileBuffer) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "trip-covers" },
+      (err, result) => (err ? reject(err) : resolve(result))
+    );
+    stream.end(fileBuffer);
+  });
+}
+
 // Create a new trip (the creator becomes admin)
-router.post("/", verifyToken, async (req, res) => {
+// upload.single("image") reads an optional file sent under the "image" field
+// alongside the "name" field, and makes it available as req.file
+router.post("/", verifyToken, upload.single("image"), async (req, res) => {
   const { name } = req.body;
+
+  
 
   if (!name || !name.trim()) {
     return res.status(400).json({ error: "Trip name is required" });
   }
 
   try {
+    let imageUrl = null;
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer);
+      imageUrl = result.secure_url;
+    }
+
     const inviteCode = crypto.randomBytes(4).toString("hex"); // e.g. "a1b2c3d4"
 
     const tripResult = await pool.query(
-      `INSERT INTO trips (name, admin_id, invite_code) VALUES ($1, $2, $3) RETURNING *`,
-      [name.trim(), req.userId, inviteCode]
+      `INSERT INTO trips (name, admin_id, invite_code, image) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name.trim(), req.userId, inviteCode, imageUrl]
     );
 
     const trip = tripResult.rows[0];
@@ -101,7 +134,7 @@ router.post("/join/:inviteCode", verifyToken, async (req, res) => {
 router.get("/my", verifyToken, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT trips.id, trips.name, trips.invite_code, trip_members.role
+      `SELECT trips.id, trips.name, trips.invite_code, trips.image, trip_members.role
        FROM trips
        JOIN trip_members ON trips.id = trip_members.trip_id
        WHERE trip_members.user_id = $1
@@ -399,4 +432,3 @@ router.delete("/:id/expenses/:expenseId", verifyToken, async (req, res) => {
 });
 
 module.exports = router;
-
