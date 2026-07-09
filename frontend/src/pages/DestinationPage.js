@@ -330,6 +330,29 @@ import { useParams, useNavigate } from "react-router-dom";
 import { places } from "../components/destinationsData";
 import MapComponent from "../components/MapComponent";
 
+function DestinationImage({ src, alt, fallbackText, style }) {
+  const [imageSrc, setImageSrc] = useState(src);
+
+  useEffect(() => {
+    setImageSrc(src);
+  }, [src]);
+
+  const fallbackImage = () => {
+    const safeText = (fallbackText || alt || "Destination").replace(/&/g, "&amp;");
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="600">
+        <rect width="100%" height="100%" fill="#0f172a" />
+        <rect x="36" y="38" width="828" height="524" rx="28" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+        <circle cx="260" cy="228" r="84" fill="rgba(255,255,255,0.14)" />
+        <path d="M92 414c68-92 162-138 276-138s212 46 340 138" stroke="rgba(255,255,255,0.2)" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <text x="50%" y="78%" text-anchor="middle" fill="#f8fafc" font-family="Arial, sans-serif" font-size="38" font-weight="700">${safeText}</text>
+      </svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  };
+
+  return <img src={imageSrc || fallbackImage()} alt={alt} style={style} onError={() => setImageSrc(fallbackImage())} loading="lazy" />;
+}
+
 export default function DestinationPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -383,16 +406,22 @@ export default function DestinationPage() {
         {/* Hero Image Banner Container */}
         <div style={{
           position: "relative",
-          minHeight: "52vh", 
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url(${place.image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          minHeight: "52vh",
+          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", 
-          alignItems: "center",    
-          textAlign: "center",                padding: "3rem 4rem"
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "3rem 4rem"
         }}>
+          <DestinationImage
+            src={place.image}
+            alt={place.name}
+            fallbackText={place.name}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
+          />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55))", zIndex: 1 }} />
           
           {/* Back Button */}
           {/* <button 

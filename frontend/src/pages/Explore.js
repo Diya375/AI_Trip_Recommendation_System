@@ -962,6 +962,38 @@ const places = [
 
 const ALL_TYPES = ["All", "Trekking", "Adventure", "Nature", "Cultural", "Relaxing", "Wildlife"];
 
+function DestinationImage({ src, alt, fallbackText, className, style }) {
+  const [imageSrc, setImageSrc] = useState(src);
+
+  useEffect(() => {
+    setImageSrc(src);
+  }, [src]);
+
+  const fallbackImage = () => {
+    const safeText = (fallbackText || alt || "Destination").replace(/&/g, "&amp;");
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="900" height="600">
+        <rect width="100%" height="100%" fill="#0f172a" />
+        <rect x="36" y="38" width="828" height="524" rx="28" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+        <circle cx="260" cy="228" r="84" fill="rgba(255,255,255,0.14)" />
+        <path d="M92 414c68-92 162-138 276-138s212 46 340 138" stroke="rgba(255,255,255,0.2)" stroke-width="18" fill="none" stroke-linecap="round"/>
+        <text x="50%" y="78%" text-anchor="middle" fill="#f8fafc" font-family="Arial, sans-serif" font-size="38" font-weight="700">${safeText}</text>
+      </svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  };
+
+  return (
+    <img
+      src={imageSrc || fallbackImage()}
+      alt={alt}
+      className={className}
+      style={style}
+      onError={() => setImageSrc(fallbackImage())}
+      loading="lazy"
+    />
+  );
+}
+
 export default function Explore() {
   const [selectedType, setSelectedType] = useState("All");
   const [trips, setTrips] = useState([]);
@@ -1028,14 +1060,19 @@ export default function Explore() {
             <div style={{
               position: "relative",
               minHeight: "45vh",
-              backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65)), url(${selectedPlace.img})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
+              overflow: "hidden",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-end",
               padding: "2.5rem"
             }}>
+              <DestinationImage
+                src={selectedPlace.img}
+                alt={selectedPlace.name}
+                fallbackText={selectedPlace.name}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
+              />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65))", zIndex: 1 }} />
               {/* Appealing Back Button */}
               <button 
                 onClick={() => { setSelectedPlace(null); setActiveTab("todo"); }}
@@ -1187,9 +1224,10 @@ export default function Explore() {
             >
               {/* Photo Banner Component */}
               <div className="relative h-56 overflow-hidden">
-                <img
+                <DestinationImage
                   src={place.img}
                   alt={place.name}
+                  fallbackText={place.name}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />

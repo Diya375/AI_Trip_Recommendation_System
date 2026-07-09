@@ -3,8 +3,15 @@ import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
 import {
-  Plus, Trash2, Crown, Map, ArrowRight, Compass,
-  Search, LayoutGrid, Rows3,
+  Plus,
+  Trash2,
+  Crown,
+  Map,
+  ArrowRight,
+  Compass,
+  Search,
+  LayoutGrid,
+  Rows3,
 } from "lucide-react";
 
 /* ---------- trip image ---------- */
@@ -18,18 +25,16 @@ function TripImage({ trip, className }) {
 
   if (!src) {
     return (
-      <div className={`${className} bg-gray-100 flex items-center justify-center`}>
+      <div
+        className={`${className} bg-gray-100 flex items-center justify-center`}
+      >
         <Map size={22} className="text-gray-300" strokeWidth={1.4} />
       </div>
     );
   }
 
   return (
-    <img
-      src={src}
-      alt={trip.name}
-      className={`${className} object-cover`}
-    />
+    <img src={src} alt={trip.name} className={`${className} object-cover`} />
   );
 }
 
@@ -42,25 +47,49 @@ function RingStat({ value, max, label, count, color }) {
   const c = 2 * Math.PI * r;
   return (
     <div className="card p-5 flex items-center gap-4">
-      <svg width="64" height="64" viewBox="0 0 64 64" className="shrink-0 -rotate-90">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="var(--border)" strokeWidth="6" />
+      <svg
+        width="64"
+        height="64"
+        viewBox="0 0 64 64"
+        className="shrink-0 -rotate-90"
+      >
         <circle
-          cx="32" cy="32" r={r} fill="none"
-          stroke={color} strokeWidth="6" strokeLinecap="round"
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth="6"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="6"
+          strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c - pct * c}
           style={{ transition: "stroke-dashoffset 0.6s ease" }}
         />
         <text
-          x="32" y="32" textAnchor="middle" dominantBaseline="central"
-          className="cinzel" fontSize="18" fill="var(--text)"
+          x="32"
+          y="32"
+          textAnchor="middle"
+          dominantBaseline="central"
+          className="cinzel"
+          fontSize="18"
+          fill="var(--text)"
           transform="rotate(90 32 32)"
         >
           {count}
         </text>
       </svg>
       <div>
-        <p className="text-xs text-[var(--text-dim)] uppercase tracking-wider">{label}</p>
+        <p className="text-xs text-[var(--text-dim)] uppercase tracking-wider">
+          {label}
+        </p>
       </div>
     </div>
   );
@@ -74,7 +103,9 @@ function MiniCalendar({ onSelectDate }) {
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [selected, setSelected] = useState(today);
 
-  const monthName = new Date(viewYear, viewMonth, 1).toLocaleString("default", { month: "long" });
+  const monthName = new Date(viewYear, viewMonth, 1).toLocaleString("default", {
+    month: "long",
+  });
   const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0 = Sun
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const leadingBlanks = (firstDay + 6) % 7; // convert to Mon-first grid
@@ -87,8 +118,14 @@ function MiniCalendar({ onSelectDate }) {
   const goToMonth = (delta) => {
     let m = viewMonth + delta;
     let y = viewYear;
-    if (m < 0) { m = 11; y -= 1; }
-    if (m > 11) { m = 0; y += 1; }
+    if (m < 0) {
+      m = 11;
+      y -= 1;
+    }
+    if (m > 11) {
+      m = 0;
+      y += 1;
+    }
     setViewMonth(m);
     setViewYear(y);
   };
@@ -108,7 +145,10 @@ function MiniCalendar({ onSelectDate }) {
   };
 
   const isSameDay = (a, day) =>
-    day != null && a.getFullYear() === viewYear && a.getMonth() === viewMonth && a.getDate() === day;
+    day != null &&
+    a.getFullYear() === viewYear &&
+    a.getMonth() === viewMonth &&
+    a.getDate() === day;
 
   const isToday = (day) => isSameDay(today, day);
   const isSelected = (day) => isSameDay(selected, day);
@@ -140,8 +180,13 @@ function MiniCalendar({ onSelectDate }) {
       </div>
 
       <div className="grid grid-cols-7 gap-y-2 text-center">
-        {["Mo","Tu","We","Th","Fr","Sa","Su"].map((d) => (
-          <span key={d} className="text-[10px] text-[var(--text-dim)] uppercase">{d}</span>
+        {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
+          <span
+            key={d}
+            className="text-[10px] text-[var(--text-dim)] uppercase"
+          >
+            {d}
+          </span>
         ))}
         {cells.map((day, i) => (
           <button
@@ -150,11 +195,13 @@ function MiniCalendar({ onSelectDate }) {
             disabled={!day}
             className={`text-xs w-6 h-6 mx-auto flex items-center justify-center rounded-full transition-colors
               ${!day ? "invisible" : "cursor-pointer"}
-              ${isSelected(day)
-                ? "bg-[var(--accent)] text-white font-semibold"
-                : isToday(day)
-                ? "border border-[var(--accent)] text-[var(--accent)] font-semibold"
-                : "text-[var(--text)] hover:bg-[var(--border)]"}`}
+              ${
+                isSelected(day)
+                  ? "bg-[var(--accent)] text-white font-semibold"
+                  : isToday(day)
+                    ? "border border-[var(--accent)] text-[var(--accent)] font-semibold"
+                    : "text-[var(--text)] hover:bg-[var(--border)]"
+              }`}
           >
             {day || ""}
           </button>
@@ -163,7 +210,11 @@ function MiniCalendar({ onSelectDate }) {
 
       <div className="mt-4 pt-3 border-t border-[var(--border)] flex items-center justify-between">
         <p className="text-[11px] text-[var(--text-dim)]">
-          {selected.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
+          {selected.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          })}
         </p>
         <Compass size={14} className="text-[var(--text-dim)]" />
       </div>
@@ -181,7 +232,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) { navigate("/"); return; }
+    if (!token) {
+      navigate("/");
+      return;
+    }
 
     Promise.all([API.get("/auth/me"), API.get("/trips/my")])
       .then(([userRes, tripsRes]) => {
@@ -207,7 +261,8 @@ export default function Dashboard() {
   };
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const adminTrips = trips.filter((t) => t.role === "admin");
   const memberTrips = trips.filter((t) => t.role === "member");
@@ -219,7 +274,8 @@ export default function Dashboard() {
   // Newest first — prefer createdAt if the API provides it, otherwise fall back
   // to id (assumes numeric/sequential or string-sortable ids from the backend).
   const sortedTrips = [...trips].sort((a, b) => {
-    if (a.createdAt && b.createdAt) return new Date(b.createdAt) - new Date(a.createdAt);
+    if (a.createdAt && b.createdAt)
+      return new Date(b.createdAt) - new Date(a.createdAt);
     return b.id > a.id ? 1 : b.id < a.id ? -1 : 0;
   });
 
@@ -230,20 +286,25 @@ export default function Dashboard() {
     .filter((t) => roleFilter === "all" || t.role === roleFilter)
     .filter((t) => t.name.toLowerCase().includes(search.trim().toLowerCase()));
 
-  const initials = user?.name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const initials = user?.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
-  if (loading) return (
-    <DashboardLayout>
-      <p className="text-[var(--text-dim)]">Loading...</p>
-    </DashboardLayout>
-  );
+  if (loading)
+    return (
+      <DashboardLayout>
+        <p className="text-[var(--text-dim)]">Loading...</p>
+      </DashboardLayout>
+    );
 
   if (!user) return null;
 
   return (
     <DashboardLayout>
       <div className="fade-up max-w-5xl mx-auto">
-
         {/* ── HERO GREETING ── */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -263,7 +324,10 @@ export default function Dashboard() {
         </div>
 
         {/* ── FEATURED TRIP + CALENDAR ── */}
-        <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: "2fr 1fr" }}>
+        <div
+          className="grid gap-4 mb-8"
+          style={{ gridTemplateColumns: "2fr 1fr" }}
+        >
           {featuredTrip && (
             <div
               onClick={() => navigate(`/planner/${featuredTrip.id}`)}
@@ -273,9 +337,13 @@ export default function Dashboard() {
             >
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">
-                  {featuredTrip.role === "admin" ? "Currently organising" : "Currently joined"}
+                  {featuredTrip.role === "admin"
+                    ? "Currently organising"
+                    : "Currently joined"}
                 </p>
-                <h2 className="cinzel text-4xl text-gray-900 mb-4">{featuredTrip.name}</h2>
+                <h2 className="cinzel text-4xl text-gray-900 mb-4">
+                  {featuredTrip.name}
+                </h2>
                 <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium">
                   Open planner <ArrowRight size={15} />
                 </div>
@@ -291,9 +359,27 @@ export default function Dashboard() {
 
         {/* ── STATS ROW (donut rings) ── */}
         <div className="grid grid-cols-3 gap-4 mb-10">
-          <RingStat value={trips.length} max={Math.max(trips.length, 1)} count={trips.length} label="Total Trips" color="var(--accent)" />
-          <RingStat value={adminTrips.length} max={Math.max(trips.length, 1)} count={adminTrips.length} label="Organised" color="#eab308" />
-          <RingStat value={memberTrips.length} max={Math.max(trips.length, 1)} count={memberTrips.length} label="Joined" color="#60a5fa" />
+          <RingStat
+            value={trips.length}
+            max={Math.max(trips.length, 1)}
+            count={trips.length}
+            label="Total Trips"
+            color="var(--accent)"
+          />
+          <RingStat
+            value={adminTrips.length}
+            max={Math.max(trips.length, 1)}
+            count={adminTrips.length}
+            label="Organised"
+            color="#eab308"
+          />
+          <RingStat
+            value={memberTrips.length}
+            max={Math.max(trips.length, 1)}
+            count={memberTrips.length}
+            label="Joined"
+            color="#60a5fa"
+          />
         </div>
 
         {/* ── TRIPS SECTION ── */}
@@ -311,8 +397,14 @@ export default function Dashboard() {
 
         {trips.length === 0 ? (
           <div className="card text-center py-16">
-            <Map size={40} className="mx-auto mb-4 text-[var(--text-dim)]" strokeWidth={1.3} />
-            <p className="cinzel text-xl text-[var(--text)] mb-2">No trips yet</p>
+            <Map
+              size={40}
+              className="mx-auto mb-4 text-[var(--text-dim)]"
+              strokeWidth={1.3}
+            />
+            <p className="cinzel text-xl text-[var(--text)] mb-2">
+              No trips yet
+            </p>
             <p className="text-sm text-[var(--text-dim)] mb-6">
               Start planning your first journey with your travel companions.
             </p>
@@ -328,7 +420,10 @@ export default function Dashboard() {
             {/* Controls: search, role tabs, view toggle */}
             <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
               <div className="relative flex-1 min-w-[200px] max-w-xs">
-                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]" />
+                <Search
+                  size={15}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
+                />
                 <input
                   type="text"
                   value={search}
@@ -350,9 +445,11 @@ export default function Dashboard() {
                       key={tab.key}
                       onClick={() => setRoleFilter(tab.key)}
                       className={`px-3 py-1.5 text-xs rounded-full transition-colors cursor-pointer
-                        ${roleFilter === tab.key
-                          ? "bg-[var(--accent)] text-white font-medium"
-                          : "text-[var(--text-dim)] hover:text-[var(--text)]"}`}
+                        ${
+                          roleFilter === tab.key
+                            ? "bg-[var(--accent)] text-white font-medium"
+                            : "text-[var(--text-dim)] hover:text-[var(--text)]"
+                        }`}
                     >
                       {tab.label}
                     </button>
@@ -382,11 +479,22 @@ export default function Dashboard() {
 
             {visibleTrips.length === 0 ? (
               <div className="rounded-2xl border border-gray-200 bg-white text-center py-12">
-                <Search size={28} className="mx-auto mb-3 text-gray-300" strokeWidth={1.3} />
-                <p className="text-sm text-gray-500">No trips match your search.</p>
+                <Search
+                  size={28}
+                  className="mx-auto mb-3 text-gray-300"
+                  strokeWidth={1.3}
+                />
+                <p className="text-sm text-gray-500">
+                  No trips match your search.
+                </p>
               </div>
             ) : viewMode === "grid" ? (
-              <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
+              <div
+                className="grid gap-4"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                }}
+              >
                 {visibleTrips.map((trip, i) => {
                   return (
                     <div
@@ -406,7 +514,9 @@ export default function Dashboard() {
                             {trip.name}
                           </h3>
                           <p className="text-xs text-gray-500">
-                            {trip.role === "admin" ? "You organised this" : "You joined this trip"}
+                            {trip.role === "admin"
+                              ? "You organised this"
+                              : "You joined this trip"}
                           </p>
                         </div>
 
@@ -422,18 +532,25 @@ export default function Dashboard() {
                       </div>
 
                       <div className="flex items-center justify-between px-5 py-3 mt-2">
-                        <span className="text-xs text-gray-400">Open planner</span>
+                        <span className="text-xs text-gray-400">
+                          Open planner
+                        </span>
                         <div className="flex items-center gap-1">
                           {trip.role === "admin" && (
                             <button
-                              onClick={(e) => handleDelete(e, trip.id, trip.name)}
+                              onClick={(e) =>
+                                handleDelete(e, trip.id, trip.name)
+                              }
                               className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
                             >
                               <Trash2 size={12} />
                             </button>
                           )}
                           <div className="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-[var(--accent)] transition-all">
-                            <ArrowRight size={13} className="text-gray-400 group-hover:text-white transition-colors" />
+                            <ArrowRight
+                              size={13}
+                              className="text-gray-400 group-hover:text-white transition-colors"
+                            />
                           </div>
                         </div>
                       </div>
@@ -448,7 +565,10 @@ export default function Dashboard() {
                     hover:border-[var(--accent)]/50 transition-all duration-200 group min-h-[92px]"
                 >
                   <div className="w-9 h-9 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center group-hover:border-[var(--accent)]/50 transition-colors">
-                    <Plus size={16} className="text-gray-400 group-hover:text-[var(--accent)] transition-colors" />
+                    <Plus
+                      size={16}
+                      className="text-gray-400 group-hover:text-[var(--accent)] transition-colors"
+                    />
                   </div>
                   <p className="text-sm text-gray-400 group-hover:text-gray-600 transition-colors">
                     New Trip
@@ -470,9 +590,13 @@ export default function Dashboard() {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="cinzel text-sm font-semibold text-gray-900 truncate">{trip.name}</h3>
+                        <h3 className="cinzel text-sm font-semibold text-gray-900 truncate">
+                          {trip.name}
+                        </h3>
                         <p className="text-xs text-gray-500">
-                          {trip.role === "admin" ? "You organised this" : "You joined this trip"}
+                          {trip.role === "admin"
+                            ? "You organised this"
+                            : "You joined this trip"}
                         </p>
                       </div>
 
@@ -506,7 +630,6 @@ export default function Dashboard() {
             )}
           </>
         )}
-
       </div>
     </DashboardLayout>
   );
