@@ -387,11 +387,11 @@ export default function Dashboard() {
           <h2 className="cinzel text-xl text-[var(--text)]">
             {featuredTrip ? "All Trips" : "Your Trips"}
           </h2>
-          <button
+           <button
             onClick={() => navigate("/create-trip")}
-            className="btn btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+            className="btn btn-primary px-5 py-2.5 text-sm"
           >
-            <Plus size={15} /> New Trip
+            + New Trip
           </button>
         </div>
 

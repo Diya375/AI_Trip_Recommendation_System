@@ -262,65 +262,65 @@ export default function Home() {
 
       
 
-        {/* ── HIDDEN GEMS (real photos) ── */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="cinzel text-xl text-gray-900 flex items-center gap-2">
-              <Mountain size={18} strokeWidth={1.8} className="text-[var(--accent)]" />
-              Popular Itineraries
-            </h2>
-            <button
-              onClick={() => navigate("/explore")}
-              className="text-xs text-[var(--accent)] flex items-center gap-1 bg-transparent border-none cursor-pointer hover:underline"
-            >
-              View all <ArrowRight size={12} />
-            </button>
-          </div>
+       {/* ── POPULAR ITINERARIES / HIDDEN GEMS ── */}
+<div className="mb-10">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="cinzel text-xl text-gray-900 flex items-center gap-2">
+      <Mountain size={18} strokeWidth={1.8} className="text-[var(--accent)]" />
+      Popular Itineraries
+    </h2>
+    <button
+      onClick={() => navigate("/explore")}
+      className="text-xs text-[var(--accent)] flex items-center gap-1 bg-transparent border-none cursor-pointer hover:underline"
+    >
+      View all <ArrowRight size={12} />
+    </button>
+  </div>
 
-          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-            {gems.map((gem) => (
-              <div
-                key={gem.name}
-                onClick={() => navigate("/explore")}
-                className="rounded-2xl border border-gray-200 bg-white cursor-pointer overflow-hidden
-                  transition-all duration-200 hover:border-[var(--accent)]/50 hover:shadow-md"
-              >
-                <img src={gem.image} alt={gem.name} className="w-full h-28 object-cover" />
-                <div className="p-4">
-                  <p className="cinzel text-sm text-gray-900 font-semibold">{gem.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 leading-snug">{gem.tagline}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+  <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
+    {gems.map((gem) => (
+      <div
+        key={gem.name}
+      
+        onClick={() => navigate(`/explore/${encodeURIComponent(gem.name.toLowerCase())}`)}
+        className="rounded-2xl border border-gray-200 bg-white cursor-pointer overflow-hidden
+          transition-all duration-200 hover:border-[var(--accent)]/50 hover:shadow-md"
+      >
+        <img src={gem.image} alt={gem.name} className="w-full h-28 object-cover" />
+        <div className="p-4">
+          <p className="cinzel text-sm text-gray-900 font-semibold">{gem.name}</p>
+          <p className="text-xs text-gray-500 mt-0.5 leading-snug">{gem.tagline}</p>
         </div>
+      </div>
+    ))}
+  </div>
+</div>
+       {/* ── TRENDING DESTINATIONS ── */}
+<div className="mb-10">
+  <div className="flex items-center gap-2 mb-4">
+    <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] shrink-0">
+      <MapPin size={16} strokeWidth={1.8} />
+    </div>
+    <div>
+      <h2 className="cinzel text-lg text-gray-900 leading-tight">Trending Destinations</h2>
+      <p className="text-xs text-gray-400">Jump straight into planning</p>
+    </div>
+  </div>
 
-        {/* ── TRENDING DESTINATIONS ── */}
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] shrink-0">
-              <MapPin size={16} strokeWidth={1.8} />
-            </div>
-            <div>
-              <h2 className="cinzel text-lg text-gray-900 leading-tight">Trending Destinations</h2>
-              <p className="text-xs text-gray-400">Jump straight into planning</p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {trendingDestinations.map((place) => (
-              <button
-                key={place}
-                onClick={() => navigate(`/planner?q=${encodeURIComponent(place)}`)}
-                className="px-4 py-2 rounded-full border border-gray-200 bg-white text-sm text-gray-700
-                  hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-all cursor-pointer"
-              >
-                {place}
-              </button>
-            ))}
-          </div>
-        </div>
-
+  <div className="flex flex-wrap gap-2">
+    {trendingDestinations.map((place) => (
+      <button
+        key={place}
+    
+        onClick={() => navigate(`/explore/${encodeURIComponent(place.toLowerCase())}`)}
+        className="px-4 py-2 rounded-full border border-gray-200 bg-white text-sm text-gray-700
+          hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-all cursor-pointer"
+      >
+        {place}
+      </button>
+    ))}
+  </div>
+</div>
         {/* ── KNOW BEFORE YOU GO + PACKING CHECKLIST ── */}
         <div className="grid gap-4 mb-10" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
 
