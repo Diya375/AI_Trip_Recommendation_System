@@ -1,7 +1,7 @@
 const express = require("express");
 const Groq = require("groq-sdk");
 const verifyToken = require("../middleware/authmiddleware");
-const pool = require("../db");
+const pool = require("../config/db");
 
 const router = express.Router();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
