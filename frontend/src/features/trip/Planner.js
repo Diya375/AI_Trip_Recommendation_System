@@ -28,7 +28,7 @@ export default function Planner() {
   const [food, setFood] = useState("No preference");
   const [accommodation, setAccommodation] = useState("No preference");
   const [notes, setNotes] = useState("");
-  
+
   // Foldable Accordion State
   const [isFormExpanded, setIsFormExpanded] = useState(false);
 
@@ -127,6 +127,25 @@ export default function Planner() {
             {members.length} member{members.length !== 1 ? "s" : ""} &middot; {role === "admin" ? "You are the admin" : "You are a member"}
           </p>
         </div>
+
+        {role === "admin" && (
+          <button
+            onClick={() =>
+              navigate(`/assistant/${id}`, {
+                state: {
+                  tripId: parseInt(id),
+                  tripName: trip?.name,
+                  members: members,
+                  preferences: allPreferences,
+                },
+              })
+            }
+            className="btn btn-primary"
+            style={{ padding: "0.6rem 1.1rem", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}
+          >
+            🌐 Send to AI Assistant
+          </button>
+        )}
       </div>
 
       {role === "admin" && (
@@ -156,7 +175,7 @@ export default function Planner() {
           {/* Waiting List Status */}
           {membersWithoutPrefs.length > 0 && (
             <div className="card" style={{ marginBottom: "2rem", background: "var(--bg)", border: "1px solid var(--border)" }}>
-              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "0.75rem", fontWeight: "700" }}>& hisat; Waiting for preferences from:</p>
+              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "0.75rem", fontWeight: "700" }}>&hisat; Waiting for preferences from:</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {membersWithoutPrefs.map((m) => (
                   <span key={m.id} style={{ fontSize: "0.8rem", padding: "0.3rem 0.75rem", borderRadius: "20px", background: "var(--border)", color: "var(--text-dim)", fontWeight: "600" }}>{m.name}</span>
@@ -200,7 +219,7 @@ export default function Planner() {
 
       {/* ── 🔽 THE FOLDABLE/ACCORDION PREFERENCE MODULE VIEW ── */}
       <div className="card" style={{ marginBottom: "2.5rem", border: "1px solid var(--border)", padding: "1.25rem" }}>
-        <div 
+        <div
           onClick={() => setIsFormExpanded(!isFormExpanded)}
           style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
         >
@@ -268,7 +287,7 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
 
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem", fontWeight: "700" }}>
-          室内 Trip Type (select all that apply)
+          🏕️ Trip Type (select all that apply)
         </label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           {TRIP_TYPES.map((type) => (

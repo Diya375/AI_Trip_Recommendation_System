@@ -305,9 +305,9 @@ export default function Dashboard() {
             <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-1">
               {greeting}
             </p>
-            <h1 className="cinzel text-4xl text-[var(--accent)] mb-1">
-              {user.name.split(" ")[0]}'s Dashboard
-            </h1>
+            
+               <h1 className="section-title">Dashboard</h1>
+              
             <p className="text-sm text-[var(--text-dim)]">
               Your journey at a glance
             </p>
