@@ -1,6 +1,7 @@
- import React, { useEffect, useState } from "react";
+// src/components/Sidebar.js
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext"; // Fixed import
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { 
   LayoutDashboard, 
@@ -17,7 +18,6 @@ import {
 const navItems = [
   { label: "Dashboard",    path: "/dashboard",   icon: LayoutDashboard },
   { label: "Home",         path: "/home",        icon: Home },
- 
   { label: "Planner",      path: "/planner",     icon: CalendarDays },
   { label: "Explore",      path: "/explore",     icon: Compass },
   { label: "Expenses",     path: "/expenses",    icon: Receipt },
@@ -46,6 +46,7 @@ export default function Sidebar({ isCollapsed }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
+  const mapRef = useRef(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -61,31 +62,50 @@ export default function Sidebar({ isCollapsed }) {
     }
   }, []);
 
+  useEffect(() => {
+    if (mapRef.current && userLocation) {
+      const timer = setTimeout(() => {
+        const google = window.google;
+        if (google && google.maps) {
+          google.maps.event.trigger(mapRef.current, "resize");
+          mapRef.current.panTo(userLocation);
+        }
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed, userLocation]);
+
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  const onLoad = (map) => {
+    mapRef.current = map;
+  };
+
+  const onUnmount = () => {
+    mapRef.current = null;
+  };
+
   return (
     <aside style={{
-      width: isCollapsed ? "0px" : "290px",
-      minWidth: isCollapsed ? "0px" : "290px",
+      width: isCollapsed ? "80px" : "290px",
+      minWidth: isCollapsed ? "80px" : "290px",
       height: "100vh",
       background: "#ffffff",
-      borderRight: isCollapsed ? "none" : "1px solid rgba(0, 0, 0, 0.06)",
+      borderRight: "1px solid rgba(0, 0, 0, 0.06)",
       display: "flex",
       flexDirection: "column",
-      padding: isCollapsed ? "2rem 0px" : "2rem 1.5rem",
-      boxShadow: isCollapsed ? "none" : "4px 0 24px rgba(0, 0, 0, 0.01)",
+      padding: isCollapsed ? "2rem 0.5rem" : "2rem 1.5rem",
+      boxShadow: "4px 0 24px rgba(0, 0, 0, 0.01)",
       position: "sticky",
       top: 0,
       zIndex: 10,
-      // Premium, elongated slider curve (0.5s duration)
       transition: "all 0.5s cubic-bezier(0.3, 1, 0.4, 1)", 
       fontFamily: "system-ui, sans-serif",
     }}>
 
-      {/* Internal scroll wrapper to allow full-height scrolling when active */}
       <div style={{
         display: "flex",
         flexDirection: "column",
@@ -93,36 +113,44 @@ export default function Sidebar({ isCollapsed }) {
         width: "100%",
         overflowY: "auto",
         overflowX: "hidden",
-        flex1: 1
+        flex: 1
       }}>
 
-        {/* YatraVerse Branding Header */}
+        {/* Branding Header: Displays "YV" when collapsed and full brand name when open */}
         <div style={{ 
           marginBottom: "2.5rem", 
-          paddingLeft: "0.5rem",
+          paddingLeft: isCollapsed ? "0px" : "0.5rem",
+          textAlign: isCollapsed ? "center" : "left",
           whiteSpace: "nowrap"
         }}>
           <div className="cinzel" style={{
-            fontSize: "1.65rem",
+            fontSize: isCollapsed ? "1.6rem" : "1.65rem",
             fontWeight: "800",
-            letterSpacing: "0.08em",
+            letterSpacing: isCollapsed ? "0.05em" : "0.08em",
             color: "#2B3E34",
-            lineHeight: "1.2"
+            lineHeight: "1.2",
+            transition: "all 0.3s"
           }}>
-            YATRAVERSE
+            {isCollapsed ? "YV" : "YATRAVERSE"}
           </div>
+          
+          {/* Subtitle slides/hides away on collapse */}
           <div style={{
             fontSize: "0.68rem",
             fontWeight: "700",
             letterSpacing: "0.18em",
             color: "#3d5a49",
-            marginTop: "0.25rem"
+            marginTop: "0.25rem",
+            opacity: isCollapsed ? 0 : 1,
+            maxHeight: isCollapsed ? 0 : "20px",
+            transition: "opacity 0.2s, max-height 0.2s",
+            overflow: "hidden"
           }}>
             AI TRAVEL COMPANION
           </div>
         </div>
 
-        {/* Navigation Links Stack */}
+        {/* Permanent Navigation Icons Stack */}
         <nav style={{ 
           display: "flex", 
           flexDirection: "column", 
@@ -136,9 +164,9 @@ export default function Sidebar({ isCollapsed }) {
               style={({ isActive }) => ({
                 display: "flex",
                 alignItems: "center",
-                gap: "0.9rem",
+                justifyContent: isCollapsed ? "center" : "flex-start",
+                gap: isCollapsed ? "0px" : "0.9rem",
                 padding: "0.8rem",
-                paddingLeft: isActive ? "0.75rem" : "1rem",
                 borderRadius: "12px",
                 textDecoration: "none",
                 fontSize: "0.92rem",
@@ -146,7 +174,7 @@ export default function Sidebar({ isCollapsed }) {
                 color: isActive ? "#2B3E34" : "#5A6A61",
                 backgroundColor: isActive ? "#E8EFEA" : "transparent",
                 transition: "all 0.2s ease-in-out",
-                borderLeft: isActive ? "4px solid #2B3E34" : "4px solid transparent",
+                borderLeft: !isCollapsed && isActive ? "4px solid #2B3E34" : "4px solid transparent",
               })}
               onMouseEnter={(e) => {
                 if (!e.currentTarget.href.includes(window.location.pathname)) {
@@ -161,17 +189,33 @@ export default function Sidebar({ isCollapsed }) {
                 }
               }}
             >
-              <IconComponent size={18} strokeWidth={2.2} style={{ shrink: 0 }} />
-              <span style={{ whiteSpace: "nowrap" }}>{label}</span>
+              <IconComponent size={20} strokeWidth={2.2} style={{ flexShrink: 0 }} />
+              
+              <span style={{ 
+                whiteSpace: "nowrap",
+                opacity: isCollapsed ? 0 : 1,
+                width: isCollapsed ? 0 : "auto",
+                transition: "opacity 0.2s, width 0.2s",
+                overflow: "hidden"
+              }}>
+                {label}
+              </span>
             </NavLink>
           ))}
         </nav>
 
-        {/* Push Map and Logout to the exact bottom of the scroll track container */}
+        {/* Bottom Actions Container */}
         <div style={{ marginTop: "auto" }}>
           
-          {/* 📍 Live Map Frame Widget (Safely anchored back at the bottom) */}
-          <div style={{ marginBottom: "1.5rem", whiteSpace: "nowrap" }}>
+          {/* Map Widget Layout */}
+          <div style={{ 
+            marginBottom: isCollapsed ? "0px" : "1.5rem", 
+            whiteSpace: "nowrap",
+            opacity: isCollapsed ? 0 : 1,
+            maxHeight: isCollapsed ? 0 : "220px",
+            transition: "opacity 0.2s, max-height 0.3s, margin 0.2s",
+            overflow: "hidden"
+          }}>
             <p style={{
               fontSize: "0.7rem",
               color: "#99AAB0",
@@ -191,14 +235,17 @@ export default function Sidebar({ isCollapsed }) {
                 overflow: "hidden",
                 border: "1px solid rgba(0, 0, 0, 0.08)",
                 height: "180px",
+                width: "100%",
                 cursor: "pointer"
               }}
             >
               {isLoaded && userLocation ? (
                 <GoogleMap
-                  mapContainerStyle={{ width: "100%", height: "100%" }}
+                  mapContainerStyle={{ width: "100%", height: "100%", position: "absolute" }}
                   center={userLocation}
                   zoom={13}
+                  onLoad={onLoad}
+                  onUnmount={onUnmount}
                   options={{
                     disableDefaultUI: true,
                     zoomControl: false,
@@ -224,7 +271,8 @@ export default function Sidebar({ isCollapsed }) {
                 color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
-                gap: "4px"
+                gap: "4px",
+                zIndex: 2
               }}>
                 <Maximize2 size={10} />
                 Expand Map
@@ -232,7 +280,7 @@ export default function Sidebar({ isCollapsed }) {
             </div>
           </div>
 
-          {/* Logout Action Trigger Button */}
+          {/* Permanent Logout Action Button */}
           <button
             onClick={handleLogout}
             style={{
@@ -247,16 +295,23 @@ export default function Sidebar({ isCollapsed }) {
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              gap: "0.6rem",
+              justifyContent: isCollapsed ? "center" : "center",
+              gap: isCollapsed ? "0px" : "0.6rem",
               transition: "all 0.2s",
               whiteSpace: "nowrap"
             }}
             onMouseEnter={(e) => e.currentTarget.style.background = "#FFE4E6"}
             onMouseLeave={(e) => e.currentTarget.style.background = "#FFF1F2"}
           >
-            <LogOut size={16} style={{ shrink: 0 }} />
-            <span>Log out</span>
+            <LogOut size={16} style={{ flexShrink: 0 }} />
+            <span style={{ 
+              opacity: isCollapsed ? 0 : 1,
+              width: isCollapsed ? 0 : "auto",
+              transition: "opacity 0.2s, width 0.2s",
+              overflow: "hidden"
+            }}>
+              Log out
+            </span>
           </button>
           
         </div>

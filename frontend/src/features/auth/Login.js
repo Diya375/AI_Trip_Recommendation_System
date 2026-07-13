@@ -1,8 +1,37 @@
+// import { GoogleLogin } from "@react-oauth/google";
+// import { useState, useEffect } from "react";
+// import API from "../../services/api";
+// import { useNavigate, Link, useLocation } from "react-router-dom";
+// import { AuthContext } from "../../context/AuthContext";
+// import { Eye, EyeOff } from "lucide-react";
+// import song from "../../assets/audio/reshamfiriri.mp3";
+
+// export default function Login() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { login } = useAuth();
+
+//   const params = new URLSearchParams(location.search);
+//   const redirectTo = location.state?.redirectTo || params.get("redirectTo") || "/dashboard";
+
+//   useEffect(() => {
+//     const audio = new Audio(anthem);
+//     audio.volume = 0.75;
+//     audio.play().catch(() => {});
+//     return () => { audio.pause(); audio.currentTime = 0; };
+//   }, []);
+
+
 import { GoogleLogin } from "@react-oauth/google";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // Removed useContext
 import API from "../../services/api";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext"; // Fixed import
 import { Eye, EyeOff } from "lucide-react";
 import song from "../../assets/audio/reshamfiriri.mp3";
 
@@ -14,17 +43,23 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  
+  // Fixed: Now using the properly imported useAuth hook
+  const { login } = useAuth(); 
 
   const params = new URLSearchParams(location.search);
   const redirectTo = location.state?.redirectTo || params.get("redirectTo") || "/dashboard";
 
   useEffect(() => {
-    const audio = new Audio(anthem);
+    const audio = new Audio(song); 
     audio.volume = 0.75;
     audio.play().catch(() => {});
     return () => { audio.pause(); audio.currentTime = 0; };
   }, []);
+
+  // ... rest of your code remains the same
+
+  // ... rest of your code remains exactly the same
 
   useEffect(() => {
     const token = localStorage.getItem("token");
