@@ -1,13 +1,23 @@
-/* Linked Explore Places Destination Section */ 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import API from "../../services/api";
-import { Copy, Check, Link2, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, Check, Link2, ChevronDown, ChevronUp, ArrowLeft, X, ClipboardList } from "lucide-react";
 
 const TRIP_TYPES = ["Adventure", "Hiking", "Trekking", "Relaxing", "Cultural", "Beach", "Wildlife", "Road Trip"];
 const FOOD_OPTIONS = ["No preference", "Vegetarian", "Non-Vegetarian", "Vegan", "Halal"];
 const ACCOMMODATION_OPTIONS = ["No preference", "Hotel", "Camping", "Homestay", "Resort", "Hostel"];
+
+const inputClass =
+  "w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 " +
+  "placeholder:text-gray-400 outline-none focus:border-[var(--accent)]/50 transition-colors";
+
+const pillClass = (active) =>
+  `px-3.5 py-1.5 rounded-full text-xs font-medium border cursor-pointer transition-all ${
+    active
+      ? "bg-[var(--accent)] border-[var(--accent)] text-white"
+      : "border-gray-200 bg-white text-gray-500 hover:border-[var(--accent)]/50 hover:text-[var(--accent)]"
+  }`;
 
 export default function Planner() {
   const { id } = useParams();
@@ -23,33 +33,30 @@ export default function Planner() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [linkedPlaces, setLinkedPlaces] = useState([]); // This state stores the places
+  const [linkedPlaces, setLinkedPlaces] = useState([]);
   const [budget, setBudget] = useState("");
   const [tripTypes, setTripTypes] = useState([]);
   const [food, setFood] = useState("No preference");
   const [accommodation, setAccommodation] = useState("No preference");
   const [notes, setNotes] = useState("");
 
-  // Foldable Accordion State
   const [isFormExpanded, setIsFormExpanded] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login", { state: { redirectTo: location.pathname } }); return; }
-
     if (!id) { navigate("/planner"); return; }
 
-    // Fetch Trip Info, Member Preferences, AND Linked Places simultaneously
     Promise.all([
       API.get(`/trips/${id}`),
       API.get(`/trips/${id}/preferences`),
-      API.get(`/trips/${id}/places`) // Added request to fetch appended places
+      API.get(`/trips/${id}/places`)
     ])
       .then(([tripRes, prefRes, placesRes]) => {
         setTrip(tripRes.data.trip);
         setMembers(tripRes.data.members);
         setRole(prefRes.data.role);
-        setLinkedPlaces(placesRes.data.places || placesRes.data || []); // Set places data array
+        setLinkedPlaces(placesRes.data.places || placesRes.data || []);
 
         if (prefRes.data.role === "admin") {
           setAllPreferences(prefRes.data.preferences);
@@ -104,7 +111,7 @@ export default function Planner() {
   if (loading) {
     return (
       <DashboardLayout>
-        <p style={{ color: "var(--text-dim)" }}>Loading trip...</p>
+        <p className="text-gray-400 text-sm">Loading trip...</p>
       </DashboardLayout>
     );
   }
@@ -113,230 +120,219 @@ export default function Planner() {
     (m) => !allPreferences.find((p) => p.user_id === m.id)
   );
 
-  return (
-    <DashboardLayout>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "2rem" }}>
-        <div>
-          <button
-            onClick={() => navigate("/dashboard")}
-            style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", fontSize: "0.85rem", padding: 0, marginBottom: "0.5rem" }}
-          >
-            &larr; Back to Dashboard
-          </button>
-          <h2 className="cinzel" style={{ fontSize: "1.8rem", color: "var(--accent)", margin: 0, fontWeight: "700" }}>
-            {trip?.name}
-          </h2>
-          <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginTop: "0.25rem" }}>
-            {members.length} member{members.length !== 1 ? "s" : ""} &middot; {role === "admin" ? "You are the admin" : "You are a member"}
-          </p>
-        </div>
-
-        {role === "admin" && (
-          <button
-            onClick={() =>
-              navigate(`/assistant/${id}`, {
-                state: {
-                  tripId: parseInt(id),
-                  tripName: trip?.name,
-                  members: members,
-                  preferences: allPreferences,
-                },
-              })
-            }
-            className="btn btn-primary"
-            style={{ padding: "0.6rem 1.1rem", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}
-          >
-            🌐 Send to AI Assistant
-          </button>
-        )}
-      </div>
-
-      {role === "admin" && (
-        <>
-          {/* Invite Link */}
-          {inviteLink && (
-            <div className="card" style={{ marginBottom: "2rem", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", padding: "1rem 1.25rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
-                <Link2 size={16} color="var(--text-dim)" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: "0.82rem", color: "var(--text)", wordBreak: "break-all" }}>{inviteLink}</span>
-              </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(inviteLink);
-                  setCopiedLink(true);
-                  setTimeout(() => setCopiedLink(false), 2000);
-                }}
-                className="btn btn-primary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.4rem", flexShrink: 0, fontWeight: "700" }}
-              >
-                {copiedLink ? <Check size={15} /> : <Copy size={15} />}
-                {copiedLink ? "Copied!" : "Copy Link"}
-              </button>
-            </div>
-          )}
-
-          {/* Waiting List Status */}
-          {membersWithoutPrefs.length > 0 && (
-            <div className="card" style={{ marginBottom: "2rem", background: "var(--bg)", border: "1px solid var(--border)" }}>
-              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "0.75rem", fontWeight: "700" }}>&middot; Waiting for preferences from:</p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                {membersWithoutPrefs.map((m) => (
-                  <span key={m.id} style={{ fontSize: "0.8rem", padding: "0.3rem 0.75rem", borderRadius: "20px", background: "var(--border)", color: "var(--text-dim)", fontWeight: "600" }}>{m.name}</span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Group Submission Grid Cards */}
-          {allPreferences.length === 0 ? (
-            <div className="card" style={{ textAlign: "center", padding: "3rem 2rem", marginBottom: "2rem" }}>
-              <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>📋</div>
-              <p style={{ color: "var(--text-dim)", fontWeight: "600" }}>No preferences submitted yet. Share the link so members can join.</p>
-            </div>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.5rem", marginBottom: "2.5rem" }}>
-              {allPreferences.map((pref) => (
-                <div key={pref.user_id} className="card fade-up">
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyindex: "center", fontSize: "0.9rem", color: "#fff", fontWeight: "700", flexShrink: 0 }}>
-                      {pref.name?.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p style={{ fontWeight: "700", color: "var(--text)", margin: 0 }}>{pref.name}</p>
-                      <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", margin: 0 }}>{pref.email}</p>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                    <PrefRow icon="💲" label="Budget" value={pref.budget ? `Rs. ${pref.budget.toLocaleString()}` : "Not specified"} />
-                    <PrefRow icon="🏕️" label="Trip type" value={pref.trip_types?.length ? pref.trip_types.join(", ") : "Not specified"} />
-                    <PrefRow icon="🍽️" label="Food" value={pref.food_preference || "Not specified"} />
-                    <PrefRow icon="🏨" label="Stay" value={pref.accommodation || "Not specified"} />
-                    {pref.notes && <PrefRow icon="📝" label="Notes" value={pref.notes} />}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-     {/* Linked Explore Places Destination Section */}
-<h3 className="cinzel" style={{ fontSize: "1.2rem", color: "var(--text)", marginBottom: "1rem", fontWeight: "700" }}>
-  📍 Curated Destinations Bucket List
-</h3>
-
-{(() => {
-  // De-duplicate places by ID before rendering
-  const uniquePlaces = linkedPlaces.filter(
-    (place, index, self) => self.findIndex((p) => p.id === place.id) === index
-  );
-
-  // Handle removing a place from the frontend state and backend
   const handleRemovePlace = async (placeId) => {
     if (!window.confirm("Are you sure you want to remove this destination?")) return;
-    
     try {
-      // Sends a DELETE request to your backend endpoint
       await API.delete(`/trips/${id}/places/${placeId}`);
-      
-      // Update the frontend state immediately after successful deletion
       setLinkedPlaces((prev) => prev.filter((p) => p.id !== placeId));
     } catch (err) {
       alert(err.response?.data?.error || "Failed to remove destination");
     }
   };
 
-  return uniquePlaces.length === 0 ? (
-    <div className="card" style={{ padding: "1.5rem", color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "2rem", textAlign: "center" }}>
-      No explore items appended to this trip itinerary group yet.
-    </div>
-  ) : (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem", marginBottom: "2.5rem" }}>
-      {uniquePlaces.map((p) => (
-        <div 
-          key={p.id} 
-          className="card" 
-          style={{ 
-            padding: "0.75rem", 
-            display: "flex", 
-            gap: "0.75rem", 
-            alignItems: "center", 
-            position: "relative" // Allows positioning the delete button
-          }}
-        >
-          {p.image_url && (
-            <img src={p.image_url} alt={p.name} style={{ width: "50px", height: "50px", borderRadius: "6px", objectFit: "cover" }} />
-          )}
-          <div style={{ minWidth: 0, flex: 1, paddingRight: "1.5rem" }}>
-            <p style={{ margin: 0, fontWeight: "700", fontSize: "0.85rem", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
-            <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-dim)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.location || p.address}</p>
-          </div>
-          
-          {/* Delete Button */}
-          <button
-            onClick={() => handleRemovePlace(p.id)}
-            style={{
-              position: "absolute",
-              top: "0.5rem",
-              right: "0.5rem",
-              background: "none",
-              border: "none",
-              color: "var(--text-dim)",
-              cursor: "pointer",
-              fontSize: "1rem",
-              padding: "2px 5px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "4px",
-              transition: "all 0.2s"
-            }}
-            onMouseEnter={(e) => e.target.style.color = "red"}
-            onMouseLeave={(e) => e.target.style.color = "var(--text-dim)"}
-            title="Remove place"
-          >
-            ×
-          </button>
-        </div>
-      ))}
-    </div>
+  const uniquePlaces = linkedPlaces.filter(
+    (place, index, self) => self.findIndex((p) => p.id === place.id) === index
   );
-})()}
-      {/* ── 🔽 THE FOLDABLE/ACCORDION PREFERENCE MODULE VIEW ── */}
-      <div className="card" style={{ marginBottom: "2.5rem", border: "1px solid var(--border)", padding: "1.25rem" }}>
-        <div
-          onClick={() => setIsFormExpanded(!isFormExpanded)}
-          style={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}
-        >
+
+  return (
+    <DashboardLayout>
+      <div className="fade-up max-w-5xl mx-auto px-4 sm:px-0">
+
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6 sm:mb-8">
           <div>
-            <h3 className="cinzel" style={{ fontSize: "1.1rem", color: "var(--text)", margin: 0, fontWeight: "700" }}>
-              🛠️ Your Personal Trip Preferences
-            </h3>
-            <p style={{ color: "var(--text-dim)", fontSize: "0.78rem", margin: "3px 0 0 0" }}>
-              {isFormExpanded ? "Collapse panel to hide options" : "Expand to configure budget, lodging, dining choices"}
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="flex items-center gap-1 text-xs text-gray-400 bg-transparent border-none
+                cursor-pointer hover:text-gray-700 transition-colors mb-2 p-0"
+            >
+              <ArrowLeft size={12} /> Back to Dashboard
+            </button>
+            <h1 className="cinzel text-2xl sm:text-3xl text-[var(--accent)] font-bold mb-1 break-words">
+              {trip?.name}
+            </h1>
+            <p className="text-gray-500 text-sm">
+              {members.length} member{members.length !== 1 ? "s" : ""} · {role === "admin" ? "You are the admin" : "You are a member"}
             </p>
           </div>
-          <button style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer" }}>
-            {isFormExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
+
+          {role === "admin" && (
+            <button
+              onClick={() =>
+                navigate(`/assistant/${id}`, {
+                  state: {
+                    tripId: parseInt(id),
+                    tripName: trip?.name,
+                    members: members,
+                    preferences: allPreferences,
+                  },
+                })
+              }
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)]
+                text-white text-sm font-semibold hover:opacity-90 transition-opacity border-none cursor-pointer shrink-0"
+            >
+              🌐 Send to AI Assistant
+            </button>
+          )}
         </div>
 
-        {/* Form content */}
-        {isFormExpanded && (
-          <div style={{ marginTop: "1.5rem", borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
-            <PreferenceForm
-              budget={budget} setBudget={setBudget}
-              tripTypes={tripTypes} toggleTripType={toggleTripType}
-              food={food} setFood={setFood}
-              accommodation={accommodation} setAccommodation={setAccommodation}
-              notes={notes} setNotes={setNotes}
-              onSave={handleSave} saving={saving} saved={saved}
-            />
+        {role === "admin" && (
+          <>
+            {/* Invite Link */}
+            {inviteLink && (
+              <div className="mb-6 sm:mb-8 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5
+                flex items-center flex-wrap gap-3 sm:gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Link2 size={16} className="text-gray-400 shrink-0" />
+                  <span className="text-xs sm:text-sm text-gray-600 break-all">{inviteLink}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(inviteLink);
+                    setCopiedLink(true);
+                    setTimeout(() => setCopiedLink(false), 2000);
+                  }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent)] text-white
+                    text-sm font-semibold hover:opacity-90 transition-opacity border-none cursor-pointer shrink-0"
+                >
+                  {copiedLink ? <Check size={15} /> : <Copy size={15} />}
+                  {copiedLink ? "Copied!" : "Copy Link"}
+                </button>
+              </div>
+            )}
+
+            {/* Waiting List */}
+            {membersWithoutPrefs.length > 0 && (
+              <div className="mb-6 sm:mb-8 rounded-2xl border border-dashed border-gray-200 bg-white p-4 sm:p-5">
+                <p className="text-xs text-gray-400 uppercase tracking-widest mb-3">
+                  Waiting for preferences from
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {membersWithoutPrefs.map((m) => (
+                    <span
+                      key={m.id}
+                      className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-500 font-medium"
+                    >
+                      {m.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Group Submissions */}
+            {allPreferences.length === 0 ? (
+              <div className="rounded-2xl border border-gray-200 bg-white text-center py-14 sm:py-16 px-4 mb-8">
+                <p className="text-4xl mb-4">📋</p>
+                <p className="text-gray-500 text-sm">No preferences submitted yet. Share the link so members can join.</p>
+              </div>
+            ) : (
+              <div
+                className="grid gap-4 mb-8 sm:mb-10"
+                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+              >
+                {allPreferences.map((pref) => (
+                  <div key={pref.user_id} className="fade-up rounded-2xl border border-gray-200 bg-white p-5">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-9 h-9 rounded-full bg-[var(--accent)] flex items-center justify-center text-sm text-white font-bold shrink-0">
+                        {pref.name?.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{pref.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{pref.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                      <PrefRow icon="💰" label="Budget" value={pref.budget ? `Rs. ${pref.budget.toLocaleString()}` : "Not specified"} />
+                      <PrefRow icon="🎒" label="Trip type" value={pref.trip_types?.length ? pref.trip_types.join(", ") : "Not specified"} />
+                      <PrefRow icon="🍽️" label="Food" value={pref.food_preference || "Not specified"} />
+                      <PrefRow icon="🏨" label="Stay" value={pref.accommodation || "Not specified"} />
+                      {pref.notes && <PrefRow icon="📝" label="Notes" value={pref.notes} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Curated Destinations */}
+        <h2 className="cinzel text-lg text-gray-900 font-semibold mb-4 flex items-center gap-2">
+          📍 Curated Destinations Bucket List
+        </h2>
+
+        {uniquePlaces.length === 0 ? (
+          <div className="rounded-2xl border border-gray-200 bg-white text-center py-8 px-4 mb-8 sm:mb-10">
+            <p className="text-gray-400 text-sm">No explore items appended to this trip itinerary group yet.</p>
+          </div>
+        ) : (
+          <div
+            className="grid gap-3 mb-8 sm:mb-10"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}
+          >
+            {uniquePlaces.map((p) => (
+              <div
+                key={p.id}
+                className="relative rounded-2xl border border-gray-200 bg-white p-3 flex items-center gap-3"
+              >
+                {p.image_url && (
+                  <img
+                    src={p.image_url}
+                    alt={p.name}
+                    className="w-12 h-12 rounded-lg object-cover shrink-0"
+                  />
+                )}
+                <div className="min-w-0 flex-1 pr-5">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{p.name}</p>
+                  <p className="text-xs text-gray-400 truncate">{p.location || p.address}</p>
+                </div>
+                <button
+                  onClick={() => handleRemovePlace(p.id)}
+                  title="Remove place"
+                  className="absolute top-2 right-2 text-gray-300 hover:text-red-500 transition-colors
+                    bg-transparent border-none cursor-pointer p-1 rounded-md"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
           </div>
         )}
-      </div>
 
+        {/* Foldable Preferences */}
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 mb-8 sm:mb-10">
+          <div
+            onClick={() => setIsFormExpanded(!isFormExpanded)}
+            className="flex items-center justify-between cursor-pointer gap-3"
+          >
+            <div>
+              <h3 className="cinzel text-base text-gray-900 font-semibold">
+                🛠️ Your Personal Trip Preferences
+              </h3>
+              <p className="text-gray-400 text-xs mt-1">
+                {isFormExpanded ? "Collapse panel to hide options" : "Expand to configure budget, lodging, dining choices"}
+              </p>
+            </div>
+            <button className="text-gray-400 bg-transparent border-none cursor-pointer shrink-0">
+              {isFormExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+          </div>
+
+          {isFormExpanded && (
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <PreferenceForm
+                budget={budget} setBudget={setBudget}
+                tripTypes={tripTypes} toggleTripType={toggleTripType}
+                food={food} setFood={setFood}
+                accommodation={accommodation} setAccommodation={setAccommodation}
+                notes={notes} setNotes={setNotes}
+                onSave={handleSave} saving={saving} saved={saved}
+              />
+            </div>
+          )}
+        </div>
+
+      </div>
     </DashboardLayout>
   );
 }
@@ -344,11 +340,11 @@ export default function Planner() {
 // Inline Sub-Components
 function PrefRow({ icon, label, value }) {
   return (
-    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
-      <span style={{ fontSize: "1rem", flexShrink: 0 }}>{icon}</span>
-      <div>
-        <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", margin: 0, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: "700" }}>{label}</p>
-        <p style={{ fontSize: "0.9rem", color: "var(--text)", margin: 0, fontWeight: "500" }}>{value}</p>
+    <div className="flex gap-3 items-start">
+      <span className="text-base shrink-0">{icon}</span>
+      <div className="min-w-0">
+        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">{label}</p>
+        <p className="text-sm text-gray-800 font-medium break-words">{value}</p>
       </div>
     </div>
   );
@@ -356,9 +352,9 @@ function PrefRow({ icon, label, value }) {
 
 function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, setFood, accommodation, setAccommodation, notes, setNotes, onSave, saving, saved }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div className="flex flex-col gap-6">
       <div>
-        <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.5rem", fontWeight: "700" }}>
+        <label className="text-xs text-gray-400 uppercase tracking-widest font-semibold block mb-2">
           💰 Budget (Rs.)
         </label>
         <input
@@ -366,29 +362,17 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
           placeholder="e.g. 15000"
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
-          className="input"
-          style={{ width: "100%" }}
+          className={inputClass}
         />
       </div>
 
       <div>
-        <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem", fontWeight: "700" }}>
-          CC Trip Type (select all that apply)
+        <label className="text-xs text-gray-400 uppercase tracking-widest font-semibold block mb-3">
+          🎒 Trip Type (select all that apply)
         </label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div className="flex flex-wrap gap-2">
           {TRIP_TYPES.map((type) => (
-            <button
-              key={type}
-              onClick={() => toggleTripType(type)}
-              style={{
-                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
-                borderColor: tripTypes.includes(type) ? "var(--accent)" : "var(--border)",
-                background: tripTypes.includes(type) ? "var(--accent)" : "transparent",
-                color: tripTypes.includes(type) ? "#fff" : "var(--text-dim)",
-                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
-                fontWeight: "600"
-              }}
-            >
+            <button key={type} onClick={() => toggleTripType(type)} className={pillClass(tripTypes.includes(type))}>
               {type}
             </button>
           ))}
@@ -396,23 +380,12 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
       </div>
 
       <div>
-        <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem", fontWeight: "700" }}>
+        <label className="text-xs text-gray-400 uppercase tracking-widest font-semibold block mb-3">
           🍽️ Food Preference
         </label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div className="flex flex-wrap gap-2">
           {FOOD_OPTIONS.map((option) => (
-            <button
-              key={option}
-              onClick={() => setFood(option)}
-              style={{
-                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
-                borderColor: food === option ? "var(--accent)" : "var(--border)",
-                background: food === option ? "var(--accent)" : "transparent",
-                color: food === option ? "#fff" : "var(--text-dim)",
-                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
-                fontWeight: "600"
-              }}
-            >
+            <button key={option} onClick={() => setFood(option)} className={pillClass(food === option)}>
               {option}
             </button>
           ))}
@@ -420,23 +393,12 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
       </div>
 
       <div>
-        <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem", fontWeight: "700" }}>
+        <label className="text-xs text-gray-400 uppercase tracking-widest font-semibold block mb-3">
           🏨 Accommodation
         </label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div className="flex flex-wrap gap-2">
           {ACCOMMODATION_OPTIONS.map((option) => (
-            <button
-              key={option}
-              onClick={() => setAccommodation(option)}
-              style={{
-                padding: "0.4rem 0.9rem", borderRadius: "20px", border: "1px solid",
-                borderColor: accommodation === option ? "var(--accent)" : "var(--border)",
-                background: accommodation === option ? "var(--accent)" : "transparent",
-                color: accommodation === option ? "#fff" : "var(--text-dim)",
-                cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s",
-                fontWeight: "600"
-              }}
-            >
+            <button key={option} onClick={() => setAccommodation(option)} className={pillClass(accommodation === option)}>
               {option}
             </button>
           ))}
@@ -444,7 +406,7 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
       </div>
 
       <div>
-        <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.5rem", fontWeight: "700" }}>
+        <label className="text-xs text-gray-400 uppercase tracking-widest font-semibold block mb-2">
           📝 Additional Notes
         </label>
         <textarea
@@ -452,21 +414,17 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          style={{
-            width: "100%", background: "var(--bg)", border: "1px solid var(--border)",
-            borderRadius: "10px", padding: "0.75rem 1rem", color: "var(--text)",
-            fontSize: "0.9rem", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box",
-          }}
+          className={`${inputClass} resize-y`}
         />
       </div>
 
       <button
         onClick={onSave}
         disabled={saving}
-        className="btn btn-primary"
-        style={{ padding: "0.85rem", fontSize: "1rem", opacity: saving ? 0.7 : 1, fontWeight: "700" }}
+        className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[var(--accent)] text-white
+          text-sm font-semibold hover:opacity-90 disabled:opacity-60 transition-opacity border-none cursor-pointer"
       >
-        {saving ? "Saving..." : saved ? "✓ Saved!" : "Save Preferences"}
+        {saving ? "Saving..." : saved ? (<><Check size={16} /> Saved!</>) : "Save Preferences"}
       </button>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
+import { AlertTriangle, Compass, ArrowRight, Loader2 } from "lucide-react";
 
 export default function JoinTrip() {
   const { inviteCode } = useParams();
@@ -35,22 +36,26 @@ export default function JoinTrip() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <div className="card fade-up w-full max-w-md px-10 py-12 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
+      <div className="fade-up w-full max-w-md rounded-2xl border border-gray-200 bg-white px-6 sm:px-10 py-10 sm:py-12 text-center shadow-sm">
 
         {loading ? (
-          <p className="text-[var(--text-dim)] text-sm">Loading invite...</p>
+          <div className="flex flex-col items-center gap-3 py-6">
+            <Loader2 size={22} className="text-[var(--accent)] animate-spin" />
+            <p className="text-gray-400 text-sm">Loading invite...</p>
+          </div>
 
         ) : error ? (
           <>
-            <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center text-2xl mx-auto mb-6">
-              ⚠️
+            <div className="w-14 h-14 rounded-xl bg-red-50 flex items-center justify-center text-red-500 mx-auto mb-6">
+              <AlertTriangle size={22} strokeWidth={1.8} />
             </div>
             <h1 className="cinzel text-2xl text-[var(--accent)] mb-3">Invalid Link</h1>
-            <p className="text-red-400 text-sm mb-6">{error}</p>
+            <p className="text-red-500 text-sm mb-8">{error}</p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="btn btn-primary w-full py-3 text-base"
+              className="w-full px-5 py-3 rounded-xl bg-[var(--accent)] text-white text-sm font-semibold
+                hover:opacity-90 transition-opacity border-none cursor-pointer"
             >
               Go to Dashboard
             </button>
@@ -58,31 +63,36 @@ export default function JoinTrip() {
 
         ) : (
           <>
-            {/* Icon */}
-            <div className="w-16 h-16 rounded-full bg-[var(--accent)] flex items-center justify-center text-3xl mx-auto mb-6">
-              🛣️
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] mx-auto mb-6">
+              <Compass size={26} strokeWidth={1.8} />
             </div>
 
-            <p className="text-sm text-[var(--text-dim)] tracking-wide mb-1">
+            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
               You've been invited to join
             </p>
-            <h1 className="cinzel text-3xl font-bold text-[var(--accent)] mb-2">
+            <h1 className="cinzel text-2xl sm:text-3xl font-bold text-[var(--accent)] mb-2 break-words">
               {trip.name}
             </h1>
-            <p className="text-sm text-[var(--text-dim)] mb-8">
+            <p className="text-sm text-gray-500 mb-8">
               Organized by{" "}
-              <span className="text-[var(--text)] font-semibold">{trip.admin_name}</span>
+              <span className="text-gray-900 font-semibold">{trip.admin_name}</span>
             </p>
 
             <button
               onClick={handleJoin}
               disabled={joining}
-              className="btn btn-primary w-full py-3 text-base disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[var(--accent)]
+                text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed
+                transition-opacity border-none cursor-pointer"
             >
-              {joining ? "Joining..." : "Join Trip 🚀"}
+              {joining ? "Joining..." : (
+                <>
+                  Join Trip <ArrowRight size={15} strokeWidth={2.2} />
+                </>
+              )}
             </button>
 
-            <p className="text-xs text-[var(--text-dim)] mt-4">
+            <p className="text-xs text-gray-400 mt-4">
               You'll be taken to the trip planner after joining.
             </p>
           </>
