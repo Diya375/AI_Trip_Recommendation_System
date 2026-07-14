@@ -156,25 +156,25 @@ export default function Planner() {
             </p>
           </div>
 
-          {role === "admin" && (
-            <button
-              onClick={() =>
-                navigate(`/assistant/${id}`, {
-                  state: {
-                    tripId: parseInt(id),
-                    tripName: trip?.name,
-                    members: members,
-                    preferences: allPreferences,
-                  },
-                })
-              }
-              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--accent)]
-                text-white text-sm font-semibold hover:opacity-90 transition-opacity border-none cursor-pointer shrink-0"
-            >
-              🌐 Send to AI Assistant
-            </button>
-          )}
-        </div>
+        {role === "admin" && (
+          <button
+            onClick={() =>
+              navigate(`/assistant/${id}`, {
+                state: {
+                  tripId: parseInt(id),
+                  tripName: trip?.name,
+                  members: members,
+                  preferences: allPreferences,
+                },
+              })
+            }
+            className="btn btn-primary"
+            style={{ padding: "0.6rem 1.1rem", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.4rem" }}
+          >
+            🌐 Send to AI Assistant
+          </button>
+        )}
+      </div>
 
         {role === "admin" && (
           <>
