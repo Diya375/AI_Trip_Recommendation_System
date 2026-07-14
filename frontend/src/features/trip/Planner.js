@@ -1,3 +1,4 @@
+/* Linked Explore Places Destination Section */ 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -22,7 +23,7 @@ export default function Planner() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-
+  const [linkedPlaces, setLinkedPlaces] = useState([]); // This state stores the places
   const [budget, setBudget] = useState("");
   const [tripTypes, setTripTypes] = useState([]);
   const [food, setFood] = useState("No preference");
@@ -38,14 +39,17 @@ export default function Planner() {
 
     if (!id) { navigate("/planner"); return; }
 
+    // Fetch Trip Info, Member Preferences, AND Linked Places simultaneously
     Promise.all([
       API.get(`/trips/${id}`),
-      API.get(`/trips/${id}/preferences`)
+      API.get(`/trips/${id}/preferences`),
+      API.get(`/trips/${id}/places`) // Added request to fetch appended places
     ])
-      .then(([tripRes, prefRes]) => {
+      .then(([tripRes, prefRes, placesRes]) => {
         setTrip(tripRes.data.trip);
         setMembers(tripRes.data.members);
         setRole(prefRes.data.role);
+        setLinkedPlaces(placesRes.data.places || placesRes.data || []); // Set places data array
 
         if (prefRes.data.role === "admin") {
           setAllPreferences(prefRes.data.preferences);
@@ -175,7 +179,7 @@ export default function Planner() {
           {/* Waiting List Status */}
           {membersWithoutPrefs.length > 0 && (
             <div className="card" style={{ marginBottom: "2rem", background: "var(--bg)", border: "1px solid var(--border)" }}>
-              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "0.75rem", fontWeight: "700" }}>&hisat; Waiting for preferences from:</p>
+              <p style={{ color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "0.75rem", fontWeight: "700" }}>&middot; Waiting for preferences from:</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                 {membersWithoutPrefs.map((m) => (
                   <span key={m.id} style={{ fontSize: "0.8rem", padding: "0.3rem 0.75rem", borderRadius: "20px", background: "var(--border)", color: "var(--text-dim)", fontWeight: "600" }}>{m.name}</span>
@@ -195,7 +199,7 @@ export default function Planner() {
               {allPreferences.map((pref) => (
                 <div key={pref.user_id} className="card fade-up">
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.25rem" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.9rem", color: "#fff", fontWeight: "700", flexShrink: 0 }}>
+                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyindex: "center", fontSize: "0.9rem", color: "#fff", fontWeight: "700", flexShrink: 0 }}>
                       {pref.name?.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -217,6 +221,88 @@ export default function Planner() {
         </>
       )}
 
+     {/* Linked Explore Places Destination Section */}
+<h3 className="cinzel" style={{ fontSize: "1.2rem", color: "var(--text)", marginBottom: "1rem", fontWeight: "700" }}>
+  📍 Curated Destinations Bucket List
+</h3>
+
+{(() => {
+  // De-duplicate places by ID before rendering
+  const uniquePlaces = linkedPlaces.filter(
+    (place, index, self) => self.findIndex((p) => p.id === place.id) === index
+  );
+
+  // Handle removing a place from the frontend state and backend
+  const handleRemovePlace = async (placeId) => {
+    if (!window.confirm("Are you sure you want to remove this destination?")) return;
+    
+    try {
+      // Sends a DELETE request to your backend endpoint
+      await API.delete(`/trips/${id}/places/${placeId}`);
+      
+      // Update the frontend state immediately after successful deletion
+      setLinkedPlaces((prev) => prev.filter((p) => p.id !== placeId));
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to remove destination");
+    }
+  };
+
+  return uniquePlaces.length === 0 ? (
+    <div className="card" style={{ padding: "1.5rem", color: "var(--text-dim)", fontSize: "0.85rem", marginBottom: "2rem", textAlign: "center" }}>
+      No explore items appended to this trip itinerary group yet.
+    </div>
+  ) : (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem", marginBottom: "2.5rem" }}>
+      {uniquePlaces.map((p) => (
+        <div 
+          key={p.id} 
+          className="card" 
+          style={{ 
+            padding: "0.75rem", 
+            display: "flex", 
+            gap: "0.75rem", 
+            alignItems: "center", 
+            position: "relative" // Allows positioning the delete button
+          }}
+        >
+          {p.image_url && (
+            <img src={p.image_url} alt={p.name} style={{ width: "50px", height: "50px", borderRadius: "6px", objectFit: "cover" }} />
+          )}
+          <div style={{ minWidth: 0, flex: 1, paddingRight: "1.5rem" }}>
+            <p style={{ margin: 0, fontWeight: "700", fontSize: "0.85rem", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</p>
+            <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-dim)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.location || p.address}</p>
+          </div>
+          
+          {/* Delete Button */}
+          <button
+            onClick={() => handleRemovePlace(p.id)}
+            style={{
+              position: "absolute",
+              top: "0.5rem",
+              right: "0.5rem",
+              background: "none",
+              border: "none",
+              color: "var(--text-dim)",
+              cursor: "pointer",
+              fontSize: "1rem",
+              padding: "2px 5px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => e.target.style.color = "red"}
+            onMouseLeave={(e) => e.target.style.color = "var(--text-dim)"}
+            title="Remove place"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+})()}
       {/* ── 🔽 THE FOLDABLE/ACCORDION PREFERENCE MODULE VIEW ── */}
       <div className="card" style={{ marginBottom: "2.5rem", border: "1px solid var(--border)", padding: "1.25rem" }}>
         <div
@@ -287,7 +373,7 @@ function PreferenceForm({ budget, setBudget, tripTypes, toggleTripType, food, se
 
       <div>
         <label style={{ fontSize: "0.8rem", color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: "0.75rem", fontWeight: "700" }}>
-          🏕️ Trip Type (select all that apply)
+          CC Trip Type (select all that apply)
         </label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
           {TRIP_TYPES.map((type) => (

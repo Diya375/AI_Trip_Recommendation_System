@@ -573,8 +573,11 @@ export default function Explore() {
                           );
                         })
                       )}
-                      <button
-                        onClick={() => setShowTripPicker(null)}
+                   <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowTripPicker(null);
+                        }}
                         className="w-full text-xs text-red-500 py-2 hover:bg-gray-50 transition-colors cursor-pointer bg-transparent border-none font-medium"
                       >
                         Cancel
@@ -582,7 +585,10 @@ export default function Explore() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => setShowTripPicker(place.name)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowTripPicker(place.name);
+                      }}
                       className="w-full bg-[var(--accent)] hover:bg-[var(--accent-2)] text-white py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 border-none cursor-pointer"
                     >
                       <Plus size={16} />
