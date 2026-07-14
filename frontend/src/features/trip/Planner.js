@@ -141,6 +141,7 @@ export default function Planner() {
                   tripName: trip?.name,
                   members: members,
                   preferences: allPreferences,
+                  linkedPlaces: linkedPlaces,
                 },
               })
             }
