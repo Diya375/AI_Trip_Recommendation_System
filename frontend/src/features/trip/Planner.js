@@ -1,6 +1,3 @@
-Planner.js
-
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
