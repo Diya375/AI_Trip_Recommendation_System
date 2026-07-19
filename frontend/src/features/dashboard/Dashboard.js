@@ -20,9 +20,9 @@ function TripImage({ trip, className }) {
   if (!src) {
     return (
       <div
-        className={`${className} bg-gray-100 flex items-center justify-center`}
+        className={`${className} bg-[var(--bg-subtle)] flex items-center justify-center border border-[var(--border)]/40`}
       >
-        <Map size={22} className="text-gray-300" strokeWidth={1.4} />
+        <Map size={22} className="text-[var(--text-dim)]/30" strokeWidth={1.4} />
       </div>
     );
   }
@@ -40,7 +40,7 @@ function RingStat({ value, max, label, count, color }) {
   const r = 26;
   const c = 2 * Math.PI * r;
   return (
-    <div className="card p-5 flex items-center gap-4">
+    <div className="card p-5 flex items-center gap-4 text-left border-[var(--border)] bg-[var(--bg-card)]">
       <svg
         width="64"
         height="64"
@@ -81,7 +81,7 @@ function RingStat({ value, max, label, count, color }) {
         </text>
       </svg>
       <div>
-        <p className="text-xs text-[var(--text-dim)] uppercase tracking-wider">
+        <p className="text-xs text-[var(--text-dim)] uppercase tracking-wider font-semibold">
           {label}
         </p>
       </div>
@@ -90,12 +90,18 @@ function RingStat({ value, max, label, count, color }) {
 }
 
 // Compact calendar with real month navigation and a selectable date,
-// mirrors the Timeline calendar module in the reference but is actually interactive.
-function MiniCalendar({ onSelectDate }) {
+// displays scheduled trip dates visually across the calendar days
+function MiniCalendar({ trips, tripDates, onSaveDates }) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [selected, setSelected] = useState(today);
+
+  // Scheduler Form States
+  const [activeTripId, setActiveTripId] = useState("");
+  const [startInput, setStartInput] = useState("");
+  const [endInput, setEndInput] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const monthName = new Date(viewYear, viewMonth, 1).toLocaleString("default", {
     month: "long",
@@ -124,93 +130,176 @@ function MiniCalendar({ onSelectDate }) {
     setViewYear(y);
   };
 
-  const goToToday = () => {
-    setViewYear(today.getFullYear());
-    setViewMonth(today.getMonth());
-    setSelected(today);
-    onSelectDate?.(today);
-  };
-
   const handleSelect = (day) => {
     if (!day) return;
     const picked = new Date(viewYear, viewMonth, day);
     setSelected(picked);
-    onSelectDate?.(picked);
   };
 
-  const isSameDay = (a, day) =>
-    day != null &&
-    a.getFullYear() === viewYear &&
-    a.getMonth() === viewMonth &&
-    a.getDate() === day;
+  const checkTripActiveOnDay = (day) => {
+    if (!day) return null;
+    const cellDate = new Date(viewYear, viewMonth, day);
 
-  const isToday = (day) => isSameDay(today, day);
-  const isSelected = (day) => isSameDay(selected, day);
+    // Find if any trip is scheduled on this date
+    for (const trip of trips) {
+      const dates = tripDates[trip.id];
+      if (dates && dates.startDate && dates.endDate) {
+        const start = new Date(dates.startDate + "T00:00:00");
+        const end = new Date(dates.endDate + "T23:59:59");
+        if (cellDate >= start && cellDate <= end) {
+          return { trip, dates };
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleSave = () => {
+    if (!activeTripId || !startInput || !endInput) return;
+    onSaveDates?.(activeTripId, startInput, endInput);
+    setIsEditing(false);
+    setActiveTripId("");
+    setStartInput("");
+    setEndInput("");
+  };
 
   return (
-    <div className="card p-5">
+    <div className="card p-5 text-left border-[var(--border)] bg-[var(--bg-card)]">
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => goToMonth(-1)}
           aria-label="Previous month"
-          className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] transition-colors cursor-pointer"
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--bg-subtle)] border-none transition-colors cursor-pointer bg-transparent"
         >
           ‹
         </button>
-        <button
-          onClick={goToToday}
-          className="cinzel text-sm text-[var(--text)] hover:text-[var(--accent)] transition-colors cursor-pointer"
-          title="Jump to today"
-        >
+        <span className="cinzel text-xs text-[var(--text)] font-bold">
           {monthName} {viewYear}
-        </button>
+        </span>
         <button
           onClick={() => goToMonth(1)}
           aria-label="Next month"
-          className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] transition-colors cursor-pointer"
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--bg-subtle)] border-none transition-colors cursor-pointer bg-transparent"
         >
           ›
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-y-2 text-center">
+      <div className="grid grid-cols-7 gap-y-2 text-center mb-2.5">
         {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
           <span
             key={d}
-            className="text-[10px] text-[var(--text-dim)] uppercase"
+            className="text-[10px] text-[var(--text-dim)] uppercase font-bold"
           >
             {d}
           </span>
         ))}
-        {cells.map((day, i) => (
-          <button
-            key={i}
-            onClick={() => handleSelect(day)}
-            disabled={!day}
-            className={`text-xs w-6 h-6 mx-auto flex items-center justify-center rounded-full transition-colors
-              ${!day ? "invisible" : "cursor-pointer"}
-              ${
-                isSelected(day)
-                  ? "bg-[var(--accent)] text-white font-semibold"
-                  : isToday(day)
-                    ? "border border-[var(--accent)] text-[var(--accent)] font-semibold"
-                    : "text-[var(--text)] hover:bg-[var(--border)]"
-              }`}
-          >
-            {day || ""}
-          </button>
-        ))}
+        {cells.map((day, i) => {
+          const tripInfo = checkTripActiveOnDay(day);
+          const isToday = day != null && today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear;
+          return (
+            <button
+              key={i}
+              onClick={() => handleSelect(day)}
+              disabled={!day}
+              title={tripInfo ? `${tripInfo.trip.name} (${tripInfo.dates.startDate} to ${tripInfo.dates.endDate})` : undefined}
+              className={`text-xs w-6 h-6 mx-auto flex items-center justify-center rounded-full transition-all relative border-none bg-transparent
+                ${!day ? "invisible" : "cursor-pointer font-semibold"}
+                ${tripInfo
+                  ? "bg-[var(--accent)]/15 text-[var(--accent)] border border-dashed border-[var(--accent)]/30 font-bold"
+                  : isToday
+                    ? "border-2 border-[var(--accent)] text-[var(--accent)] font-bold"
+                    : "text-[var(--text)] hover:bg-[var(--bg-subtle)]"
+                }`}
+            >
+              {day || ""}
+              {tripInfo && (
+                <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-[var(--accent)]" />
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-[var(--border)] flex items-center justify-between">
-        <p className="text-[11px] text-[var(--text-dim)]">
-          {selected.toLocaleDateString(undefined, {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          })}
-        </p>
-        <Compass size={14} className="text-[var(--text-dim)]" />
+      {/* Trip Scheduler Form */}
+      <div className="mt-4 pt-3 border-t border-[var(--border)]">
+        {!isEditing ? (
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[var(--text)]">Schedule & Timelines</span>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-xs text-[var(--accent)] hover:underline font-bold bg-transparent border-none cursor-pointer"
+            >
+              + Schedule Trip
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <p className="text-[10px] text-[var(--text-dim)] uppercase font-bold">Schedule Dates</p>
+            <select
+              value={activeTripId}
+              onChange={(e) => setActiveTripId(e.target.value)}
+              className="w-full px-2 py-1.5 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text)] outline-none cursor-pointer font-semibold"
+            >
+              <option value="">Choose trip...</option>
+              {trips.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[9px] text-[var(--text-dim)] uppercase font-bold block mb-1">Start Date</label>
+                <input
+                  type="date"
+                  value={startInput}
+                  onChange={(e) => setStartInput(e.target.value)}
+                  className="w-full px-2 py-1 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text)] outline-none font-semibold"
+                />
+              </div>
+              <div>
+                <label className="text-[9px] text-[var(--text-dim)] uppercase font-bold block mb-1">End Date</label>
+                <input
+                  type="date"
+                  value={endInput}
+                  onChange={(e) => setEndInput(e.target.value)}
+                  className="w-full px-2 py-1 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text)] outline-none font-semibold"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end mt-1">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-2.5 py-1 text-[10px] rounded-lg border border-[var(--border)] text-[var(--text-dim)] bg-transparent cursor-pointer hover:bg-[var(--bg-subtle)] font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={!activeTripId || !startInput || !endInput}
+                className="px-2.5 py-1 text-[10px] rounded-lg bg-[var(--accent)] text-white border-none cursor-pointer font-bold hover:opacity-90"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Display scheduled list */}
+        {Object.keys(tripDates).length > 0 && !isEditing && (
+          <div className="mt-3 flex flex-col gap-1.5 max-h-24 overflow-y-auto pr-0.5">
+            {trips
+              .filter(t => tripDates[t.id])
+              .map(t => {
+                const dates = tripDates[t.id];
+                return (
+                  <div key={t.id} className="flex items-center justify-between text-[10px] bg-[var(--bg-subtle)] p-2 rounded-lg border border-[var(--border)]/40">
+                    <span className="font-bold text-[var(--text)] truncate max-w-[125px]">{t.name}</span>
+                    <span className="text-[var(--text-dim)] font-semibold">{new Date(dates.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} ➔ {new Date(dates.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -223,6 +312,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tripDates, setTripDates] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -243,12 +333,36 @@ export default function Dashboard() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
+  // Load scheduler trip dates map from localStorage
+  useEffect(() => {
+    if (trips.length > 0) {
+      const datesMap = {};
+      trips.forEach((t) => {
+        const stored = localStorage.getItem(`trip_dates_${t.id}`);
+        if (stored) datesMap[t.id] = JSON.parse(stored);
+      });
+      setTripDates(datesMap);
+    }
+  }, [trips]);
+
+  const handleSaveDates = (tripId, startDate, endDate) => {
+    const updatedRange = { startDate, endDate };
+    localStorage.setItem(`trip_dates_${tripId}`, JSON.stringify(updatedRange));
+    setTripDates((prev) => ({ ...prev, [tripId]: updatedRange }));
+  };
+
   const handleDelete = async (e, tripId, tripName) => {
     e.stopPropagation();
     if (!window.confirm(`Delete "${tripName}"? This can't be undone.`)) return;
     try {
       await API.delete(`/trips/${tripId}`);
       setTrips((prev) => prev.filter((t) => t.id !== tripId));
+      localStorage.removeItem(`trip_dates_${tripId}`);
+      setTripDates((prev) => {
+        const updated = { ...prev };
+        delete updated[tripId];
+        return updated;
+      });
     } catch (err) {
       alert(err.response?.data?.error || "Failed to delete trip");
     }
@@ -265,8 +379,7 @@ export default function Dashboard() {
   const [roleFilter, setRoleFilter] = useState("all"); // all | admin | member
   const [viewMode, setViewMode] = useState("grid"); // grid | list
 
-  // Newest first — prefer createdAt if the API provides it, otherwise fall back
-  // to id (assumes numeric/sequential or string-sortable ids from the backend).
+  // Newest first
   const sortedTrips = [...trips].sort((a, b) => {
     if (a.createdAt && b.createdAt)
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -290,7 +403,7 @@ export default function Dashboard() {
   if (loading)
     return (
       <DashboardLayout>
-        <p className="text-[var(--text-dim)]">Loading...</p>
+        <p className="text-[var(--text-dim)] animate-pulse">Loading dashboard...</p>
       </DashboardLayout>
     );
 
@@ -298,61 +411,78 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="fade-up max-w-5xl mx-auto">
+      <div className="fade-up max-w-5xl mx-auto text-left">
         {/* ── HERO GREETING ── */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 border-b border-[var(--border)] pb-4">
           <div>
-            <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-1">
+            <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-1.5 font-bold">
               {greeting}
             </p>
-            
-               <h1 className="section-title">Dashboard</h1>
-              
+
+            <h1 className="cinzel text-3.5xl font-bold text-[var(--text)]">Dashboard</h1>
+
             <p className="text-sm text-[var(--text-dim)]">
-              Your journey at a glance
+              Welcome back, {user.name} · Travel overview
             </p>
           </div>
-          <div className="w-14 h-14 rounded-full bg-[var(--accent)] flex items-center justify-center cinzel text-xl font-bold text-white shrink-0">
+          <div className="w-12 h-12 rounded-full bg-[var(--accent)] flex items-center justify-center cinzel text-lg font-bold text-white shrink-0">
             {initials}
           </div>
         </div>
 
         {/* ── FEATURED TRIP + CALENDAR ── */}
         <div
-          className="grid gap-4 mb-8"
-          style={{ gridTemplateColumns: "2fr 1fr" }}
+          className="grid gap-6 mb-8 grid-cols-1 lg:grid-cols-[2.1fr_1.1fr]"
         >
-          {featuredTrip && (
+          {featuredTrip ? (
             <div
               onClick={() => navigate(`/planner/${featuredTrip.id}`)}
-              className="relative rounded-2xl border border-gray-200 cursor-pointer overflow-hidden
-                p-8 flex items-center justify-between gap-6 bg-white
-                hover:border-[var(--accent)]/50 hover:shadow-md transition-all duration-200"
+              className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] cursor-pointer overflow-hidden
+                p-8 flex flex-col justify-between md:flex-row md:items-center gap-6
+                hover:border-[var(--accent)]/55 hover:shadow-md transition-all duration-200"
             >
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-2 font-bold">
                   {featuredTrip.role === "admin"
                     ? "Currently organising"
                     : "Currently joined"}
                 </p>
-                <h2 className="cinzel text-4xl text-gray-900 mb-4">
+                <h2 className="cinzel text-3xl font-bold text-[var(--text)] mb-4 truncate" title={featuredTrip.name}>
                   {featuredTrip.name}
                 </h2>
-                <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-medium">
+
+                {tripDates[featuredTrip.id] && (
+                  <p className="text-xs text-[var(--text-dim)] mb-4 font-semibold">
+                    📅 Schedule: {tripDates[featuredTrip.id].startDate} to {tripDates[featuredTrip.id].endDate}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-2 text-sm text-[var(--accent)] font-bold">
                   Open planner <ArrowRight size={15} />
                 </div>
               </div>
-              <div className="w-36 h-28 rounded-xl overflow-hidden shrink-0">
+              <div className="w-40 h-28 rounded-xl overflow-hidden shrink-0 border border-[var(--border)]/40 shadow-sm">
                 <TripImage trip={featuredTrip} className="w-full h-full" />
               </div>
             </div>
+          ) : (
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-8 flex flex-col justify-center items-center text-center gap-3">
+              <Compass size={32} className="text-[var(--text-dim)]/40 animate-spin-slow" />
+              <p className="text-[var(--text)] font-semibold text-sm">No recent active trip</p>
+              <button
+                onClick={() => navigate("/create-trip")}
+                className="btn btn-primary px-4 py-2 text-xs"
+              >
+                Create a Trip
+              </button>
+            </div>
           )}
 
-          <MiniCalendar />
+          <MiniCalendar trips={trips} tripDates={tripDates} onSaveDates={handleSaveDates} />
         </div>
 
         {/* ── STATS ROW (donut rings) ── */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <RingStat
             value={trips.length}
             max={Math.max(trips.length, 1)}
@@ -372,31 +502,31 @@ export default function Dashboard() {
             max={Math.max(trips.length, 1)}
             count={memberTrips.length}
             label="Joined"
-            color="#60a5fa"
+            color="#3b82f6"
           />
         </div>
 
         {/* ── TRIPS SECTION ── */}
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-          <h2 className="cinzel text-xl text-[var(--text)]">
-            {featuredTrip ? "All Trips" : "Your Trips"}
+          <h2 className="cinzel text-xl text-[var(--text)] font-bold">
+            {featuredTrip ? "All Other Portfolios" : "Your Trips"}
           </h2>
-           <button
+          <button
             onClick={() => navigate("/create-trip")}
-            className="btn btn-primary px-5 py-2.5 text-sm"
+            className="btn btn-primary px-5 py-2.5 text-xs font-bold"
           >
             + New Trip
           </button>
         </div>
 
         {trips.length === 0 ? (
-          <div className="card text-center py-16">
+          <div className="card text-center py-16 border-[var(--border)] bg-[var(--bg-card)]">
             <Map
               size={40}
-              className="mx-auto mb-4 text-[var(--text-dim)]"
+              className="mx-auto mb-4 text-[var(--text-dim)]/40"
               strokeWidth={1.3}
             />
-            <p className="cinzel text-xl text-[var(--text)] mb-2">
+            <p className="cinzel text-xl text-[var(--text)] mb-2 font-bold">
               No trips yet
             </p>
             <p className="text-sm text-[var(--text-dim)] mb-6">
@@ -404,7 +534,7 @@ export default function Dashboard() {
             </p>
             <button
               onClick={() => navigate("/create-trip")}
-              className="btn btn-primary px-6 py-3"
+              className="btn btn-primary px-6 py-3 font-bold"
             >
               Create Your First Trip
             </button>
@@ -423,8 +553,8 @@ export default function Dashboard() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search trips..."
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-full bg-[var(--bg-card)] border border-[var(--border)]
-                    text-[var(--text)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-full bg-[var(--bg-card)] border border-[var(--border)]
+                    text-[var(--text)] placeholder:text-[var(--text-dim)]/50 focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
                 />
               </div>
 
@@ -438,11 +568,10 @@ export default function Dashboard() {
                     <button
                       key={tab.key}
                       onClick={() => setRoleFilter(tab.key)}
-                      className={`px-3 py-1.5 text-xs rounded-full transition-colors cursor-pointer
-                        ${
-                          roleFilter === tab.key
-                            ? "bg-[var(--accent)] text-white font-medium"
-                            : "text-[var(--text-dim)] hover:text-[var(--text)]"
+                      className={`px-3.5 py-1.5 text-xs rounded-full border-none transition-colors cursor-pointer font-semibold
+                        ${roleFilter === tab.key
+                          ? "bg-[var(--accent)] text-white font-bold"
+                          : "text-[var(--text-dim)] hover:text-[var(--text)] bg-transparent"
                         }`}
                     >
                       {tab.label}
@@ -454,39 +583,39 @@ export default function Dashboard() {
                   <button
                     onClick={() => setViewMode("grid")}
                     aria-label="Grid view"
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer
+                    className={`w-7 h-7 border-none rounded-full flex items-center justify-center transition-colors cursor-pointer bg-transparent
                       ${viewMode === "grid" ? "bg-[var(--accent)] text-white" : "text-[var(--text-dim)] hover:text-[var(--text)]"}`}
                   >
-                    <LayoutGrid size={14} />
+                    <LayoutGrid size={13} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     aria-label="List view"
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer
+                    className={`w-7 h-7 border-none rounded-full flex items-center justify-center transition-colors cursor-pointer bg-transparent
                       ${viewMode === "list" ? "bg-[var(--accent)] text-white" : "text-[var(--text-dim)] hover:text-[var(--text)]"}`}
                   >
-                    <Rows3 size={14} />
+                    <Rows3 size={13} />
                   </button>
                 </div>
               </div>
             </div>
 
             {visibleTrips.length === 0 ? (
-              <div className="rounded-2xl border border-gray-200 bg-white text-center py-12">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] text-center py-12">
                 <Search
                   size={28}
-                  className="mx-auto mb-3 text-gray-300"
+                  className="mx-auto mb-3 text-[var(--text-dim)]/40"
                   strokeWidth={1.3}
                 />
-                <p className="text-sm text-gray-500">
-                  No trips match your search.
+                <p className="text-sm text-[var(--text-dim)] font-semibold">
+                  No other trips match your search.
                 </p>
               </div>
             ) : viewMode === "grid" ? (
               <div
-                className="grid gap-4"
+                className="grid gap-5"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
                 }}
               >
                 {visibleTrips.map((trip, i) => {
@@ -494,59 +623,46 @@ export default function Dashboard() {
                     <div
                       key={trip.id}
                       onClick={() => navigate(`/planner/${trip.id}`)}
-                      className="relative rounded-2xl border border-gray-200 cursor-pointer group
-                        bg-white overflow-hidden transition-all duration-200
-                        hover:border-[var(--accent)]/50 hover:shadow-md"
+                      className="card card-hover cursor-pointer group flex flex-col gap-4 text-left relative overflow-hidden"
+                      style={{ padding: "0" }}
                     >
-                      <div className="h-28 w-full overflow-hidden">
+                      <div className="h-28 w-full overflow-hidden relative bg-gradient-to-br from-[#426856]/40 to-[#2c3531]/40 shrink-0">
                         <TripImage trip={trip} className="w-full h-full" />
                       </div>
 
-                      <div className="flex items-center gap-3 px-5 pt-4">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="cinzel text-base font-semibold text-gray-900 leading-tight truncate">
-                            {trip.name}
-                          </h3>
-                          <p className="text-xs text-gray-500">
-                            {trip.role === "admin"
-                              ? "You organised this"
-                              : "You joined this trip"}
-                          </p>
-                        </div>
+                      <div className="px-5 pt-3 flex-1 flex flex-col gap-1.5">
+                        <h3 className="cinzel text-base font-bold text-[var(--text)] truncate group-hover:text-[var(--accent)] transition-colors">
+                          {trip.name}
+                        </h3>
 
-                        {trip.role === "admin" ? (
-                          <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[var(--accent)] text-white font-medium shrink-0">
-                            <Crown size={10} /> Admin
-                          </span>
-                        ) : (
-                          <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 shrink-0">
-                            Member
-                          </span>
+                        {tripDates[trip.id] && (
+                          <p className="text-[10px] text-[var(--text-dim)] font-semibold">
+                            📅 {tripDates[trip.id].startDate} to {tripDates[trip.id].endDate}
+                          </p>
                         )}
+
+                        <p className="text-[10px] text-[var(--text-dim)] uppercase font-bold mt-1">
+                          {trip.role === "admin"
+                            ? "Organizer"
+                            : "Companion"}
+                        </p>
                       </div>
 
-                      <div className="flex items-center justify-between px-5 py-3 mt-2">
-                        <span className="text-xs text-gray-400">
-                          Open planner
+                      <div className="flex items-center justify-between px-5 py-3 border-t border-[var(--border)]/40">
+                        <span className="text-xs text-[var(--accent)] font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                          Open planner <ArrowRight size={13} />
                         </span>
-                        <div className="flex items-center gap-1">
-                          {trip.role === "admin" && (
-                            <button
-                              onClick={(e) =>
-                                handleDelete(e, trip.id, trip.name)
-                              }
-                              className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
-                            >
-                              <Trash2 size={12} />
-                            </button>
-                          )}
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center group-hover:bg-[var(--accent)] transition-all">
-                            <ArrowRight
-                              size={13}
-                              className="text-gray-400 group-hover:text-white transition-colors"
-                            />
-                          </div>
-                        </div>
+
+                        {trip.role === "admin" && (
+                          <button
+                            onClick={(e) =>
+                              handleDelete(e, trip.id, trip.name)
+                            }
+                            className="w-7 h-7 border-none rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-red-500 hover:bg-red-50/10 transition-colors cursor-pointer bg-transparent"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -554,52 +670,51 @@ export default function Dashboard() {
 
                 <div
                   onClick={() => navigate("/create-trip")}
-                  className="rounded-2xl border-2 border-dashed border-gray-200 cursor-pointer
+                  className="rounded-2xl border-2 border-dashed border-[var(--border)] bg-transparent cursor-pointer
                     flex items-center justify-center gap-3 p-5
-                    hover:border-[var(--accent)]/50 transition-all duration-200 group min-h-[92px]"
+                    hover:border-[var(--accent)]/55 transition-all duration-200 group min-h-[140px]"
                 >
-                  <div className="w-9 h-9 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center group-hover:border-[var(--accent)]/50 transition-colors">
+                  <div className="w-8 h-8 rounded-full border-2 border-dashed border-[var(--border)] flex items-center justify-center group-hover:border-[var(--accent)]/55 transition-colors">
                     <Plus
-                      size={16}
-                      className="text-gray-400 group-hover:text-[var(--accent)] transition-colors"
+                      size={15}
+                      className="text-[var(--text-dim)] group-hover:text-[var(--accent)] transition-colors"
                     />
                   </div>
-                  <p className="text-sm text-gray-400 group-hover:text-gray-600 transition-colors">
-                    New Trip
+                  <p className="text-xs text-[var(--text-dim)] font-semibold group-hover:text-[var(--text)] transition-colors">
+                    New Portfolio
                   </p>
                 </div>
               </div>
             ) : (
-              // List view — compact rows, better for scanning many trips
-              <div className="rounded-2xl border border-gray-200 bg-white divide-y divide-gray-100 overflow-hidden">
+              // List view — compact rows
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] divide-y divide-[var(--border)]/65 overflow-hidden">
                 {visibleTrips.map((trip, i) => {
                   return (
                     <div
                       key={trip.id}
                       onClick={() => navigate(`/planner/${trip.id}`)}
-                      className="flex items-center gap-4 px-5 py-4 cursor-pointer group hover:bg-gray-50 transition-colors"
+                      className="flex items-center gap-4 px-5 py-4 cursor-pointer group hover:bg-[var(--bg-subtle)]/50 transition-colors"
                     >
-                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[var(--border)]/40">
                         <TripImage trip={trip} className="w-full h-full" />
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="cinzel text-sm font-semibold text-gray-900 truncate">
+                        <h3 className="cinzel text-sm font-bold text-[var(--text)] truncate">
                           {trip.name}
                         </h3>
-                        <p className="text-xs text-gray-500">
-                          {trip.role === "admin"
-                            ? "You organised this"
-                            : "You joined this trip"}
+                        <p className="text-xs text-[var(--text-dim)] font-medium">
+                          {trip.role === "admin" ? "Organized by you" : "Joined by you"}
+                          {tripDates[trip.id] && ` · 📅 ${tripDates[trip.id].startDate} to ${tripDates[trip.id].endDate}`}
                         </p>
                       </div>
 
                       {trip.role === "admin" ? (
-                        <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-[var(--accent)] text-white font-medium shrink-0">
+                        <span className="flex items-center gap-1 text-[10px] px-2.5 py-1 rounded-full bg-[var(--accent)] text-white font-bold shrink-0">
                           <Crown size={10} /> Admin
                         </span>
                       ) : (
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 shrink-0">
+                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-[var(--bg-subtle)] border border-[var(--border)] text-[var(--text-dim)] font-bold shrink-0">
                           Member
                         </span>
                       )}
@@ -607,7 +722,7 @@ export default function Dashboard() {
                       {trip.role === "admin" && (
                         <button
                           onClick={(e) => handleDelete(e, trip.id, trip.name)}
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer shrink-0"
+                          className="w-8 h-8 border-none rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-red-500 hover:bg-red-50/10 transition-colors cursor-pointer shrink-0 bg-transparent"
                         >
                           <Trash2 size={13} />
                         </button>
@@ -615,7 +730,7 @@ export default function Dashboard() {
 
                       <ArrowRight
                         size={15}
-                        className="text-gray-300 group-hover:text-[var(--accent)] group-hover:translate-x-0.5 transition-all shrink-0"
+                        className="text-[var(--text-dim)] group-hover:text-[var(--accent)] group-hover:translate-x-0.5 transition-all shrink-0"
                       />
                     </div>
                   );
