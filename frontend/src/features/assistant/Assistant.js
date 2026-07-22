@@ -93,7 +93,7 @@ export default function Assistant() {
     } catch { setMessages(p => [...p, { sender: "ai", text: "Failed to generate plan." }]); }
     finally { setGenerating(false); }
   };
-
+ 
   const clearHistory = async () => {
     if (!window.confirm("Clear this chat history?")) return;
     try {
