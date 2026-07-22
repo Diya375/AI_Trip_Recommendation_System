@@ -99,7 +99,7 @@ function Assistant() {
       setGenerating(false);
     }
   };
-
+ 
   const clearHistory = async () => {
     if (!window.confirm("Clear this chat history?")) return;
     try {
