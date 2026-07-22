@@ -14,12 +14,13 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  process.env.LOCAL_URL,
   process.env.NGROK_URL,
   process.env.PROD_URL,
 ].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin:(origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) callback(null, true);
     else callback(new Error("Not allowed by CORS"));
   },

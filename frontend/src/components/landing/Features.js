@@ -1,11 +1,11 @@
- import React from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const featureList = [
   {
     title: "Trip Planner",
     description: "Map out personalized itineraries, set up your daily pacing, and coordinate customized routes seamlessly across Nepal.",
-    path: "/Planner",
+    path: "/planner",
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -13,152 +13,90 @@ const featureList = [
         <line x1="8" y1="2" x2="8" y2="6" />
         <line x1="3" y1="10" x2="21" y2="10" />
       </svg>
-    )
+    ),
   },
   {
     title: "Expense Manager",
     description: "Manage your travel funds efficiently. Monitor budgets, categorize expenditures, and keep track of your financial footprint.",
-    path: "/Expenses",
+    path: "/expenses",
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="12" y1="1" x2="12" y2="23" />
         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </svg>
-    )
+    ),
   },
   {
     title: "Intelligent Assistant",
     description: "Get real-time answers, smart local guidance, and automated recommendations custom-tailored to your current location.",
-    path: "/Assistant",
+    path: "/assistant",
     icon: (
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
-    )
-  }
+    ),
+  },
 ];
 
 export default function Features() {
   const navigate = useNavigate();
+  const isLoggedIn = !!localStorage.getItem("token");
 
-  // 🔒 Replace true/false with your global authentication state logic
-  const isLoggedIn = true; 
-
-  const handleCardClick = (destinationPath) => {
-    if (isLoggedIn) {
-      navigate(destinationPath);
-    } else {
-      navigate("/login");
-    }
+  const handleCardClick = (path) => {
+    navigate(isLoggedIn ? path : "/login");
   };
 
   return (
-    <section style={{
-      width: "100%",
-      padding: "6rem 2rem",
-      backgroundColor: "#ffffff", 
-      color: "#2C3E35", // Changed from #ffffff so headers/text render correctly on light layout
-    }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        
-        {/* Section Header */}
-        <div style={{ textAlign: "center", marginBottom: "4.5rem" }}>
-          <p style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: "0.75rem",
-            letterSpacing: "0.25em",
-            color: "var(--accent)",
-            textTransform: "uppercase",
-            fontWeight: "600",
-            marginBottom: "1rem",
-            marginTop: "-2.5rem"
-          }}>
+    <section className="w-full py-24 px-8 bg-white">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Header */}
+        <div className="text-center mb-16">
+          <p className="cinzel text-xs tracking-[0.25em] uppercase font-semibold text-[var(--accent)] mb-3">
             Platform Capabilities
           </p>
-          <h2 className="cinzel" style={{
-            fontSize: "clamp(2rem, 5vw, 2.8rem)",
-            fontWeight: "700",
-            letterSpacing: "0.03em"
-          }}>
-            <span style={{ color: "var(--accent)" }}>Explore Your Dashboard Tools.</span>
+          <h2 className="cinzel text-3xl sm:text-4xl font-bold tracking-wide text-[var(--accent)]">
+            Explore Your Dashboard Tools.
           </h2>
-          <div style={{
-            width: "50px",
-            height: "1px",
-            backgroundColor: "var(--accent)",
-            margin: "1.5rem auto 0",
-            opacity: 0.3
-          }} />
+          <div className="w-12 h-px bg-[var(--accent)] opacity-30 mx-auto mt-5" />
         </div>
 
-        {/* Features Interactive Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "2.5rem"
-        }}>
-          {featureList.map((feature, index) => (
-            <div 
-              key={index}
+        {/* Cards */}
+        <div className="grid gap-8" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
+          {featureList.map((feature, i) => (
+            <div
+              key={i}
               onClick={() => handleCardClick(feature.path)}
+              className="group cursor-pointer rounded-2xl p-10 border border-white/10
+                transition-all duration-300 hover:-translate-y-1.5
+                hover:border-white/30 hover:shadow-2xl"
               style={{
-                // 🎨 Updated to use your brand's dark army green (matches var(--accent) text color)
                 background: "linear-gradient(145deg, #374F43 0%, #2B3E34 100%)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                borderRadius: "16px",
-                padding: "2.5rem 2rem",
-                backdropFilter: "blur(4px)",
-                transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease",
-                cursor: "pointer",
-                boxShadow: "0 10px 30px rgba(44, 62, 53, 0.15)"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-6px)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
-                e.currentTarget.style.boxShadow = "0 15px 35px rgba(44, 62, 53, 0.25)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                e.currentTarget.style.boxShadow = "0 10px 30px rgba(44, 62, 53, 0.15)";
+                boxShadow: "0 10px 30px rgba(44, 62, 53, 0.15)",
               }}
             >
-              {/* Icon Holder */}
-              <div style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "12px",
-                background: "rgba(255, 255, 255, 0.1)", 
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "1.75rem",
-                border: "1px solid rgba(255, 255, 255, 0.15)"
-              }}>
+              {/* Icon */}
+              <div className="w-13 h-13 rounded-xl bg-white/10 border border-white/15
+                flex items-center justify-center mb-7 w-[52px] h-[52px]">
                 {feature.icon}
               </div>
 
               {/* Title */}
-              <h3 className="cinzel" style={{
-                fontSize: "1.2rem",
-                fontWeight: "600",
-                marginBottom: "0.85rem",
-                letterSpacing: "0.03em",
-                color: "#ffffff" // Ensured white text on the dark background
-              }}>
+              <h3 className="cinzel text-xl font-semibold text-white tracking-wide mb-3">
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p style={{
-                fontSize: "0.95rem",
-                fontFamily: "'Playfair Display', 'Georgia', serif",
-                color: "rgba(255, 255, 255, 0.8)", // Clean readability contrast
-                lineHeight: "1.75",
-                fontWeight: "300"
-              }}>
+              <p className="text-white/80 leading-relaxed text-[0.95rem] font-light"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                 {feature.description}
               </p>
+
+              {/* Arrow */}
+              <div className="mt-6 flex items-center gap-1 text-white/40 text-xs group-hover:text-white/70 transition-colors">
+                <span>Explore</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
             </div>
           ))}
         </div>
