@@ -9,6 +9,7 @@ const preferencesRoutes = require("./routes/preferences");
 const placesRoutes = require("./routes/places");
 const expensesRoutes = require("./routes/expenses");
 const aiRoutes = require("./routes/ai");
+const tripPlanRoutes = require("./routes/tripPlan");
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/api/trips", tripsRoutes);
 app.use("/api/trips", preferencesRoutes);
 app.use("/api/trips", placesRoutes);
 app.use("/api/trips", expensesRoutes);
+app.use("/api/trips", tripPlanRoutes);
 
 app.use("/api/ai", aiRoutes);
 

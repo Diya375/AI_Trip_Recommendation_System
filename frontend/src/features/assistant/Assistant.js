@@ -91,6 +91,7 @@ export default function Assistant() {
   const [activePlace,    setActivePlace]    = useState(null);
   const [addingPlace,    setAddingPlace]    = useState(false);
   const [addedPlace,     setAddedPlace]     = useState(null);
+  const [showBanner,     setShowBanner]     = useState(!!(tripData?.preferences?.length > 0));
 
   useEffect(() => {
     API.get("/trips/my").then(r => setTrips(r.data)).catch(() => {});
@@ -135,6 +136,8 @@ export default function Assistant() {
     } finally { setLoading(false); }
   };
 
+  const [planShared,     setPlanShared]     = useState(false);
+
   const generatePlan = async () => {
     if (!tripData?.preferences?.length) return;
     setGenerating(true);
@@ -143,8 +146,18 @@ export default function Assistant() {
     await persist("user", userMsg);
     try {
       const res = await API.post("/ai/trip-plan", { tripName: tripData.tripName, members: tripData.members, preferences: tripData.preferences });
-      setMessages(p => [...p, { sender: "ai", text: res.data.plan }]);
-      await persist("ai", res.data.plan);
+      const planText = res.data.plan;
+      setMessages(p => [...p, { sender: "ai", text: planText }]);
+      await persist("ai", planText);
+
+      // Share with all trip members via trip_plans table
+      if (selectedId) {
+        try {
+          await API.post(`/trips/${selectedId}/plan`, { plan: planText });
+          setPlanShared(true);
+          setTimeout(() => setPlanShared(false), 4000);
+        } catch { /* non-fatal */ }
+      }
     } catch { setMessages(p => [...p, { sender: "ai", text: "Failed to generate plan." }]); }
     finally { setGenerating(false); }
   };
@@ -184,6 +197,17 @@ export default function Assistant() {
 
   return (
     <DashboardLayout>
+      {/* ── Shared Plan Toast ── */}
+      {planShared && (
+        <div
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-xl text-sm font-bold text-white"
+          style={{ background: "var(--accent)", backdropFilter: "blur(8px)", animation: "fadeInDown 0.3s ease" }}
+        >
+          <Check size={16} />
+          Plan shared! All trip members can now view it in the Planner.
+        </div>
+      )}
+
       {/* Split-Screen Layout: Chat Left | Map Right */}
       <div className="fade-up flex h-[calc(100vh-75px)] gap-0 overflow-hidden">
 
@@ -241,20 +265,29 @@ export default function Assistant() {
           </div>
 
           {/* Generate Plan Banner */}
-          {tripData?.preferences?.length > 0 && selectedId === tripData?.tripId && (
+          {showBanner && tripData?.preferences?.length > 0 && selectedId === tripData?.tripId && (
             <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 shrink-0">
-              <div>
-                <p className="text-sm font-bold text-[var(--text)]">{tripData.tripName}</p>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-[var(--text)] truncate">{tripData.tripName}</p>
                 <p className="text-xs text-[var(--text-dim)]">{tripData.preferences.length} of {tripData.members?.length} members have submitted preferences</p>
               </div>
-              <button
-                onClick={generatePlan}
-                disabled={generating}
-                className="btn btn-primary flex items-center gap-2 px-4 py-2 text-xs shrink-0"
-              >
-                <Sparkles size={13} />
-                {generating ? "Generating…" : "Generate Plan"}
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={generatePlan}
+                  disabled={generating}
+                  className="btn btn-primary flex items-center gap-2 px-4 py-2 text-xs"
+                >
+                  <Sparkles size={13} />
+                  {generating ? "Generating…" : "Generate Plan"}
+                </button>
+                <button
+                  onClick={() => setShowBanner(false)}
+                  className="w-6 h-6 flex items-center justify-center rounded-full text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--bg-subtle)] border-none bg-transparent cursor-pointer text-base leading-none transition-colors"
+                  title="Dismiss"
+                >
+                  ×
+                </button>
+              </div>
             </div>
           )}
 

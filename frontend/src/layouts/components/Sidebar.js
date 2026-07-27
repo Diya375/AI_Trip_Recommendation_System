@@ -12,7 +12,8 @@ import {
   Bot, 
   User, 
   LogOut, 
-  Maximize2 
+  Maximize2,
+  MapPin
 } from "lucide-react";
 
 const navItems = [
@@ -216,17 +217,31 @@ export default function Sidebar({ isCollapsed }) {
             transition: "opacity 0.2s, max-height 0.3s, margin 0.2s",
             overflow: "hidden"
           }}>
-            <p style={{
-              fontSize: "0.7rem",
-              color: "#99AAB0",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
               marginBottom: "0.6rem",
               paddingLeft: "0.25rem"
             }}>
-              📍 Your Location
-            </p>
+              <MapPin size={13} style={{ color: "var(--accent)", flexShrink: 0 }} strokeWidth={2.2} />
+              <span style={{
+                fontSize: "0.78rem",
+                fontWeight: "700",
+                color: "var(--text)",
+                letterSpacing: "0.01em"
+              }}>Your Location</span>
+              <span style={{
+                fontSize: "0.6rem",
+                fontWeight: "700",
+                padding: "1px 7px",
+                borderRadius: "999px",
+                background: "rgba(26,128,96,0.12)",
+                color: "var(--accent)",
+                letterSpacing: "0.04em",
+                marginLeft: "2px"
+              }}>Live</span>
+            </div>
             <div
               onClick={() => navigate("/map")}
               style={{
