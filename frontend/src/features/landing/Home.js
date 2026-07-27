@@ -55,17 +55,17 @@ const defaultChecklist = [
 const testimonials = [
   {
     quote: "Planned my whole Pokhara trip in one evening — the budget breakdown saved me so much back-and-forth.",
-    name: "Aarav Shrestha",
+    name: "Roshan Shrestha",
     meta: "Kathmandu · Pokhara, Solo",
   },
   {
     quote: "We split expenses for a 5-person trek without a single argument. Genuinely useful.",
-    name: "Nisha Gurung",
+    name: "Aayush Shrestha",
     meta: "Pokhara · EBC, Group",
   },
   {
     quote: "The AI suggested a route through Bandipur I'd never have found on my own. Loved it.",
-    name: "Rohan Thapa",
+    name: "Rohan Shrestha",
     meta: "Biratnagar · Bandipur, Family",
   },
 ];
