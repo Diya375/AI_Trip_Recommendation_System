@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import API from "../../services/api";
-import { Trash2, Sparkles, Send, Loader2, Copy, Check, ChevronDown, Bot } from "lucide-react";
+import MapComponent from "../../components/destinations/MapComponent";
+import {
+  Trash2, Sparkles, Send, Loader2, Copy, Check,
+  ChevronDown, Bot, MapPin, Plus, Map
+} from "lucide-react";
 
 const SUGGESTIONS = [
   "Best hidden gems near Pokhara 🏔️",
@@ -13,16 +17,63 @@ const SUGGESTIONS = [
   "Best trekking seasons and weather guide",
 ];
 
-function renderText(text) {
-  return text.split("\n").map((line, i) => {
-    const html = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    return <p key={i} className="my-0.5 leading-relaxed" dangerouslySetInnerHTML={{ __html: html }} />;
+/** Parses **Bold** markdown into clickable place-name spans and plain text nodes */
+function renderText(text, onPlaceClick) {
+  return text.split("\n").map((line, lineIdx) => {
+    const parts = [];
+    const regex = /\*\*(.*?)\*\*/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(line.slice(lastIndex, match.index));
+      }
+      const place = match[1];
+      parts.push(
+        <button
+          key={`${lineIdx}-${match.index}`}
+          onClick={() => onPlaceClick(place)}
+          style={{
+            background: "var(--accent)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            padding: "1px 8px",
+            fontWeight: "700",
+            fontSize: "0.85em",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "4px",
+            margin: "0 2px",
+            transition: "opacity 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          title={`View ${place} on map`}
+        >
+          <MapPin size={11} />
+          {place}
+        </button>
+      );
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < line.length) {
+      parts.push(line.slice(lastIndex));
+    }
+
+    return (
+      <p key={lineIdx} className="my-0.5 leading-relaxed">
+        {parts}
+      </p>
+    );
   });
 }
 
 export default function Assistant() {
-  const location = useLocation();
-  const navigate  = useNavigate();
+  const location  = useLocation();
   const tripData  = location.state;
   const endRef    = useRef(null);
 
@@ -36,6 +87,10 @@ export default function Assistant() {
   const [histLoading,    setHistLoading]    = useState(false);
   const [copiedIdx,      setCopiedIdx]      = useState(null);
   const [showTripDrop,   setShowTripDrop]   = useState(false);
+  const [mapQuery,       setMapQuery]       = useState("Nepal");
+  const [activePlace,    setActivePlace]    = useState(null);
+  const [addingPlace,    setAddingPlace]    = useState(false);
+  const [addedPlace,     setAddedPlace]     = useState(null);
 
   useEffect(() => {
     API.get("/trips/my").then(r => setTrips(r.data)).catch(() => {});
@@ -93,7 +148,7 @@ export default function Assistant() {
     } catch { setMessages(p => [...p, { sender: "ai", text: "Failed to generate plan." }]); }
     finally { setGenerating(false); }
   };
- 
+
   const clearHistory = async () => {
     if (!window.confirm("Clear this chat history?")) return;
     try {
@@ -108,150 +163,239 @@ export default function Assistant() {
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
+  const handlePlaceClick = (place) => {
+    setMapQuery(place);
+    setActivePlace(place);
+    setAddedPlace(null);
+  };
+
+  const handleAddToTrip = async () => {
+    if (!activePlace || !selectedId) return;
+    setAddingPlace(true);
+    try {
+      await API.post(`/trips/${selectedId}/places`, { name: activePlace });
+      setAddedPlace(activePlace);
+    } catch {
+      alert("Failed to add place to trip. Please try again.");
+    } finally {
+      setAddingPlace(false);
+    }
+  };
+
   return (
     <DashboardLayout>
-      <div className="fade-up max-w-3xl mx-auto flex flex-col h-[calc(100vh-5rem)]">
+      {/* Split-Screen Layout: Chat Left | Map Right */}
+      <div className="fade-up flex h-[calc(100vh-75px)] gap-0 overflow-hidden">
 
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-[var(--border)] shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
-              <Bot size={18} strokeWidth={1.8} />
+        {/* ── LEFT: Chat Panel (60%) ── */}
+        <div className="flex flex-col flex-1 min-w-0 h-full px-5 py-5 overflow-hidden">
+
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-[var(--border)] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
+                <Bot size={18} strokeWidth={1.8} />
+              </div>
+              <div>
+                <h1 className="cinzel text-xl font-bold text-[var(--text)]">AI Travel Assistant</h1>
+                <p className="text-xs text-[var(--text-dim)]">Powered by YatraVerse · Nepal specialist</p>
+              </div>
             </div>
-            <div>
-              <h1 className="cinzel text-xl font-bold text-[var(--text)]">AI Travel Assistant</h1>
-              <p className="text-xs text-[var(--text-dim)]">Powered by YatraVerse · Nepal specialist</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Trip selector dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setShowTripDrop(!showTripDrop)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer font-semibold"
-              >
-                {selectedName || "General Chat"}
-                <ChevronDown size={12} />
-              </button>
-              {showTripDrop && (
-                <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg z-10 overflow-hidden">
-                  <button
-                    onClick={() => { setSelectedId(null); setSelectedName(null); setShowTripDrop(false); }}
-                    className="w-full text-left px-4 py-2.5 text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors border-none bg-transparent cursor-pointer font-semibold"
-                  >
-                    General Chat
-                  </button>
-                  {trips.map(t => (
+            <div className="flex items-center gap-2">
+              {/* Trip selector dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowTripDrop(!showTripDrop)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors cursor-pointer font-semibold"
+                >
+                  {selectedName || "General Chat"}
+                  <ChevronDown size={12} />
+                </button>
+                {showTripDrop && (
+                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg z-10 overflow-hidden">
                     <button
-                      key={t.id}
-                      onClick={() => { setSelectedId(t.id); setSelectedName(t.name); setShowTripDrop(false); }}
-                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors border-none bg-transparent cursor-pointer border-t border-[var(--border)]/50"
+                      onClick={() => { setSelectedId(null); setSelectedName(null); setShowTripDrop(false); }}
+                      className="w-full text-left px-4 py-2.5 text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors border-none bg-transparent cursor-pointer font-semibold"
                     >
-                      {t.name}
+                      General Chat
                     </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={clearHistory}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text-dim)] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer"
-            >
-              <Trash2 size={12} /> Clear
-            </button>
-          </div>
-        </div>
-
-        {/* ── Generate Plan Banner (only when navigated with tripData) ── */}
-        {tripData?.preferences?.length > 0 && selectedId === tripData?.tripId && (
-          <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 shrink-0">
-            <div>
-              <p className="text-sm font-bold text-[var(--text)]">{tripData.tripName}</p>
-              <p className="text-xs text-[var(--text-dim)]">{tripData.preferences.length} of {tripData.members?.length} members have submitted preferences</p>
-            </div>
-            <button
-              onClick={generatePlan}
-              disabled={generating}
-              className="btn btn-primary flex items-center gap-2 px-4 py-2 text-xs shrink-0"
-            >
-              <Sparkles size={13} />
-              {generating ? "Generating…" : "Generate Plan"}
-            </button>
-          </div>
-        )}
-
-        {/* ── Chat messages ── */}
-        <div className="flex-1 overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] flex flex-col p-4 gap-3 min-h-0">
-          {histLoading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <p className="text-[var(--text-dim)] text-sm animate-pulse">Loading history…</p>
-            </div>
-          ) : (
-            <>
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className="relative group max-w-[80%]">
-                    <div className={`px-4 py-3 text-sm rounded-2xl
-                      ${msg.sender === "user"
-                        ? "bubble-user"
-                        : "bubble-ai text-[var(--text)]"}`}>
-                      {renderText(msg.text)}
-                    </div>
-                    {msg.sender === "ai" && (
+                    {trips.map(t => (
                       <button
-                        onClick={() => copyMsg(msg.text, i)}
-                        className="absolute -right-7 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-[var(--text-dim)] hover:text-[var(--text)] bg-transparent border-none cursor-pointer"
+                        key={t.id}
+                        onClick={() => { setSelectedId(t.id); setSelectedName(t.name); setShowTripDrop(false); }}
+                        className="w-full text-left px-4 py-2.5 text-xs text-[var(--text)] hover:bg-[var(--bg-subtle)] transition-colors border-none bg-transparent cursor-pointer border-t border-[var(--border)]/50"
                       >
-                        {copiedIdx === i ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                        {t.name}
                       </button>
-                    )}
+                    ))}
                   </div>
-                </div>
-              ))}
-              {(loading || generating) && (
-                <div className="flex justify-start">
-                  <div className="bubble-ai px-4 py-3 flex items-center gap-2 text-sm text-[var(--text-dim)]">
-                    <Loader2 size={13} className="animate-spin text-[var(--accent)]" />
-                    {generating ? "Formulating your trip plan…" : "Typing…"}
-                  </div>
-                </div>
-              )}
-              <div ref={endRef} />
-            </>
+                )}
+              </div>
+              <button
+                onClick={clearHistory}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text-dim)] hover:text-red-500 hover:border-red-200 transition-colors cursor-pointer"
+              >
+                <Trash2 size={12} /> Clear
+              </button>
+            </div>
+          </div>
+
+          {/* Generate Plan Banner */}
+          {tripData?.preferences?.length > 0 && selectedId === tripData?.tripId && (
+            <div className="mb-3 flex items-center justify-between gap-4 px-4 py-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 shrink-0">
+              <div>
+                <p className="text-sm font-bold text-[var(--text)]">{tripData.tripName}</p>
+                <p className="text-xs text-[var(--text-dim)]">{tripData.preferences.length} of {tripData.members?.length} members have submitted preferences</p>
+              </div>
+              <button
+                onClick={generatePlan}
+                disabled={generating}
+                className="btn btn-primary flex items-center gap-2 px-4 py-2 text-xs shrink-0"
+              >
+                <Sparkles size={13} />
+                {generating ? "Generating…" : "Generate Plan"}
+              </button>
+            </div>
           )}
-        </div>
 
-        {/* ── Quick Suggestions ── */}
-        <div className="flex gap-2 overflow-x-auto py-2 shrink-0" style={{ scrollbarWidth: "none" }}>
-          {SUGGESTIONS.map((s, i) => (
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] flex flex-col p-4 gap-3 min-h-0">
+            {histLoading ? (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-[var(--text-dim)] text-sm animate-pulse">Loading history…</p>
+              </div>
+            ) : (
+              <>
+                {messages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className="relative group max-w-[85%]">
+                      <div className={`px-4 py-3 text-sm rounded-2xl
+                        ${msg.sender === "user"
+                          ? "bubble-user"
+                          : "bubble-ai text-[var(--text)]"}`}>
+                        {renderText(msg.text, handlePlaceClick)}
+                      </div>
+                      {msg.sender === "ai" && (
+                        <button
+                          onClick={() => copyMsg(msg.text, i)}
+                          className="absolute -right-7 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 text-[var(--text-dim)] hover:text-[var(--text)] bg-transparent border-none cursor-pointer"
+                        >
+                          {copiedIdx === i ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {(loading || generating) && (
+                  <div className="flex justify-start">
+                    <div className="bubble-ai px-4 py-3 flex items-center gap-2 text-sm text-[var(--text-dim)]">
+                      <Loader2 size={13} className="animate-spin text-[var(--accent)]" />
+                      {generating ? "Formulating your trip plan…" : "Typing…"}
+                    </div>
+                  </div>
+                )}
+                <div ref={endRef} />
+              </>
+            )}
+          </div>
+
+          {/* Quick Suggestions */}
+          <div className="flex gap-2 overflow-x-auto py-2 shrink-0" style={{ scrollbarWidth: "none" }}>
+            {SUGGESTIONS.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => send(s)}
+                disabled={loading}
+                className="shrink-0 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)]/50 transition-all cursor-pointer whitespace-nowrap disabled:opacity-40"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          {/* Input Bar */}
+          <div className="flex gap-3 shrink-0">
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
+              placeholder={selectedId ? `Ask about ${selectedName}…` : "Ask anything about Nepal travel…"}
+              disabled={loading || generating || histLoading}
+              className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-sm text-[var(--text)] placeholder:text-[var(--text-dim)]/50 outline-none focus:border-[var(--accent)]/60 transition-colors"
+            />
             <button
-              key={i}
-              onClick={() => send(s)}
-              disabled={loading}
-              className="shrink-0 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-card)] text-xs text-[var(--text-dim)] hover:text-[var(--accent)] hover:border-[var(--accent)]/50 transition-all cursor-pointer whitespace-nowrap disabled:opacity-40"
+              onClick={() => send()}
+              disabled={!input.trim() || loading || generating}
+              className="btn btn-primary px-5 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {s}
+              <Send size={14} /> Send
             </button>
-          ))}
+          </div>
         </div>
 
-        {/* ── Input ── */}
-        <div className="flex gap-3 shrink-0">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-            placeholder={selectedId ? `Ask about ${selectedName}…` : "Ask anything about Nepal travel…"}
-            disabled={loading || generating || histLoading}
-            className="flex-1 px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-sm text-[var(--text)] placeholder:text-[var(--text-dim)]/50 outline-none focus:border-[var(--accent)]/60 transition-colors"
-          />
-          <button
-            onClick={() => send()}
-            disabled={!input.trim() || loading || generating}
-            className="btn btn-primary px-5 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* ── RIGHT: Map Panel (40%) ── */}
+        <div
+          className="hidden lg:flex flex-col shrink-0 border-l border-[var(--border)]"
+          style={{ width: "38%" }}
+        >
+          {/* Map Header */}
+          <div
+            className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between shrink-0"
+            style={{ background: "var(--bg-card)" }}
           >
-            <Send size={14} /> Send
-          </button>
+            <div className="flex items-center gap-2">
+              <Map size={15} className="text-[var(--accent)]" strokeWidth={2} />
+              <span className="text-sm font-bold text-[var(--text)]">
+                {activePlace ? activePlace : "Map View"}
+              </span>
+              {activePlace && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-semibold">
+                  Nepal
+                </span>
+              )}
+            </div>
+            {/* Add to Trip button */}
+            {activePlace && selectedId && (
+              <button
+                onClick={handleAddToTrip}
+                disabled={addingPlace || !!addedPlace}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-none cursor-pointer disabled:cursor-not-allowed"
+                style={{
+                  background: addedPlace ? "rgba(34,197,94,0.1)" : "var(--accent)",
+                  color: addedPlace ? "#22c55e" : "#fff",
+                  opacity: addingPlace ? 0.6 : 1,
+                }}
+              >
+                {addedPlace ? (
+                  <><Check size={12} /> Added!</>
+                ) : addingPlace ? (
+                  <><Loader2 size={12} className="animate-spin" /> Adding…</>
+                ) : (
+                  <><Plus size={12} /> Add to Trip</>
+                )}
+              </button>
+            )}
+          </div>
+
+          {/* Map Embed */}
+          <div className="flex-1 relative">
+            <MapComponent selectedDestination={mapQuery} />
+
+            {/* Hint when no place is selected */}
+            {!activePlace && (
+              <div
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-xs font-semibold text-[var(--text-dim)] flex items-center gap-2 pointer-events-none"
+                style={{
+                  background: "var(--bg-card)",
+                  border: "1px solid var(--border)",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                <MapPin size={12} className="text-[var(--accent)]" />
+                Click a highlighted place in chat to explore it here
+              </div>
+            )}
+          </div>
         </div>
 
       </div>

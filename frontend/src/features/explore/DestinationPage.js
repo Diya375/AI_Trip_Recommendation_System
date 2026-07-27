@@ -94,7 +94,7 @@ export default function DestinationPage() {
 
       overflow: "hidden",
 
-      background: "#ffffff",
+      background: "var(--bg)",
 
       fontFamily: "system-ui, sans-serif"
 
@@ -220,7 +220,7 @@ export default function DestinationPage() {
 
           background: "#fff",
 
-          color: "#2B3E34",
+          color: "var(--text-dark)",
 
           border: "none",
 
@@ -282,7 +282,7 @@ export default function DestinationPage() {
 
           background: "#fff",
 
-          color: "#2B3E34",
+          color: "var(--text-dark)",
 
           border: "none",
 
@@ -374,9 +374,9 @@ export default function DestinationPage() {
 
         {/* Action Category Tab Row */}
 
-        <div style={{ padding: "2rem 3rem 0" }}>
+        <div style={{ padding: "2rem 3rem 0", background: "var(--bg-card)" }}>
 
-          <div style={{ display: "flex", gap: "0.75rem", borderBottom: "1px solid #e2e8f0", paddingBottom: "1.25rem" }}>
+          <div style={{ display: "flex", gap: "0.75rem", borderBottom: "1px solid var(--border)", paddingBottom: "1.25rem" }}>
 
             <button
 
@@ -384,11 +384,11 @@ export default function DestinationPage() {
 
               style={{
 
-                backgroundColor: activeTab === "todo" ? "#FFEBE7" : "transparent",
+                backgroundColor: activeTab === "todo" ? "var(--accent)" : "transparent",
 
-                color: activeTab === "todo" ? "#FF5A5F" : "#4A5568",
+                color: activeTab === "todo" ? "#ffffff" : "var(--text-dim)",
 
-                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer"
+                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s"
 
               }}>
 
@@ -402,11 +402,11 @@ export default function DestinationPage() {
 
               style={{
 
-                backgroundColor: activeTab === "eat" ? "#FFEBE7" : "transparent",
+                backgroundColor: activeTab === "eat" ? "var(--accent)" : "transparent",
 
-                color: activeTab === "eat" ? "#FF5A5F" : "#4A5568",
+                color: activeTab === "eat" ? "#ffffff" : "var(--text-dim)",
 
-                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer"
+                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s"
 
               }}>
 
@@ -420,11 +420,11 @@ export default function DestinationPage() {
 
               style={{
 
-                backgroundColor: activeTab === "stay" ? "#FFEBE7" : "transparent",
+                backgroundColor: activeTab === "stay" ? "var(--accent)" : "transparent",
 
-                color: activeTab === "stay" ? "#FF5A5F" : "#4A5568",
+                color: activeTab === "stay" ? "#ffffff" : "var(--text-dim)",
 
-                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer"
+                border: "none", padding: "0.6rem 1.2rem", borderRadius: "20px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s"
 
               }}>
 
@@ -440,9 +440,9 @@ export default function DestinationPage() {
 
         {/* Dynamic Categories Grid Content */}
 
-        <div style={{ padding: "2.5rem 3rem" }}>
+        <div style={{ padding: "2.5rem 3rem", background: "var(--bg-card)", flex: 1 }}>
 
-          <h3 style={{ fontSize: "1.3rem", fontWeight: "700", color: "#2B3E34", marginBottom: "1.25rem" }}>
+          <h3 style={{ fontSize: "1.3rem", fontWeight: "700", color: "var(--text)", marginBottom: "1.25rem" }}>
 
             {activeTab === "todo" && "What to do"}
 
@@ -458,7 +458,7 @@ export default function DestinationPage() {
 
               <div key={index} style={{
 
-                padding: "1.25rem", background: "#F8FAFC", borderRadius: "12px", border: "1px solid #E2E8F0", fontWeight: "500", color: "#4A5568"
+                padding: "1.25rem", background: "var(--bg-subtle)", borderRadius: "12px", border: "1px solid var(--border)", fontWeight: "500", color: "var(--text)"
 
               }}>
 
