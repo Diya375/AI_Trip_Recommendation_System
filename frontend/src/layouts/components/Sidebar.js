@@ -93,8 +93,8 @@ export default function Sidebar({ isCollapsed }) {
       width: isCollapsed ? "80px" : "290px",
       minWidth: isCollapsed ? "80px" : "290px",
       height: "100vh",
-      background: "#ffffff",
-      borderRight: "1px solid rgba(0, 0, 0, 0.06)",
+      background: "var(--bg-card)",
+      borderRight: "1px solid var(--border)",
       display: "flex",
       flexDirection: "column",
       padding: isCollapsed ? "2rem 0.5rem" : "2rem 1.5rem",
@@ -127,7 +127,7 @@ export default function Sidebar({ isCollapsed }) {
             fontSize: isCollapsed ? "1.6rem" : "1.65rem",
             fontWeight: "800",
             letterSpacing: isCollapsed ? "0.05em" : "0.08em",
-            color: "#2B3E34",
+            color: "var(--accent)",
             lineHeight: "1.2",
             transition: "all 0.3s"
           }}>
@@ -139,7 +139,7 @@ export default function Sidebar({ isCollapsed }) {
             fontSize: "0.68rem",
             fontWeight: "700",
             letterSpacing: "0.18em",
-            color: "#3d5a49",
+            color: "var(--accent-2)",
             marginTop: "0.25rem",
             opacity: isCollapsed ? 0 : 1,
             maxHeight: isCollapsed ? 0 : "20px",
@@ -171,21 +171,21 @@ export default function Sidebar({ isCollapsed }) {
                 textDecoration: "none",
                 fontSize: "0.92rem",
                 fontWeight: isActive ? "600" : "500",
-                color: isActive ? "#2B3E34" : "#5A6A61",
-                backgroundColor: isActive ? "#E8EFEA" : "transparent",
+                color: isActive ? "var(--text)" : "var(--text-dim)",
+                backgroundColor: isActive ? "var(--bg-subtle)" : "transparent",
                 transition: "all 0.2s ease-in-out",
-                borderLeft: !isCollapsed && isActive ? "4px solid #2B3E34" : "4px solid transparent",
+                borderLeft: !isCollapsed && isActive ? "4px solid var(--accent)" : "4px solid transparent",
               })}
               onMouseEnter={(e) => {
                 if (!e.currentTarget.href.includes(window.location.pathname)) {
-                  e.currentTarget.style.backgroundColor = "#F8FAFC";
-                  e.currentTarget.style.color = "#2B3E34";
+                  e.currentTarget.style.backgroundColor = "var(--bg-subtle)";
+                  e.currentTarget.style.color = "var(--text)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!e.currentTarget.href.includes(window.location.pathname)) {
                   e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#5A6A61";
+                  e.currentTarget.style.color = "var(--text-dim)";
                 }
               }}
             >
