@@ -36,21 +36,17 @@ export default function Hero() {
             key={image.src}
             src={image.src}
             alt={image.alt}
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-center transition-[opacity,transform] duration-[1500ms] ease-in-out"
             style={{
               opacity: i === currentIndex ? 1 : 0,
               transform: i === currentIndex ? "scale(1.03)" : "scale(1.00)",
-              transition: "opacity 1500ms ease-in-out, transform 6000ms ease-in-out",
             }}
           />
         ))}
 
         {/* Gradient overlay */}
         <div
-          className="absolute inset-0 z-10"
-          style={{
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(19,25,22,0.8) 85%, #ffffff 110%)",
-          }}
+          className="absolute inset-0 z-10 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.55)_50%,rgba(19,25,22,0.8)_85%,#ffffff_110%)]"
         />
       </div>
 
@@ -59,29 +55,14 @@ export default function Hero() {
 
         {/* Headline */}
         <h1
-          className="cinzel font-bold text-white mb-7 leading-tight"
-          style={{
-            fontSize: "clamp(2.8rem, 7vw, 4.5rem)",
-            letterSpacing: "0.02em",
-            textShadow: "0 4px 16px rgba(0,0,0,0.6)",
-          }}
+          className="cinzel font-bold text-white mb-7 leading-tight text-[clamp(2.8rem,7vw,4.5rem)] tracking-[0.02em] drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)]"
         >
           Plan Smarter,<br />
           <span className="text-white">Travel Deeper.</span>
         </h1>
 
         {/* Subtext */}
-        <p
-          className="max-w-xl mx-auto mb-14 font-light tracking-wide leading-loose"
-          style={{
-            fontSize: "1.1rem",
-            color: "rgba(245,245,245,0.85)",
-            fontFamily: "'Playfair Display', Georgia, serif",
-            letterSpacing: "0.03em",
-            lineHeight: "1.9",
-            textShadow: "0 2px 10px rgba(0,0,0,0.5)",
-          }}
-        >
+        <p className="max-w-xl mx-auto mb-14 text-[1.1rem] font-light tracking-[0.03em] leading-[1.9] text-[rgba(245,245,245,0.85)] font-serif drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
           Traverse epic peaks, historic mountain hamlets, and sweeping gorges down to the
           vibrant heart of ancient heritage. Your journey across Nepal begins here.
         </p>
@@ -89,14 +70,7 @@ export default function Hero() {
         {/* CTA */}
         <Link to={token ? "/dashboard" : "/signup"} className="no-underline">
           <button
-            className="btn btn-primary rounded-full shadow-lg tracking-wide"
-            style={{
-              padding: "1.1rem 3rem",
-              fontSize: "1.2rem",
-              fontFamily: "'Playfair Display', Georgia, serif",
-              letterSpacing: "0.04em",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.3)",
-            }}
+            className="btn btn-primary rounded-full tracking-[0.04em] px-[3rem] py-[1.1rem] text-[1.2rem] font-serif shadow-[0_4px_15px_rgba(0,0,0,0.3)]"
           >
             {token ? "Go to Dashboard" : "Begin Your Journey"}
           </button>

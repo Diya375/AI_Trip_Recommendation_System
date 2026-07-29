@@ -34,23 +34,7 @@ function renderText(text, onPlaceClick) {
         <button
           key={`${lineIdx}-${match.index}`}
           onClick={() => onPlaceClick(place)}
-          style={{
-            background: "var(--accent)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            padding: "1px 8px",
-            fontWeight: "700",
-            fontSize: "0.85em",
-            cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-            margin: "0 2px",
-            transition: "opacity 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          className="inline-flex items-center gap-1 rounded-lg bg-[var(--accent)] px-2 py-[0.15rem] text-[0.85em] font-bold text-white transition-opacity duration-200 hover:opacity-80 mx-0.5"
           title={`View ${place} on map`}
         >
           <MapPin size={11} />
@@ -199,10 +183,7 @@ export default function Assistant() {
     <DashboardLayout>
       {/* ── Shared Plan Toast ── */}
       {planShared && (
-        <div
-          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-xl text-sm font-bold text-white"
-          style={{ background: "var(--accent)", backdropFilter: "blur(8px)", animation: "fadeInDown 0.3s ease" }}
-        >
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 rounded-2xl shadow-xl text-sm font-bold text-white bg-[var(--accent)] backdrop-blur-xl animate-[fadeInDown_0.3s_ease]">
           <Check size={16} />
           Plan shared! All trip members can now view it in the Planner.
         </div>
@@ -333,7 +314,7 @@ export default function Assistant() {
           </div>
 
           {/* Quick Suggestions */}
-          <div className="flex gap-2 overflow-x-auto py-2 shrink-0" style={{ scrollbarWidth: "none" }}>
+          <div className="flex gap-2 overflow-x-auto py-2 shrink-0">
             {SUGGESTIONS.map((s, i) => (
               <button
                 key={i}
@@ -367,15 +348,9 @@ export default function Assistant() {
         </div>
 
         {/* ── RIGHT: Map Panel (40%) ── */}
-        <div
-          className="hidden lg:flex flex-col shrink-0 border-l border-[var(--border)]"
-          style={{ width: "38%" }}
-        >
+        <div className="hidden lg:flex flex-col shrink-0 basis-[38%] border-l border-[var(--border)]">
           {/* Map Header */}
-          <div
-            className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between shrink-0"
-            style={{ background: "var(--bg-card)" }}
-          >
+          <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--bg-card)] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <Map size={15} className="text-[var(--accent)]" strokeWidth={2} />
               <span className="text-sm font-bold text-[var(--text)]">
@@ -392,12 +367,7 @@ export default function Assistant() {
               <button
                 onClick={handleAddToTrip}
                 disabled={addingPlace || !!addedPlace}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border-none cursor-pointer disabled:cursor-not-allowed"
-                style={{
-                  background: addedPlace ? "rgba(34,197,94,0.1)" : "var(--accent)",
-                  color: addedPlace ? "#22c55e" : "#fff",
-                  opacity: addingPlace ? 0.6 : 1,
-                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer disabled:cursor-not-allowed ${addedPlace ? "bg-emerald-100 text-emerald-600" : "bg-[var(--accent)] text-white"} ${addingPlace ? "opacity-60" : "opacity-100"}`}
               >
                 {addedPlace ? (
                   <><Check size={12} /> Added!</>
@@ -416,14 +386,7 @@ export default function Assistant() {
 
             {/* Hint when no place is selected */}
             {!activePlace && (
-              <div
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-xs font-semibold text-[var(--text-dim)] flex items-center gap-2 pointer-events-none"
-                style={{
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                  backdropFilter: "blur(8px)",
-                }}
-              >
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full text-xs font-semibold text-[var(--text-dim)] flex items-center gap-2 pointer-events-none bg-[var(--bg-card)] border border-[var(--border)] backdrop-blur-xl">
                 <MapPin size={12} className="text-[var(--accent)]" />
                 Click a highlighted place in chat to explore it here
               </div>

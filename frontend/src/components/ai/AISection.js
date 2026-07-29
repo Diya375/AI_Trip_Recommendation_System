@@ -74,105 +74,41 @@ const dnaFeatures = [
 ];
 export default function AISection() {
   return (
-    <section style={{
-      width: "100%",
-      padding: "0rem 2rem 8rem", // ⚡ Flush 0 top padding removes any visual separation gap
-      backgroundColor: "#ffffff",
-      color: "#2B3E34",
-      position: "relative"
-    }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+    <section className="w-full bg-white text-[#2B3E34] relative px-6 pb-32 sm:px-10 lg:px-16">
+      <div className="mx-auto max-w-[1100px]">
         
         {/* Editorial Header */}
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
-          <p style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: "0.75rem",
-            color: "#374F43",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            fontWeight: "600",
-            marginBottom: "0.75rem"
-          }}>
+        <div className="text-center mb-16">
+          <p className="font-serif text-xs uppercase tracking-[0.25em] font-semibold text-[#374F43] mb-3">
             Core Platform DNA
           </p>
-          <h2 className="cinzel" style={{
-            fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
-            fontWeight: "700",
-            letterSpacing: "0.01em",
-            color: "#2B3E34",
-            lineHeight: 1.3
-          }}>
+          <h2 className="cinzel text-[clamp(1.8rem,4vw,2.5rem)] font-bold tracking-[-0.01em] text-[#2B3E34] leading-[1.3]">
             Maximize your trip planning with YATRAVERSE
           </h2>
-          <p style={{
-            fontSize: "1rem",
-            fontFamily: "'Playfair Display', 'Georgia', serif",
-            color: "#5c6660",
-            marginTop: "0.75rem",
-            maxWidth: "600px",
-            margin: "0.75rem auto 0",
-            fontWeight: "400"
-          }}>
+          <p className="mx-auto mt-3 max-w-[600px] text-base font-serif text-[#5c6660] font-normal">
             Experience the full potential of comprehensive system tools engineered to establish an intuitive and streamlined journey structure.
           </p>
         </div>
 
         {/* Clean Wanderlog Pro Style Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: "1.5rem"
-        }}>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {dnaFeatures.map((item) => (
             <div
               key={item.id}
-              style={{
-                backgroundColor: "#F8FAFC", // 🎨 Clean off-white light grey card fill from Wanderlog Pro
-                borderRadius: "16px",
-                padding: "2.5rem 2rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                border: "1px solid rgba(241, 245, 249, 0.6)",
-                userSelect: "none" // Ensures unclickable flat structural feel
-              }}
+              className="flex flex-col gap-4 rounded-[16px] border border-[rgba(241,245,249,0.6)] bg-[#F8FAFC] p-10 select-none"
             >
               {/* Minimal Vector Icon Block */}
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "40px",
-                height: "40px",
-                borderRadius: "8px",
-                backgroundColor: "transparent",
-                marginBottom: "0.25rem"
-              }}>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent mb-1">
                 {item.icon}
               </div>
 
               {/* Feature Title */}
-              <h3 style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: "1.2rem",
-                fontWeight: "700",
-                color: "#2B3E34",
-                margin: 0,
-                letterSpacing: "-0.01em"
-              }}>
+              <h3 className="font-sans text-[1.2rem] font-bold text-[#2B3E34] tracking-[-0.01em] m-0">
                 {item.title}
               </h3>
 
               {/* Feature Description */}
-              <p style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: "0.95rem",
-                color: "#5c6660",
-                lineHeight: "1.6",
-                fontWeight: "400",
-                margin: 0
-              }}>
+              <p className="font-sans text-sm leading-7 text-[#5c6660] font-normal m-0">
                 {item.desc}
               </p>
             </div>

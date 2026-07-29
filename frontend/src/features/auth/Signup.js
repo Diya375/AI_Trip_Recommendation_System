@@ -51,41 +51,12 @@ export default function Signup() {
   };
 
   return (
-    <div
-      className="page"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        className="card fade-up"
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          padding: "3rem 2.5rem",
-          textAlign: "center",
-        }}
-      >
-        <h1
-          className="cinzel"
-          style={{
-            fontSize: "2.2rem",
-            color: "var(--accent)",
-            marginBottom: "0.5rem",
-          }}
-        >
+    <div className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
+      <div className="w-full max-w-md rounded-[24px] bg-white p-10 text-center shadow-xl shadow-slate-200/50">
+        <h1 className="cinzel text-3xl font-bold text-[var(--accent)] mb-2">
           Join YatraVerse
         </h1>
-        <p
-          style={{
-            color: "var(--text-dim)",
-            marginBottom: "2.5rem",
-            fontSize: "0.9rem",
-            letterSpacing: "0.05em",
-          }}
-        >
+        <p className="mb-10 text-sm text-[var(--text-dim)] tracking-[0.05em]">
           Begin Your Journey
         </p>
 
@@ -108,55 +79,35 @@ export default function Signup() {
           <div className="flex-1 h-px bg-[var(--border)]" />
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="mb-6 flex flex-col gap-4">
           <input
             type="text"
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="input"
+            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
           />
           <input
             type="email"
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
           />
 
           {/* Password with Lucide Eye toggle */}
-          <div style={{ position: "relative" }}>
+          <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="input"
-              style={{ width: "100%", paddingRight: "44px" }}
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                right: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--text-dim)",
-                display: "flex",
-                alignItems: "center",
-                padding: 0,
-              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-dim)]"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -164,37 +115,21 @@ export default function Signup() {
         </div>
 
         {error && (
-          <p
-            style={{
-              color: "#e74c3c",
-              fontSize: "0.85rem",
-              marginBottom: "1rem",
-            }}
-          >
+          <p className="mb-4 text-sm text-rose-500">
             {error}
           </p>
         )}
 
         <button
           onClick={handleSignup}
-          className="btn btn-primary"
-          style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}
+          className="w-full rounded-full bg-[#0f172a] px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900"
         >
           Create Account
         </button>
 
-        <p
-          style={{
-            marginTop: "2rem",
-            fontSize: "0.85rem",
-            color: "var(--text-dim)",
-          }}
-        >
-          Already a traveler?{" "}
-          <Link
-            to="/login"
-            style={{ color: "var(--accent)", textDecoration: "none" }}
-          >
+        <p className="mt-8 text-sm text-[var(--text-dim)]">
+          Already a traveler?{' '}
+          <Link to="/login" className="text-[var(--accent)] no-underline">
             Login here
           </Link>
         </p>

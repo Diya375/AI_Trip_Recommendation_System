@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { useNavigate } from "react-router-dom";
 // import anthem from "../../assets/audio/reshamfiriri.mp3";
 
@@ -9,39 +9,32 @@ function Splash() {
   //   const audio = new Audio(anthem);
   //   audio.volume = 0.75;
   //   audio.play().catch((err) => console.log(err));
-    
   //   setTimeout(() => {
   //     navigate("/login");
   //   }, 2500);
   // };
 
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      textAlign: "center",
-      background: "linear-gradient(160deg, var(--bg) 0%, var(--bg-subtle) 60%, var(--bg) 100%)",
-      color: "var(--text)",
-      position: "relative",
-      overflow: "hidden"
-    }}>
-      {/* Decorative rings */}
-      <div style={{ position: "absolute", width: "600px", height: "600px", border: "1px solid rgba(75,119,98,0.1)", borderRadius: "50%", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", width: "900px", height: "900px", border: "1px solid rgba(75,119,98,0.06)", borderRadius: "50%", pointerEvents: "none" }} />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[var(--bg)] via-[var(--bg-subtle)] to-[var(--bg)] text-[var(--text)]">
+      <div className="pointer-events-none absolute h-[600px] w-[600px] rounded-full border border-[rgba(75,119,98,0.12)]" />
+      <div className="pointer-events-none absolute h-[900px] w-[900px] rounded-full border border-[rgba(75,119,98,0.06)]" />
 
-      <div className="fade-up" style={{ position: "relative", zIndex: 1, padding: "0 2rem" }}>
-        <h1 className="cinzel" style={{ fontSize: "clamp(3.5rem, 8vw, 6rem)", color: "var(--accent)", letterSpacing: "0.1em", marginBottom: "1rem" }}>
+      <div className="fade-up relative z-10 px-6 text-center sm:px-10">
+        <h1 className="cinzel text-[clamp(3.5rem,8vw,6rem)] font-black tracking-[0.1em] text-[var(--accent)]">
           YatraVerse
         </h1>
-        <p style={{ fontSize: "1.2rem", letterSpacing: "0.2em", color: "var(--text-dim)", textTransform: "uppercase", marginBottom: "3rem" }}>
+        <p className="mx-auto mt-6 max-w-2xl text-base uppercase tracking-[0.2em] text-[var(--text-dim)] sm:text-lg">
           Beyond Maps. Beyond Travel.
         </p>
 
-        {/* <button onClick={beginJourney} className="btn btn-primary" style={{ padding: "1rem 3rem", fontSize: "1.1rem" }}>
-          Enter YatraVerse
-        </button> */}
+        {false && (
+          <button
+            onClick={() => {}}
+            className="mt-12 inline-flex rounded-full bg-[var(--accent)] px-10 py-4 text-sm font-semibold text-white transition hover:bg-[#FF4C4F] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30"
+          >
+            Enter YatraVerse
+          </button>
+        )}
       </div>
     </div>
   );

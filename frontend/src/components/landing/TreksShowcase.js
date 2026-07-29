@@ -24,21 +24,21 @@ export default function TreksShowcase() {
       });
   }, []);
 
-  if (loading) return <div style={{ padding: "2rem", color: "#64748b" }}>Loading live trails...</div>;
+  if (loading) return <div className="p-8 text-slate-500">Loading live trails...</div>;
 
   return (
-    <div style={{ padding: "3rem", background: "#f8fafc" }}>
-      <h2 style={{ fontSize: "1.8rem", color: "#1e293b", marginBottom: "1.5rem" }}>
-        🏔️ Live Featured Trekking Routes
+    <div className="p-12 bg-slate-50">
+      <h2 className="text-2xl font-semibold text-slate-900 mb-6">
+        Live Featured Trekking Routes
       </h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem" }}>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {routes.map((route) => (
-          <div key={route.id} style={{ padding: "1.5rem", background: "#fff", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)", border: "1px solid #e2e8f0" }}>
-            <h4 style={{ margin: "0 0 0.5rem 0", color: "#0f172a" }}>{route.name}</h4>
-            <span style={{ fontSize: "0.85rem", background: route.difficulty === "Hard" ? "#fee2e2" : "#fef08a", color: route.difficulty === "Hard" ? "#991b1b" : "#854d0e", padding: "0.25rem 0.6rem", borderRadius: "12px", fontWeight: "600" }}>
+          <div key={route.id} className="rounded-[12px] border border-slate-200 bg-white p-6 shadow-sm">
+            <h4 className="m-0 text-lg font-semibold text-slate-900">{route.name}</h4>
+            <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${route.difficulty === "Hard" ? "bg-rose-100 text-rose-700" : "bg-yellow-100 text-amber-800"}`}>
               {route.difficulty}
             </span>
-            <p style={{ margin: "0.75rem 0 0 0", fontSize: "0.9rem", color: "#475569" }}>⏱️ Duration: {route.duration}</p>
+            <p className="mt-3 text-sm text-slate-600">⏱️ Duration: {route.duration}</p>
           </div>
         ))}
       </div>

@@ -153,31 +153,31 @@ export default function TripPlaces({ tripId }) {
   };
 
   return (
-    <div style={{ marginTop: "2.5rem", padding: "1.5rem", background: "#ffffff", borderRadius: "16px", border: "1px solid rgba(0,0,0,0.06)" }}>
-      <h3 className="cinzel" style={{ fontSize: "1.2rem", color: "#2B3E34", marginBottom: "1.25rem", fontWeight: "700" }}>
+    <div className="mt-10 rounded-[16px] border border-[rgba(0,0,0,0.06)] bg-white p-6">
+      <h3 className="cinzel text-xl font-bold text-[#2B3E34] mb-5">
         📌 Places to Visit
       </h3>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+      <div className="grid gap-6 lg:grid-cols-2">
         <div>
-          <div style={{ position: "relative", marginBottom: "1.25rem" }}>
+          <div className="relative mb-5">
             <input
               type="text"
               placeholder="Search and add a place..."
               value={query}
               onChange={handleQueryChange}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 250)}
-              style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "10px", border: "1px solid #cbd5e1" }}
+              className="w-full rounded-[10px] border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-400 disabled:cursor-not-allowed"
               disabled={adding}
             />
 
             {showSuggestions && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: "10px", zIndex: 999, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+              <div className="absolute inset-x-0 top-full z-50 mt-2 rounded-[10px] border border-slate-300 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
                 {suggestions.map((s, i) => (
                   <div
                     key={i}
                     onMouseDown={() => handleSelectSuggestion(s)}
-                    style={{ padding: "0.75rem 1rem", cursor: "pointer", borderBottom: "1px solid #f1f5f9", fontSize: "0.85rem", color: "#334155" }}
+                    className="cursor-pointer border-b border-slate-100 px-4 py-3 text-sm text-slate-700 last:border-b-0 hover:bg-slate-50"
                   >
                     {s.description}
                   </div>
@@ -186,17 +186,17 @@ export default function TripPlaces({ tripId }) {
             )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div className="flex flex-col gap-3">
             {places.length === 0 ? (
-              <p style={{ color: "#94a3b8", fontSize: "0.85rem" }}>No destinations added yet.</p>
+              <p className="text-sm text-slate-400">No destinations added yet.</p>
             ) : (
               places.map((place) => (
-                <div key={place.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc", padding: "0.75rem 1rem", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+                <div key={place.id} className="flex items-center justify-between rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3">
                   <div>
-                    <p style={{ margin: 0, fontWeight: 600, fontSize: "0.88rem", color: "#1e293b" }}>{place.name}</p>
-                    <p style={{ margin: 0, fontSize: "0.75rem", color: "#64748b" }}>{place.address}</p>
+                    <p className="m-0 text-sm font-semibold text-slate-900">{place.name}</p>
+                    <p className="m-0 text-xs text-slate-500">{place.address}</p>
                   </div>
-                  <button onClick={() => handleDelete(place.id)} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer" }}>
+                  <button onClick={() => handleDelete(place.id)} className="text-slate-500 transition-colors hover:text-slate-700">
                     <Trash2 size={15} />
                   </button>
                 </div>
@@ -205,7 +205,7 @@ export default function TripPlaces({ tripId }) {
           </div>
         </div>
 
-        <div ref={mapRef} style={{ width: "100%", height: "350px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "#f1f5f9" }} />
+        <div ref={mapRef} className="h-[350px] rounded-[12px] border border-slate-200 bg-slate-100 w-full" />
       </div>
     </div>
   );
