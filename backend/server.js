@@ -9,17 +9,19 @@ const preferencesRoutes = require("./routes/preferences");
 const placesRoutes = require("./routes/places");
 const expensesRoutes = require("./routes/expenses");
 const aiRoutes = require("./routes/ai");
+const tripPlanRoutes = require("./routes/tripPlan");
 
 const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  process.env.LOCAL_URL,
   process.env.NGROK_URL,
   process.env.PROD_URL,
 ].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
+  origin:(origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) callback(null, true);
     else callback(new Error("Not allowed by CORS"));
   },
@@ -58,6 +60,7 @@ app.use("/api/trips", tripsRoutes);
 app.use("/api/trips", preferencesRoutes);
 app.use("/api/trips", placesRoutes);
 app.use("/api/trips", expensesRoutes);
+app.use("/api/trips", tripPlanRoutes);
 
 app.use("/api/ai", aiRoutes);
 

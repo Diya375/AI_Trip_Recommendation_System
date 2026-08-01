@@ -25,40 +25,39 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="page" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div className="card fade-up" style={{ width: "100%", maxWidth: "420px", padding: "3rem 2.5rem", textAlign: "center" }}>
-        <h1 className="cinzel" style={{ fontSize: "2rem", color: "var(--accent)", marginBottom: "0.5rem" }}>
+    <div className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
+      <div className="w-full max-w-md rounded-[24px] bg-white p-10 text-center shadow-xl shadow-slate-200/50">
+        <h1 className="cinzel text-3xl font-bold text-[var(--accent)] mb-2">
           Recover Account
         </h1>
-        <p style={{ color: "var(--text-dim)", marginBottom: "2.5rem", fontSize: "0.9rem" }}>
+        <p className="mb-10 text-sm text-[var(--text-dim)]">
           Enter your email to reset your password
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+        <div className="mb-6 flex flex-col gap-4">
           <input
             type="email"
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input"
+            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
           />
         </div>
 
-        {error && <p style={{ color: "#e57373", marginBottom: "1rem", fontSize: "0.85rem" }}>{error}</p>}
-        {message && <p style={{ color: "#81c784", marginBottom: "1rem", fontSize: "0.85rem" }}>{message}</p>}
+        {error && <p className="mb-4 text-sm text-rose-500">{error}</p>}
+        {message && <p className="mb-4 text-sm text-emerald-500">{message}</p>}
 
         <button
           onClick={handleForgot}
           disabled={loading || !email}
-          className="btn btn-primary"
-          style={{ width: "100%", padding: "0.85rem", fontSize: "1rem" }}
+          className="w-full rounded-full bg-[#0f172a] px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
           {loading ? "Sending..." : "Send Reset Code"}
         </button>
 
-        <p style={{ marginTop: "2rem", fontSize: "0.85rem", color: "var(--text-dim)" }}>
-          Remember your password?{" "}
-          <Link to="/login" style={{ color: "var(--accent)", textDecoration: "none" }}>
+        <p className="mt-8 text-sm text-[var(--text-dim)]">
+          Remember your password?{' '}
+          <Link to="/login" className="text-[var(--accent)] no-underline">
             Login here
           </Link>
         </p>

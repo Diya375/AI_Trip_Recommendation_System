@@ -246,9 +246,11 @@ html {
 html.light {
   --bg: #ffffff;                       /* Pure white canvas background */
   --bg-card: #ffffff;                  /* Cards stay pure white */
+  --bg-subtle: #f8fafc;                /* Subtle slate-50 background */
   --text: #1e293b;                     /* Sharp slate-900 typography */
   --text-dim: #64748b;                 /* Clear slate-500 descriptive text */
   --accent: #059669;                   /* Vibrant crisp emerald green */
+  --accent-2: #34d399;                 /* Lighter emerald green */
   --border: #f1f5f9;                   /* Subtle separator lines */
   
   /* 🌤️ WANDERLOG LIGHT MASK: Lets full picture opacity pop out without muddy dark gradients */
@@ -262,7 +264,10 @@ html.light {
 html.dark {
   --bg: #131916;              /* Deep, cinematic landscape base */
   --bg-card: rgba(25, 33, 29, 0.5);
+  --bg-subtle: #19211d;       /* Dark green-black subtle backgrounds */
   --text: #ffffff;
   --text-dim: rgba(255, 255, 255, 0.6);
+  --accent: #426856;          /* Deep Sage/Emerald */
+  --accent-2: #4f8069;        /* Lighter Sage */
   --border: rgba(201, 169, 110, 0.12);
 }

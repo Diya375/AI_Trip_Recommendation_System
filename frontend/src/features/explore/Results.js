@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 
@@ -11,51 +11,62 @@ function Results() {
 
   const addActivity = () => {
     if (!activity.trim()) return;
-    setActivities([...activities, activity]);
+    setActivities([...activities, activity.trim()]);
     setActivity("");
   };
 
   return (
     <DashboardLayout>
-      <div className="fade-up" style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <h1 className="section-title">Trip Dashboard</h1>
-        <p className="section-sub">Manage activities for your upcoming journey</p>
+      <div className="fade-up mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-8 space-y-3 text-center">
+          <h1 className="section-title">Trip Dashboard</h1>
+          <p className="section-sub">Manage activities for your upcoming journey</p>
+        </div>
 
-        <div className="card" style={{ marginBottom: "2rem" }}>
-          <h2 className="cinzel" style={{ fontSize: "1.5rem", color: "var(--accent)", marginBottom: "1rem" }}>
-            {trip.tripName || "Unnamed Trip"}
-          </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", color: "var(--text-dim)", fontSize: "0.95rem" }}>
-            <p><strong style={{ color: "var(--text)" }}>Destination:</strong> {trip.destination || "Not specified"}</p>
-            <p><strong style={{ color: "var(--text)" }}>Members:</strong> {trip.members || 0}</p>
-            <p><strong style={{ color: "var(--text)" }}>Start Date:</strong> {trip.startDate || "-"}</p>
-            <p><strong style={{ color: "var(--text)" }}>End Date:</strong> {trip.endDate || "-"}</p>
+        <div className="mb-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/30">
+          <h2 className="cinzel mb-5 text-2xl font-semibold text-[var(--accent)]">{trip.tripName || "Unnamed Trip"}</h2>
+          <div className="grid gap-4 sm:grid-cols-2 text-sm text-slate-600">
+            <p>
+              <span className="font-semibold text-slate-900">Destination:</span> {trip.destination || "Not specified"}
+            </p>
+            <p>
+              <span className="font-semibold text-slate-900">Members:</span> {trip.members || 0}
+            </p>
+            <p>
+              <span className="font-semibold text-slate-900">Start Date:</span> {trip.startDate || "-"}
+            </p>
+            <p>
+              <span className="font-semibold text-slate-900">End Date:</span> {trip.endDate || "-"}
+            </p>
           </div>
         </div>
 
-        <div className="card">
-          <h2 className="cinzel" style={{ fontSize: "1.2rem", marginBottom: "1.5rem" }}>Trip Activities</h2>
+        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/30">
+          <h2 className="cinzel mb-6 text-xl font-semibold text-slate-900">Trip Activities</h2>
 
-          <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row">
             <input
               type="text"
               placeholder="E.g., Visit Swayambhunath"
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
-              className="input"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[var(--accent)] focus:bg-white focus:ring-2 focus:ring-[var(--accent)]/20"
             />
-            <button onClick={addActivity} className="btn btn-primary" style={{ padding: "0 1.5rem" }}>
+            <button
+              onClick={addActivity}
+              className="inline-flex items-center justify-center rounded-2xl bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#FF4C4F] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30"
+            >
               Add
             </button>
           </div>
 
           {activities.length === 0 ? (
-            <p style={{ color: "var(--text-dim)", fontSize: "0.9rem" }}>No activities added yet.</p>
+            <p className="text-sm leading-7 text-slate-500">No activities added yet.</p>
           ) : (
-            <ul style={{ paddingLeft: "1.2rem", color: "var(--text-dim)", lineHeight: 1.8 }}>
+            <ul className="space-y-3 pl-5 text-sm leading-7 text-slate-600">
               {activities.map((item, index) => (
-                <li key={index} style={{ marginBottom: "0.5rem" }}>
-                  <span style={{ color: "var(--text)" }}>{item}</span>
+                <li key={index} className="list-disc">
+                  <span className="text-slate-900">{item}</span>
                 </li>
               ))}
             </ul>

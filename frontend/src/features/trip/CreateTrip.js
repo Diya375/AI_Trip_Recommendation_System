@@ -72,10 +72,10 @@ export default function CreateTrip() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="fade-up w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[var(--bg)]">
+      <div className="fade-up w-full max-w-md bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] shadow-sm p-10 text-center">
         <h1 className="cinzel text-3xl text-[var(--accent)] mb-1">Start a New Trip</h1>
-        <p className="text-gray-500 text-sm mb-8">Invite your travel companions</p>
+        <p className="text-[var(--text-dim)] text-sm mb-8">Invite your travel companions</p>
 
         {!inviteLink ? (
           <>
@@ -84,8 +84,8 @@ export default function CreateTrip() {
               placeholder="Trip name (e.g. Pokhara Getaway)"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 mb-4 rounded-xl border border-gray-200 text-sm
-                text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
+              className="w-full px-4 py-3 mb-4 rounded-xl border border-[var(--border)] text-sm
+                bg-[var(--bg-subtle)] text-[var(--text)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]/60 transition-colors"
             />
 
             {/* Cover image upload */}
@@ -104,7 +104,7 @@ export default function CreateTrip() {
             ) : (
               <label
                 className="flex flex-col items-center justify-center gap-2 mb-5 h-40 rounded-xl
-                  border-2 border-dashed border-gray-200 text-gray-400 cursor-pointer
+                  border-2 border-dashed border-[var(--border)] text-[var(--text-dim)] cursor-pointer
                   hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors"
               >
                 <Upload size={20} />
@@ -125,8 +125,8 @@ export default function CreateTrip() {
           </>
         ) : (
           <>
-            <p className="text-gray-500 text-sm mb-3">Share this link with your travel companions:</p>
-            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-sm text-gray-900 break-all mb-4">
+            <p className="text-[var(--text-dim)] text-sm mb-3">Share this link with your travel companions:</p>
+            <div className="bg-[var(--bg-subtle)] border border-[var(--border)] rounded-xl px-4 py-3.5 text-sm text-[var(--text)] break-all mb-4">
               {inviteLink}
             </div>
             <button
@@ -138,7 +138,7 @@ export default function CreateTrip() {
             </button>
             <button
               onClick={() => navigate("/dashboard")}
-              className="text-gray-400 text-sm underline hover:text-gray-600 transition-colors cursor-pointer"
+              className="text-[var(--text-dim)] text-sm underline hover:text-[var(--text)] transition-colors cursor-pointer"
             >
               Go to Dashboard
             </button>

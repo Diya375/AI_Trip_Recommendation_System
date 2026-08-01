@@ -10,70 +10,19 @@ const footerLinks = [
 
 export default function Footer() {
   return (
-    <footer
-      style={{
-        width: "100%",
-        background: "var(--bg-card)",
-        borderTop: "1px solid var(--border)",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <footer className="w-full bg-[var(--bg-card)] border-t border-[var(--border)] relative overflow-hidden">
       {/* Top accent line */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "240px",
-          height: "1px",
-          background:
-            "linear-gradient(90deg, transparent, rgba(22,107,79,0.3), transparent)",
-        }}
-      />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[240px] h-px bg-[linear-gradient(90deg,transparent,rgba(22,107,79,0.3),transparent)]" />
 
-      <div
-        style={{
-          maxWidth: "1150px",
-          margin: "0 auto",
-          padding: "4rem 2rem 3rem",
-        }}
-      >
+      <div className="mx-auto max-w-[1150px] px-8 py-16 sm:px-10">
         {/* Main row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "3rem",
-            marginBottom: "3rem",
-          }}
-        >
+        <div className="flex flex-wrap items-start justify-between gap-12 mb-12">
           {/* Brand */}
-          <div style={{ maxWidth: "300px" }}>
-            <span
-              className="cinzel"
-              style={{
-                display: "block",
-                fontSize: "1.4rem",
-                fontWeight: "700",
-                color: "var(--accent)",
-                letterSpacing: "0.15em",
-                marginBottom: "1rem",
-              }}
-            >
+          <div className="max-w-[300px]">
+            <span className="cinzel block text-[1.4rem] font-bold uppercase tracking-[0.15em] text-[var(--accent)] mb-4">
               YATRAVERSE
             </span>
-            <p
-              style={{
-                color: "var(--text-dim)",
-                fontSize: "0.88rem",
-                lineHeight: "1.8",
-                fontWeight: "300",
-              }}
-            >
+            <p className="text-[var(--text-dim)] text-[0.88rem] leading-[1.8] font-light">
               Your AI-powered companion for exploring Nepal's peaks, valleys, and
               ancient heritage — one curated journey at a time.
             </p>
@@ -81,42 +30,15 @@ export default function Footer() {
 
           {/* Navigation links */}
           <div>
-            <p
-              style={{
-                fontFamily: "'Cinzel', serif",
-                fontSize: "0.65rem",
-                letterSpacing: "0.25em",
-                color: "var(--text-dim)",
-                textTransform: "uppercase",
-                fontWeight: "600",
-                marginBottom: "1.25rem",
-              }}
-            >
+            <p className="text-[0.65rem] uppercase tracking-[0.25em] text-[var(--text-dim)] font-semibold mb-5">
               Navigate
             </p>
-            <nav
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
-              }}
-            >
+            <nav className="flex flex-col gap-3">
               {footerLinks.map((link) => (
                 <Link
                   key={link.label}
                   to={link.to}
-                  style={{
-                    color: "var(--text-dim)",
-                    textDecoration: "none",
-                    fontSize: "0.88rem",
-                    fontWeight: "300",
-                    transition: "color 0.25s ease",
-                    letterSpacing: "0.03em",
-                  }}
-                  onMouseEnter={(e) => (e.target.style.color = "var(--accent)")}
-                  onMouseLeave={(e) =>
-                    (e.target.style.color = "var(--text-dim)")
-                  }
+                  className="text-[var(--text-dim)] no-underline text-[0.88rem] font-light tracking-[0.03em] transition-colors duration-200 hover:text-[var(--accent)]"
                 >
                   {link.label}
                 </Link>
@@ -125,60 +47,19 @@ export default function Footer() {
           </div>
 
           {/* Tagline / CTA block */}
-          <div style={{ maxWidth: "240px" }}>
-            <p
-              style={{
-                fontFamily: "'Cinzel', serif",
-                fontSize: "0.65rem",
-                letterSpacing: "0.25em",
-                color: "var(--text-dim)",
-                textTransform: "uppercase",
-                fontWeight: "600",
-                marginBottom: "1.25rem",
-              }}
-            >
+          <div className="max-w-[240px]">
+            <p className="text-[0.65rem] uppercase tracking-[0.25em] text-[var(--text-dim)] font-semibold mb-5">
               Begin Your Journey
             </p>
-            <p
-              style={{
-                color: "var(--text-dim)",
-                fontSize: "0.85rem",
-                lineHeight: "1.8",
-                fontWeight: "300",
-                marginBottom: "1.5rem",
-              }}
-            >
+            <p className="text-[var(--text-dim)] text-[0.85rem] leading-[1.8] font-light mb-6">
               Nepal awaits. Let AI map the path, while you live the adventure.
             </p>
             <Link
               to="/signup"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.65rem 1.5rem",
-                borderRadius: "50px",
-                border: "1px solid rgba(22,107,79,0.3)",
-                color: "var(--accent)",
-                textDecoration: "none",
-                fontSize: "0.78rem",
-                fontFamily: "'Cinzel', serif",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                fontWeight: "600",
-                transition: "all 0.25s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(22,107,79,0.08)";
-                e.currentTarget.style.borderColor = "var(--accent)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = "rgba(22,107,79,0.3)";
-              }}
+              className="inline-flex items-center gap-2 rounded-full border border-[rgba(22,107,79,0.3)] bg-transparent px-6 py-3 text-[var(--accent)] no-underline text-[0.78rem] uppercase tracking-[0.12em] font-semibold font-serif transition duration-200 hover:bg-[rgba(22,107,79,0.08)] hover:border-[var(--accent)]"
             >
               Sign Up Free
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
@@ -187,36 +68,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div
-          style={{
-            borderTop: "1px solid var(--border)",
-            paddingTop: "2rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
-        >
-          <p
-            style={{
-              color: "var(--text-dim)",
-              fontSize: "0.78rem",
-              fontWeight: "300",
-              letterSpacing: "0.05em",
-            }}
-          >
+        <div className="border-t border-[var(--border)] pt-8 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-[var(--text-dim)] text-[0.78rem] font-light tracking-[0.05em]">
             © 2026 YatraVerse · AI Travel Companion · Nepal
           </p>
 
-          <p
-            style={{
-              color: "var(--text-dim)",
-              fontSize: "0.75rem",
-              fontWeight: "300",
-              letterSpacing: "0.05em",
-            }}
-          >
+          <p className="text-[var(--text-dim)] text-[0.75rem] font-light tracking-[0.05em]">
             Crafted with ❤ for the mountains
           </p>
         </div>

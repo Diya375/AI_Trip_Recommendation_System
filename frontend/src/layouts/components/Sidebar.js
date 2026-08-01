@@ -1,28 +1,29 @@
-// src/components/Sidebar.js
+﻿// src/components/Sidebar.js
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Fixed import
+import { useAuth } from "../../context/AuthContext";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
-import { 
-  LayoutDashboard, 
-  Home, 
-  Compass, 
-  CalendarDays, 
-  Receipt, 
-  Bot, 
-  User, 
-  LogOut, 
-  Maximize2 
+import {
+  LayoutDashboard,
+  Home,
+  Compass,
+  CalendarDays,
+  Receipt,
+  Bot,
+  User,
+  LogOut,
+  Maximize2,
+  MapPin,
 } from "lucide-react";
 
 const navItems = [
-  { label: "Dashboard",    path: "/dashboard",   icon: LayoutDashboard },
-  { label: "Home",         path: "/home",        icon: Home },
-  { label: "Planner",      path: "/planner",     icon: CalendarDays },
-  { label: "Explore",      path: "/explore",     icon: Compass },
-  { label: "Expenses",     path: "/expenses",    icon: Receipt },
-  { label: "AI Assistant", path: "/assistant",   icon: Bot },
-  { label: "Profile",      path: "/profile",     icon: User }
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { label: "Home", path: "/home", icon: Home },
+  { label: "Planner", path: "/planner", icon: CalendarDays },
+  { label: "Explore", path: "/explore", icon: Compass },
+  { label: "Expenses", path: "/expenses", icon: Receipt },
+  { label: "AI Assistant", path: "/assistant", icon: Bot },
+  { label: "Profile", path: "/profile", icon: User },
 ];
 
 const LIBRARIES = ["places"];
@@ -89,159 +90,78 @@ export default function Sidebar({ isCollapsed }) {
   };
 
   return (
-    <aside style={{
-      width: isCollapsed ? "80px" : "290px",
-      minWidth: isCollapsed ? "80px" : "290px",
-      height: "100vh",
-      background: "#ffffff",
-      borderRight: "1px solid rgba(0, 0, 0, 0.06)",
-      display: "flex",
-      flexDirection: "column",
-      padding: isCollapsed ? "2rem 0.5rem" : "2rem 1.5rem",
-      boxShadow: "4px 0 24px rgba(0, 0, 0, 0.01)",
-      position: "sticky",
-      top: 0,
-      zIndex: 10,
-      transition: "all 0.5s cubic-bezier(0.3, 1, 0.4, 1)", 
-      fontFamily: "system-ui, sans-serif",
-    }}>
-
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        width: "100%",
-        overflowY: "auto",
-        overflowX: "hidden",
-        flex: 1
-      }}>
-
-        {/* Branding Header: Displays "YV" when collapsed and full brand name when open */}
-        <div style={{ 
-          marginBottom: "2.5rem", 
-          paddingLeft: isCollapsed ? "0px" : "0.5rem",
-          textAlign: isCollapsed ? "center" : "left",
-          whiteSpace: "nowrap"
-        }}>
-          <div className="cinzel" style={{
-            fontSize: isCollapsed ? "1.6rem" : "1.65rem",
-            fontWeight: "800",
-            letterSpacing: isCollapsed ? "0.05em" : "0.08em",
-            color: "#2B3E34",
-            lineHeight: "1.2",
-            transition: "all 0.3s"
-          }}>
+    <aside
+      className={`sticky top-0 z-10 flex h-screen flex-col border-r border-slate-200 bg-[var(--bg-card)] shadow-[4px_0_24px_rgba(0,0,0,0.01)] transition-all duration-500 ease-in-out ${
+        isCollapsed ? "w-20 min-w-[80px] px-2 py-8" : "w-[290px] min-w-[290px] px-6 py-8"
+      }`}
+    >
+      <div className="flex h-full flex-col overflow-hidden overflow-y-auto">
+        <div
+          className={`mb-10 ${isCollapsed ? "text-center" : "text-left pl-2"}`}
+        >
+          <div
+            className={`cinzel font-black tracking-[0.08em] text-[var(--accent)] transition-all duration-300 ${
+              isCollapsed ? "text-2xl" : "text-[1.65rem]"
+            }`}
+          >
             {isCollapsed ? "YV" : "YATRAVERSE"}
           </div>
-          
-          {/* Subtitle slides/hides away on collapse */}
-          <div style={{
-            fontSize: "0.68rem",
-            fontWeight: "700",
-            letterSpacing: "0.18em",
-            color: "#3d5a49",
-            marginTop: "0.25rem",
-            opacity: isCollapsed ? 0 : 1,
-            maxHeight: isCollapsed ? 0 : "20px",
-            transition: "opacity 0.2s, max-height 0.2s",
-            overflow: "hidden"
-          }}>
+          <div
+            className={`mt-1 max-w-full overflow-hidden text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[var(--accent-2)] transition-all duration-200 ${
+              isCollapsed ? "opacity-0 max-h-0" : "opacity-100 max-h-[20px]"
+            }`}
+          >
             AI TRAVEL COMPANION
           </div>
         </div>
 
-        {/* Permanent Navigation Icons Stack */}
-        <nav style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "0.35rem",
-          marginBottom: "2rem"
-        }}>
+        <nav className="mb-8 flex flex-col gap-2">
           {navItems.map(({ label, path, icon: IconComponent }) => (
             <NavLink
               key={path}
               to={path}
-              style={({ isActive }) => ({
-                display: "flex",
-                alignItems: "center",
-                justifyContent: isCollapsed ? "center" : "flex-start",
-                gap: isCollapsed ? "0px" : "0.9rem",
-                padding: "0.8rem",
-                borderRadius: "12px",
-                textDecoration: "none",
-                fontSize: "0.92rem",
-                fontWeight: isActive ? "600" : "500",
-                color: isActive ? "#2B3E34" : "#5A6A61",
-                backgroundColor: isActive ? "#E8EFEA" : "transparent",
-                transition: "all 0.2s ease-in-out",
-                borderLeft: !isCollapsed && isActive ? "4px solid #2B3E34" : "4px solid transparent",
-              })}
-              onMouseEnter={(e) => {
-                if (!e.currentTarget.href.includes(window.location.pathname)) {
-                  e.currentTarget.style.backgroundColor = "#F8FAFC";
-                  e.currentTarget.style.color = "#2B3E34";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!e.currentTarget.href.includes(window.location.pathname)) {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#5A6A61";
-                }
-              }}
+              className={({ isActive }) =>
+                `group flex items-center ${
+                  isCollapsed ? "justify-center" : "justify-start"
+                } gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? "bg-[var(--bg-subtle)] text-[var(--text)] border-l-4 border-[var(--accent)]"
+                    : "border-l-4 border-transparent text-[var(--text-dim)] hover:bg-[var(--bg-subtle)] hover:text-[var(--text)]"
+                }`
+              }
             >
-              <IconComponent size={20} strokeWidth={2.2} style={{ flexShrink: 0 }} />
-              
-              <span style={{ 
-                whiteSpace: "nowrap",
-                opacity: isCollapsed ? 0 : 1,
-                width: isCollapsed ? 0 : "auto",
-                transition: "opacity 0.2s, width 0.2s",
-                overflow: "hidden"
-              }}>
+              <IconComponent size={20} strokeWidth={2.2} className="flex-shrink-0" />
+              <span
+                className={`whitespace-nowrap overflow-hidden transition-all duration-200 ${
+                  isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+                }`}
+              >
                 {label}
               </span>
             </NavLink>
           ))}
         </nav>
 
-        {/* Bottom Actions Container */}
-        <div style={{ marginTop: "auto" }}>
-          
-          {/* Map Widget Layout */}
-          <div style={{ 
-            marginBottom: isCollapsed ? "0px" : "1.5rem", 
-            whiteSpace: "nowrap",
-            opacity: isCollapsed ? 0 : 1,
-            maxHeight: isCollapsed ? 0 : "220px",
-            transition: "opacity 0.2s, max-height 0.3s, margin 0.2s",
-            overflow: "hidden"
-          }}>
-            <p style={{
-              fontSize: "0.7rem",
-              color: "#99AAB0",
-              fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.12em",
-              marginBottom: "0.6rem",
-              paddingLeft: "0.25rem"
-            }}>
-              📍 Your Location
-            </p>
+        <div className="mt-auto">
+          <div
+            className={`overflow-hidden rounded-3xl transition-all duration-300 ${
+              isCollapsed ? "max-h-0 opacity-0" : "mb-6 max-h-[220px] opacity-100"
+            }`}
+          >
+            <div className="flex items-center gap-2 pb-3 pl-1 text-[0.78rem] font-bold uppercase tracking-[0.01em] text-[var(--text)]">
+              <MapPin size={13} className="text-[var(--accent)] flex-shrink-0" strokeWidth={2.2} />
+              <span>Your Location</span>
+              <span className="rounded-full bg-[rgba(26,128,96,0.12)] px-2 py-0.5 text-[0.6rem] font-semibold text-[var(--accent)]">
+                Live
+              </span>
+            </div>
             <div
               onClick={() => navigate("/map")}
-              style={{
-                position: "relative",
-                borderRadius: "16px",
-                overflow: "hidden",
-                border: "1px solid rgba(0, 0, 0, 0.08)",
-                height: "180px",
-                width: "100%",
-                cursor: "pointer"
-              }}
+              className="relative h-[180px] w-full cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-slate-100"
             >
               {isLoaded && userLocation ? (
                 <GoogleMap
-                  mapContainerStyle={{ width: "100%", height: "100%", position: "absolute" }}
+                  mapContainerClassName="absolute inset-0"
                   center={userLocation}
                   zoom={13}
                   onLoad={onLoad}
@@ -257,63 +177,28 @@ export default function Sidebar({ isCollapsed }) {
                   <Marker position={userLocation} />
                 </GoogleMap>
               ) : (
-                <div style={{ width: "100%", height: "100%", background: "#F1F5F9" }} />
+                <div className="absolute inset-0 bg-slate-100" />
               )}
-              <div style={{
-                position: "absolute",
-                bottom: "8px",
-                right: "8px",
-                backgroundColor: "rgba(13, 23, 22, 0.85)",
-                backdropFilter: "blur(4px)",
-                borderRadius: "6px",
-                padding: "3px 8px",
-                fontSize: "0.65rem",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                zIndex: 2
-              }}>
+              <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-slate-950/85 px-2 py-1 text-[0.65rem] text-white backdrop-blur-sm">
                 <Maximize2 size={10} />
                 Expand Map
               </div>
             </div>
           </div>
 
-          {/* Permanent Logout Action Button */}
           <button
             onClick={handleLogout}
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              background: "#FFF1F2",
-              color: "#F43F5E",
-              border: "none",
-              borderRadius: "12px",
-              fontSize: "0.9rem",
-              fontWeight: "600",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: isCollapsed ? "center" : "center",
-              gap: isCollapsed ? "0px" : "0.6rem",
-              transition: "all 0.2s",
-              whiteSpace: "nowrap"
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#FFE4E6"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#FFF1F2"}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFF1F2] px-4 py-3 text-sm font-semibold text-[#F43F5E] transition hover:bg-[#FFE4E6]"
           >
-            <LogOut size={16} style={{ flexShrink: 0 }} />
-            <span style={{ 
-              opacity: isCollapsed ? 0 : 1,
-              width: isCollapsed ? 0 : "auto",
-              transition: "opacity 0.2s, width 0.2s",
-              overflow: "hidden"
-            }}>
+            <LogOut size={16} className="flex-shrink-0" />
+            <span
+              className={`whitespace-nowrap overflow-hidden transition-all duration-200 ${
+                isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+              }`}
+            >
               Log out
             </span>
           </button>
-          
         </div>
       </div>
     </aside>

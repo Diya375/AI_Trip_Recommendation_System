@@ -39,39 +39,14 @@ import { Link } from "react-router-dom";
 export default function Header() {
   const token = localStorage.getItem("token");
   return (
-    <header style={{
-      position: "absolute",  // 1. Sits directly on top of the slideshow layers
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 10,            // 2. Higher than the hero text so links remain clickable
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "1.75rem 2.5rem",
-      // 3. Subtle dark fade from the top down + frosted glass blur for micro-contrast
-      background: "linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 100%)",
-      backdropFilter: "blur(2px)", 
-    }}>
-    {/* 🧭 REFINED TYPOGRAPHIC LOGO (Icon removed) */}
-<Link to="/" style={{ 
-  display: "flex",
-  alignItems: "center",
-  textDecoration: "none"
-}}>
-  <span className="cinzel" style={{ 
-    fontSize: "1.4rem", 
-    color: "#ffffff",         // High-contrast clean white text
-    letterSpacing: "0.22em",  // Expanded letter spacing for a luxury branding feel
-    fontWeight: "700",
-    textTransform: "uppercase",
-    textShadow: "0 2px 4px rgba(0,0,0,0.2)"
-  }}>
-    YatraVerse
-    {/* A minimalist dot in your accent color replaces the star as a clean focal point */}
-    <span style={{ color: "var(--accent)", marginLeft: "0.15rem" }}>.</span>
-  </span>
-</Link>
+    <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-6 py-7 sm:px-10 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
+      {/* 🧭 REFINED TYPOGRAPHIC LOGO (Icon removed) */}
+      <Link to="/" className="flex items-center no-underline">
+        <span className="cinzel text-[1.4rem] uppercase font-bold tracking-[0.22em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]">
+          YatraVerse
+          <span className="ml-1 text-[var(--accent)]">.</span>
+        </span>
+      </Link>
 
       {/* Navigation Links */}
       {/* <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}> */}
@@ -93,37 +68,22 @@ export default function Header() {
       </nav> */}
 
       {/* Action Buttons */}
-      <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+      <div className="flex items-center gap-4">
   {token ? (
     <>
       <Link
         to="/dashboard"
-       style={{
-      background: "transparent",
-      border: "none",
-      color: "#fff",
-      fontFamily: "'Playfair Display', 'Georgia', serif",
-      fontWeight: "600",
-      fontSize: "0.9rem",
-      cursor: "pointer",
-    }}
+        className="text-white text-sm font-semibold font-serif no-underline"
       >
         Dashboard
       </Link>
 
       <button
-        className="btn"
+        className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 font-serif"
         onClick={() => {
           localStorage.removeItem("token");
           window.location.href = "/";
         }}
-        style={{background: "#fff",
-      color: "#0a1f1c",
-      border: "none",
-      borderRadius: "24px",
-      padding: "8px 18px",
-      fontWeight: "600",
-      cursor: "pointer",fontFamily: "'Playfair Display', 'Georgia', serif"}}
       >
         Logout
       </button>
@@ -132,25 +92,13 @@ export default function Header() {
     <>
       <Link
         to="/login"
-        style={{
-          color: "#ffffff",
-          textDecoration: "none",
-          fontFamily: "'Playfair Display', 'Georgia', serif",
-          fontSize: "0.9rem",
-        }}
+        className="text-white text-sm font-semibold font-serif no-underline"
       >
         Login
       </Link>
 
       <Link to="/signup">
-        <button
-          className="btn btn-primary"
-          style={{
-            padding: "0.5rem 1.25rem",
-            fontFamily: "'Playfair Display', 'Georgia', serif",
-            fontSize: "0.85rem",
-          }}
-        >
+        <button className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-950 font-serif">
           Sign Up
         </button>
       </Link>

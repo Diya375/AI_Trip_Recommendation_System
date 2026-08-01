@@ -45,7 +45,7 @@ export default function Verify() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <div className="w-full max-w-md bg-[var(--card)] border border-[var(--border)] rounded-2xl px-10 py-12 text-center shadow-xl fade-up">
+      <div className="w-full max-w-md bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl px-10 py-12 text-center shadow-xl fade-up">
 
         {/* Icon */}
         <div className="w-14 h-14 rounded-full bg-[var(--accent)] flex items-center justify-center text-2xl mx-auto mb-6">

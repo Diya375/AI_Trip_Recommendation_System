@@ -36,13 +36,13 @@ export default function JoinTrip() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
-      <div className="fade-up w-full max-w-md rounded-2xl border border-gray-200 bg-white px-6 sm:px-10 py-10 sm:py-12 text-center shadow-sm">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4 py-10">
+      <div className="fade-up w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] px-6 sm:px-10 py-10 sm:py-12 text-center shadow-sm">
 
         {loading ? (
           <div className="flex flex-col items-center gap-3 py-6">
             <Loader2 size={22} className="text-[var(--accent)] animate-spin" />
-            <p className="text-gray-400 text-sm">Loading invite...</p>
+            <p className="text-[var(--text-dim)] text-sm">Loading invite...</p>
           </div>
 
         ) : error ? (
@@ -67,15 +67,15 @@ export default function JoinTrip() {
               <Compass size={26} strokeWidth={1.8} />
             </div>
 
-            <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">
+            <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest mb-1">
               You've been invited to join
             </p>
             <h1 className="cinzel text-2xl sm:text-3xl font-bold text-[var(--accent)] mb-2 break-words">
               {trip.name}
             </h1>
-            <p className="text-sm text-gray-500 mb-8">
+            <p className="text-sm text-[var(--text-dim)] mb-8">
               Organized by{" "}
-              <span className="text-gray-900 font-semibold">{trip.admin_name}</span>
+              <span className="text-[var(--text)] font-semibold">{trip.admin_name}</span>
             </p>
 
             <button
@@ -92,7 +92,7 @@ export default function JoinTrip() {
               )}
             </button>
 
-            <p className="text-xs text-gray-400 mt-4">
+            <p className="text-xs text-[var(--text-dim)] mt-4">
               You'll be taken to the trip planner after joining.
             </p>
           </>
