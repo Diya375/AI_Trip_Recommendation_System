@@ -387,12 +387,9 @@ export default function Dashboard() {
   });
 
   const featuredTrip = sortedTrips[0]; // newest trip, shown in the hero panel
-  const restTrips = sortedTrips.slice(1);
-
-  const visibleTrips = restTrips
-    .filter((t) => roleFilter === "all" || t.role === roleFilter)
-    .filter((t) => t.name.toLowerCase().includes(search.trim().toLowerCase()));
-
+  const visibleTrips = sortedTrips
+   .filter((t) => roleFilter === "all" || t.role === roleFilter)
+   .filter((t) => t.name.toLowerCase().includes(search.trim().toLowerCase()));
   const initials = user?.name
     ?.split(" ")
     .map((n) => n[0])
