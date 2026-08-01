@@ -606,3 +606,346 @@ export default function Explore() {
     </DashboardLayout>
   );
 }
+
+// // src/pages/Explore.js
+// import React, { useState, useEffect } from "react";
+// import DashboardLayout from "../../layouts/DashboardLayout";
+// import API from "../../services/api";
+// import MapComponent from "../../components/destinations/MapComponent";
+// import { MapPin, Clock, Mountain, Plus, Check, ArrowLeft } from "lucide-react";
+
+// // Import data from external dataset file
+// import { places, ALL_TYPES } from "../../data/destinationsData";
+
+// export default function Explore() {
+//   const [selectedType, setSelectedType] = useState("All");
+//   const [trips, setTrips] = useState([]);
+//   const [addedPlaces, setAddedPlaces] = useState({});
+//   const [addingTo, setAddingTo] = useState(null);
+//   const [showTripPicker, setShowTripPicker] = useState(null);
+  
+//   // States for managing detailed split-screen view
+//   const [selectedPlace, setSelectedPlace] = useState(null);
+//   const [activeTab, setActiveTab] = useState("todo"); // "todo", "eat", "stay"
+
+//   useEffect(() => {
+//     API.get("/trips/my").then((res) => setTrips(res.data)).catch(() => {});
+//   }, []);
+
+//   const filtered = places.filter((p) =>
+//     selectedType === "All" || p.type.includes(selectedType)
+//   );
+
+//   const handleAddToTrip = async (tripId, place, e) => {
+//     if (e) e.stopPropagation(); // Prevents opening detailed view when adding trip
+//     setAddingTo(`${tripId}-${place.name}`);
+//     try {
+//       await API.post(`/trips/${tripId}/places`, {
+//         name: place.name,
+//         address: `${place.region}, Nepal`,
+//         lat: null, lng: null, place_id: null,
+//       });
+//       setAddedPlaces((prev) => ({ ...prev, [`${tripId}-${place.name}`]: true }));
+//       setShowTripPicker(null);
+//     } catch (err) {
+//       alert(err.response?.data?.error || "Failed to add place");
+//     } finally {
+//       setAddingTo(null);
+//     }
+//   };
+
+//   const getTabIcon = () => {
+//     if (activeTab === "eat") return "🍲 Try ";
+//     if (activeTab === "stay") return "🏨 Book ";
+//     return "🌟 Explore ";
+//   };
+
+//   // RENDERS SPLIT SCREEN VIEW WHEN A PLACE IS SELECTED
+//   if (selectedPlace) {
+//     const activeCategories = selectedPlace[activeTab] || [];
+//     return (
+//       <DashboardLayout>
+//         <div style={{
+//           display: "flex",
+//           width: "100%",
+//           height: "calc(100vh - 120px)",
+//           background: "#ffffff",
+//           borderRadius: "24px",
+//           overflow: "hidden",
+//           boxShadow: "0 10px 30px rgba(0,0,0,0.05)",
+//           border: "1px solid rgba(0,0,0,0.06)"
+//         }} className="fade-up">
+          
+//           {/* LEFT CONTENT TRAVEL GUIDE PANEL */}
+//           <div style={{ width: "55%", height: "100%", overflowY: "auto", display: "flex", flexDirection: "column", background: "#fff" }}>
+            
+//             {/* Hero Image */}
+//             <div style={{
+//               position: "relative",
+//               minHeight: "45vh",
+//               backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.65)), url(${selectedPlace.img})`,
+//               backgroundSize: "cover",
+//               backgroundPosition: "center",
+//               display: "flex",
+//               flexDirection: "column",
+//               justifyContent: "flex-end",
+//               padding: "2.5rem"
+//             }}>
+//               {/* Back Button */}
+//               <button 
+//                 onClick={() => { setSelectedPlace(null); setActiveTab("todo"); }}
+//                 style={{
+//                   position: "absolute",
+//                   top: "1.5rem",
+//                   left: "1.5rem",
+//                   background: "rgba(255,255,255,0.9)",
+//                   border: "none",
+//                   borderRadius: "50%",
+//                   width: "42px",
+//                   height: "42px",
+//                   display: "flex",
+//                   alignItems: "center",
+//                   justifyContent: "center",
+//                   cursor: "pointer",
+//                   boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+//                   transition: "transform 0.2s"
+//                 }}
+//                 onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+//                 onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+//               >
+//                 <ArrowLeft size={18} color="#2B3E34" />
+//               </button>
+
+//               <div style={{ textTransform: "uppercase", letterSpacing: "0.15em", color: "#FFEBE7", fontSize: "0.8rem", fontWeight: "700", marginBottom: "0.4rem" }}>
+//                 📍 {selectedPlace.region}
+//               </div>
+//               <h1 className="cinzel" style={{ color: "#fff", fontSize: "2.5rem", margin: "0 0 0.5rem 0", fontWeight: "700" }}>
+//                 {selectedPlace.name}
+//               </h1>
+//               <p style={{ color: "rgba(255,255,255,0.9)", margin: 0, fontSize: "1rem", fontStyle: "italic", maxWidth: "90%" }}>
+//                 "{selectedPlace.desc}"
+//               </p>
+//             </div>
+
+//             {/* Historical Overview */}
+//             <div style={{ padding: "2rem 2.5rem 1rem" }}>
+//               <h3 className="cinzel" style={{ fontSize: "1.25rem", color: "#2B3E34", fontWeight: "700", marginBottom: "0.75rem", letterSpacing: "0.02em" }}>
+//                 Historical & Regional Overview
+//               </h3>
+//               <p style={{ color: "#4A5568", fontSize: "0.95rem", lineHeight: "1.7", margin: 0, textAlign: "justify" }}>
+//                 {selectedPlace.history}
+//               </p>
+//             </div>
+
+//             {/* Interactive Tabs */}
+//             <div style={{ padding: "1.5rem 2.5rem 0" }}>
+//               <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid #E2E8F0", paddingBottom: "1rem" }}>
+//                 {["todo", "eat", "stay"].map((tab) => (
+//                   <button
+//                     key={tab}
+//                     onClick={() => setActiveTab(tab)}
+//                     style={{
+//                       backgroundColor: activeTab === tab ? "#FFEBE7" : "transparent",
+//                       color: activeTab === tab ? "#FF5A5F" : "#4A5568",
+//                       border: "none",
+//                       padding: "0.6rem 1.2rem",
+//                       borderRadius: "20px",
+//                       fontWeight: "600",
+//                       cursor: "pointer",
+//                       fontSize: "0.85rem",
+//                       transition: "all 0.2s"
+//                     }}
+//                   >
+//                     {tab === "todo" && "📍 What to do"}
+//                     {tab === "eat" && "🍴 What to eat"}
+//                     {tab === "stay" && "🛏️ Where to stay"}
+//                   </button>
+//                 ))}
+//               </div>
+//             </div>
+
+//             {/* Tab Details Content */}
+//             <div style={{ padding: "1.5rem 2.5rem 2.5rem", flex: 1 }}>
+//               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+//                 {activeCategories.map((item, index) => (
+//                   <div key={index} style={{
+//                     padding: "1.1rem 1.25rem",
+//                     background: "#F8FAFC",
+//                     borderRadius: "14px",
+//                     border: "1px solid #E2E8F0",
+//                     fontSize: "0.9rem",
+//                     fontWeight: "500",
+//                     color: "#4A5568",
+//                     display: "flex",
+//                     alignItems: "center"
+//                   }}>
+//                     {getTabIcon()}{item}
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+
+//           </div>
+
+//           {/* RIGHT PANORAMIC INTERACTIVE MAP PANEL */}
+//           <div style={{ width: "45%", height: "100%", borderLeft: "1px solid rgba(0,0,0,0.08)" }}>
+//             <MapComponent selectedDestination={selectedPlace.name} />
+//           </div>
+
+//         </div>
+//       </DashboardLayout>
+//     );
+//   }
+
+//   // STANDARD EXPLORE GRID SCREEN
+//   return (
+//     <DashboardLayout>
+//       <div className="fade-up">
+
+//         {/* Top Header */}
+//         <div className="mb-8">
+//           <h1 className="section-title">Explore Hidden Nepal</h1>
+//           <p className="section-sub">Discover extraordinary destinations beyond the ordinary</p>
+//         </div>
+
+//         {/* Filter Toolbar */}
+//         <div className="flex flex-wrap items-center gap-3 mb-8 p-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)]">
+//           <div className="flex flex-wrap gap-2 items-center">
+//             <span className="text-xs text-[var(--text-dim)] uppercase tracking-widest mr-1">Type</span>
+//             {ALL_TYPES.map((type) => (
+//               <button
+//                 key={type}
+//                 onClick={() => setSelectedType(type)}
+//                 className={`px-3 py-1 rounded-full text-sm border transition-all cursor-pointer
+//                   ${selectedType === type
+//                     ? "bg-[var(--accent)] border-[var(--accent)] text-white"
+//                     : "border-[var(--border)] text-[var(--text-dim)] bg-transparent hover:border-[var(--accent)]"}`}
+//               >
+//                 {type}
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Destination Cards Grid */}
+//         <div style={{ 
+//           display: "grid",
+//           gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
+//           gap: "2rem",
+//         }}>
+//           {filtered.map((place) => (
+//             <div 
+//               key={place.name} 
+//               onClick={() => setSelectedPlace(place)}
+//               className="card card-hover overflow-hidden flex flex-col" 
+//               style={{ padding: 0, cursor: "pointer" }}
+//             >
+//               {/* Photo Banner */}
+//               <div className="relative h-56 overflow-hidden">
+//                 <img
+//                   src={place.img}
+//                   alt={place.name}
+//                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+//                 />
+//                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+//                 <div className="absolute bottom-0 left-0 right-0 p-4">
+//                   <h2 className="cinzel text-2xl font-bold text-white leading-tight">{place.name}</h2>
+//                   <div className="flex items-center gap-1 mt-1">
+//                     <MapPin size={12} className="text-white/70" />
+//                     <span className="text-xs text-white/70">{place.region}</span>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Card Body */}
+//               <div className="p-5 flex flex-col gap-4 flex-1">
+//                 <div className="inline-flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs px-3 py-1.5 rounded-full w-fit font-medium">
+//                   ✨ {place.highlight}
+//                 </div>
+//                 <p className="text-sm text-[var(--text-dim)] leading-relaxed">{place.desc}</p>
+
+//                 {/* Information Badges */}
+//                 <div className="flex gap-3">
+//                   <div className="flex items-center gap-2 bg-[var(--bg)] border border-[var(--border)] rounded-xl px-3 py-2 flex-1">
+//                     <Clock size={13} className="text-[var(--accent)] shrink-0" />
+//                     <div>
+//                       <p className="text-[0.6rem] text-[var(--text-dim)] uppercase tracking-wider">Best Time</p>
+//                       <p className="text-xs text-[var(--text)] font-medium">{place.bestTime}</p>
+//                     </div>
+//                   </div>
+//                   <div className="flex items-center gap-2 bg-[var(--bg)] border border-[var(--border)] rounded-xl px-3 py-2 flex-1">
+//                     <Mountain size={13} className="text-[var(--accent)] shrink-0" />
+//                     <div>
+//                       <p className="text-[0.6rem] text-[var(--text-dim)] uppercase tracking-wider">Duration</p>
+//                       <p className="text-xs text-[var(--text)] font-medium">{place.days}</p>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Subtag Array Badges */}
+//                 <div className="flex flex-wrap gap-1.5">
+//                   {place.type.map((t) => (
+//                     <span key={t} className="text-xs px-2.5 py-0.5 rounded-full border border-[var(--border)] text-[var(--text-dim)]">
+//                       {t}
+//                     </span>
+//                   ))}
+//                 </div>
+
+//                 {/* Trip Add Selector */}
+//                 <div className="mt-auto pt-4" onClick={(e) => e.stopPropagation()}>
+//                   {showTripPicker === place.name ? (
+//                     <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-white shadow-sm">
+//                       <p className="text-xs text-[var(--text-dim)] px-3 py-2 border-b border-[var(--border)] bg-[var(--bg)] font-medium">
+//                         Add to which trip?
+//                       </p>
+//                       {trips.length === 0 ? (
+//                         <p className="text-xs text-[var(--text-dim)] px-3 py-3">No trips yet.</p>
+//                       ) : (
+//                         trips.map((trip) => {
+//                           const key = `${trip.id}-${place.name}`;
+//                           const done = addedPlaces[key];
+//                           return (
+//                             <button
+//                               key={trip.id}
+//                               onClick={(e) => !done && handleAddToTrip(trip.id, place, e)}
+//                               disabled={addingTo === key || done}
+//                               className="w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-[var(--bg)] transition-colors border-b border-[var(--border)] last:border-0 text-[var(--text)] disabled:opacity-60 cursor-pointer bg-transparent"
+//                             >
+//                               <span>{trip.name}</span>
+//                               {done ? (
+//                                 <Check size={14} className="text-green-500" />
+//                               ) : addingTo === key ? (
+//                                 <span className="text-xs text-[var(--text-dim)]">Adding...</span>
+//                               ) : (
+//                                 <Plus size={14} className="text-[var(--text-dim)]" />
+//                               )}
+//                             </button>
+//                           );
+//                         })
+//                       )}
+//                       <button
+//                         onClick={() => setShowTripPicker(null)}
+//                         className="w-full text-center py-1.5 text-xs text-[var(--text-dim)] bg-gray-50 border-t border-[var(--border)] hover:bg-gray-100 cursor-pointer"
+//                       >
+//                         Cancel
+//                       </button>
+//                     </div>
+//                   ) : (
+//                     <button
+//                       onClick={() => setShowTripPicker(place.name)}
+//                       className="w-full py-2 px-4 rounded-xl border border-[var(--border)] bg-[var(--bg)] hover:bg-[var(--accent)] hover:text-white text-xs font-semibold text-[var(--text)] transition-all flex items-center justify-center gap-2 cursor-pointer"
+//                     >
+//                       <Plus size={14} /> Add to Trip
+//                     </button>
+//                   )}
+//                 </div>
+
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+
+//       </div>
+//     </DashboardLayout>
+//   );
+// }

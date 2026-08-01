@@ -170,3 +170,4 @@ export const places = [
     stay: ["Kyanjin Gompa Tea Houses", "Lama Hotel Lodges", "Syabrubesi Riverside Hotels", "Tamang Community Heritage Stays"]
   }
 ];
+
