@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Plane } from "lucide-react";
 
 const navLinks = [
@@ -11,14 +11,55 @@ const navLinks = [
 
 export default function Navbar() {
   const token = localStorage.getItem("token");
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    setActiveSection(location.hash || "");
+
+    const updateActiveSection = () => {
+      const sections = navLinks
+        .map((link) => ({ hash: link.href, element: document.querySelector(link.href) }))
+        .filter((item) => item.element);
+
+      if (sections.length === 0) {
+        return;
+      }
+
+      const firstTop = sections[0].element.getBoundingClientRect().top;
+      if (firstTop > 100) {
+        setActiveSection(location.hash || "");
+        return;
+      }
+
+      const topOffset = 100;
+      const active = sections
+        .map(({ hash, element }) => {
+          const rect = element.getBoundingClientRect();
+          return { hash, distance: Math.abs(rect.top - topOffset) };
+        })
+        .sort((a, b) => a.distance - b.distance)[0];
+
+      setActiveSection(active?.hash || "");
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    return () => window.removeEventListener("scroll", updateActiveSection);
+  }, [location.pathname, location.hash]);
 
   return (
     <>
@@ -42,15 +83,18 @@ export default function Navbar() {
 
         <div className="hidden flex-1 justify-center md:flex">
           <div className="flex items-center gap-1 px-2 py-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${scrolled ? "text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href;
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${scrolled ? "text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "text-white/80 hover:bg-white/10 hover:text-white"} ${isActive ? "bg-slate-100 text-slate-900" : ""}`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </div>
         </div>
 
