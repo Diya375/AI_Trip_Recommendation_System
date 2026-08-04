@@ -41,7 +41,7 @@ export default function Navbar() {
 
       const firstTop = sections[0].element.getBoundingClientRect().top;
       if (firstTop > 100) {
-        setActiveSection(location.hash || "");
+        setActiveSection("");
         return;
       }
 
