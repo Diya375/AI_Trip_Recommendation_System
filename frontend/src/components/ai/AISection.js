@@ -74,7 +74,7 @@ const dnaFeatures = [
 ];
 export default function AISection() {
   return (
-    <section className="w-full bg-white text-[#2B3E34] relative px-6 pb-32 sm:px-10 lg:px-16">
+    <section id="assistant" className="scroll-mt-24 w-full bg-white text-[#2B3E34] relative px-6 pb-32 sm:px-10 lg:px-16">
       <div className="mx-auto max-w-[1100px]">
         
         {/* Editorial Header */}

@@ -1,4 +1,4 @@
-﻿// src/components/Sidebar.js
+// src/components/Sidebar.js
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";

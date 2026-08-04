@@ -51,8 +51,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
-      <div className="w-full max-w-md rounded-[24px] bg-white p-10 text-center shadow-xl shadow-slate-200/50">
+    <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-4 py-10 sm:px-6">
+      <div className="card w-full max-w-md px-8 py-10 text-center">
         <h1 className="cinzel text-3xl font-bold text-[var(--accent)] mb-2">
           Join YatraVerse
         </h1>
@@ -85,14 +85,14 @@ export default function Signup() {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+            className="input w-full"
           />
           <input
             type="email"
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+            className="input w-full"
           />
 
           {/* Password with Lucide Eye toggle */}
@@ -102,7 +102,7 @@ export default function Signup() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white"
+              className="input w-full pr-12"
             />
             <button
               type="button"
@@ -122,7 +122,7 @@ export default function Signup() {
 
         <button
           onClick={handleSignup}
-          className="w-full rounded-full bg-[#0f172a] px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-900"
+          className="btn btn-primary w-full py-3 text-base"
         >
           Create Account
         </button>

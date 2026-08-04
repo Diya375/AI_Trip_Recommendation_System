@@ -97,11 +97,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4">
-      <div className="card fade-up w-full max-w-md px-10 py-12 text-center">
-
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] px-4 py-10">
+      <div className="card fade-up w-full max-w-md px-8 py-10 text-center">
         <h1 className="cinzel text-4xl text-[var(--accent)] mb-2">YatraVerse</h1>
-        <p className="text-sm text-[var(--text-dim)] tracking-widest mb-8">
+        <p className="text-sm text-[var(--text-dim)] tracking-[0.25em] mb-8">
           Welcome Back Explorer
         </p>
 

@@ -4,7 +4,7 @@ import { places } from '../../data/destinationsData';
 
 export default function DestinationCards() {
   return (
-    <section className="px-8 sm:px-10 pb-20 bg-[var(--bg)]">
+    <section id="explore" className="scroll-mt-24 px-8 sm:px-10 pb-20 bg-[var(--bg)]">
       <div className="mx-auto max-w-[1000px]">
         
         {/* Section Header */}

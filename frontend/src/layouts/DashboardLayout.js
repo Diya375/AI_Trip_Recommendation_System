@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import { Menu, Globe, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";

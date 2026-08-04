@@ -15,6 +15,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://127.0.0.1:3000",
   process.env.LOCAL_URL,
   process.env.NGROK_URL,
   process.env.PROD_URL,
@@ -22,8 +23,12 @@ const allowedOrigins = [
 
 app.use(cors({
   origin:(origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-    else callback(new Error("Not allowed by CORS"));
+    if (!origin) return callback(null, true);
+
+    const isLocalDevOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    if (allowedOrigins.includes(origin) || isLocalDevOrigin) return callback(null, true);
+
+    callback(new Error("Not allowed by CORS"));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"],

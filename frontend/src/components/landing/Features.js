@@ -47,7 +47,7 @@ export default function Features() {
   };
 
   return (
-    <section className="w-full py-24 px-8 bg-white">
+    <section id="features" className="scroll-mt-24 w-full py-24 px-8 bg-white">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
