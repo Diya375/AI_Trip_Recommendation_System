@@ -94,14 +94,14 @@ export default function Navbar() {
       </nav>
 
       {mobileOpen && (
-        <div className="fixed left-0 right-0 top-16 z-40 border-b border-white/10 bg-slate-950/95 px-4 py-4 pb-6 backdrop-blur-xl md:hidden">
+        <div className="fixed left-0 right-0 top-16 z-40 border-b border-slate-200/70 bg-white/95 px-4 py-4 pb-6 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-3 py-3 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
+                className="rounded-xl px-3 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
               >
                 {link.label}
               </a>
@@ -109,12 +109,12 @@ export default function Navbar() {
           </div>
           <div className="mt-4 flex flex-col gap-2">
             {token ? (
-              <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white">
+              <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="rounded-xl bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white">
                 Go to Dashboard
               </Link>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-white/15 px-4 py-3 text-center text-sm font-semibold text-white/85">
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-slate-300 px-4 py-3 text-center text-sm font-semibold text-slate-700">
                   Login
                 </Link>
                 <Link to="/signup" onClick={() => setMobileOpen(false)} className="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white">
