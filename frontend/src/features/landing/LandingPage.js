@@ -34,16 +34,16 @@ export default function LandingPage() {
     <>
       <Navbar />
       <Hero />
-      <section id="about" className="scroll-mt-24 bg-[var(--bg)] px-4 py-16 text-[var(--text)] sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl rounded-[32px] border border-[var(--border)]/60 bg-[var(--bg-card)] p-8 shadow-[0_14px_40px_rgba(75,119,98,0.12)] sm:p-10 lg:p-14">
+      <section id="about" className="scroll-mt-24 bg-white px-4 py-20 text-[#2B3E34] sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[28px] border border-[rgba(241,245,249,0.8)] bg-[#F8FAFC] p-8 shadow-[0_16px_40px_rgba(43,62,52,0.06)] sm:p-10 lg:p-14">
           <div className="max-w-3xl">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-[var(--accent)]">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-[#374F43]">
               About YatraVerse
             </p>
-            <h2 className="text-3xl font-bold leading-tight text-[var(--text)] sm:text-4xl">
+            <h2 className="cinzel text-3xl font-bold leading-tight text-[#2B3E34] sm:text-4xl">
               Your AI travel companion for unforgettable journeys.
             </h2>
-            <p className="mt-5 text-lg leading-8 text-[var(--text-dim)]">
+            <p className="mt-5 text-lg leading-8 text-[#5c6660]">
               YatraVerse helps travelers plan, organize, and enjoy every trip with ease. From discovering destinations to managing group expenses, our platform brings everything together in one simple experience.
             </p>
           </div>
@@ -54,13 +54,13 @@ export default function LandingPage() {
               return (
                 <div
                   key={item.title}
-                  className="rounded-2xl border border-[var(--border)]/70 bg-[var(--bg-subtle)] p-6"
+                  className="rounded-[20px] border border-[rgba(241,245,249,0.9)] bg-white p-6 shadow-[0_8px_24px_rgba(43,62,52,0.04)]"
                 >
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-[#374F43]/10 text-[#374F43]">
                     <Icon size={20} />
                   </div>
-                  <h3 className="text-xl font-semibold text-[var(--text)]">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-7 text-[var(--text-dim)]">{item.text}</p>
+                  <h3 className="text-xl font-semibold text-[#2B3E34]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-7 text-[#5c6660]">{item.text}</p>
                 </div>
               );
             })}

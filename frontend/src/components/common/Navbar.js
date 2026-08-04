@@ -20,276 +20,104 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navStyle = {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 50,
-    transition: "all 0.3s ease",
-    padding: "0 2rem",
-    height: "72px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    ...(scrolled
-      ? {
-        background: "rgba(15,23,42,0.85)",
-        backdropFilter: "blur(20px) saturate(200%)",
-        WebkitBackdropFilter: "blur(20px) saturate(200%)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
-      }
-      : {
-        background: "transparent",
-      }),
-  };
-
   return (
     <>
-      <nav style={navStyle}>
-        {/* Logo */}
-        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{
-            width: "36px", height: "36px", borderRadius: "10px",
-            background: "linear-gradient(135deg, #3B82F6, #06B6D4)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 4px 12px rgba(59,130,246,0.4)",
-          }}>
-            <Plane size={18} color="#fff" strokeWidth={2.5} style={{ transform: "rotate(-45deg)" }} />
+      <nav
+        className={`fixed inset-x-0 top-0 z-50 flex h-18 items-center justify-between px-4 py-3 transition-all duration-300 sm:px-6 lg:px-8 ${
+          scrolled
+            ? "border-b border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_4px_24px_rgba(15,23,42,0.06)]"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="flex min-w-0 flex-1 items-center">
+          <Link to="/" className={`flex items-center gap-2 whitespace-nowrap no-underline ${scrolled ? "text-slate-800" : "text-white"}`}>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-cyan-400 shadow-lg shadow-sky-500/30">
+              <Plane size={18} color="#fff" strokeWidth={2.5} className="rotate-[-45deg]" />
+            </div>
+            <span className={`text-lg font-extrabold tracking-[-0.02em] ${scrolled ? "text-slate-800" : "bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent"}`}>
+              YatraVerse
+            </span>
+          </Link>
+        </div>
+
+        <div className="hidden flex-1 justify-center md:flex">
+          <div className="flex items-center gap-1 px-2 py-1">
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${scrolled ? "text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
-          <span style={{
-            fontFamily: "'Inter', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.25rem",
-            background: "linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            letterSpacing: "-0.02em",
-          }}>
-            YatraVerse
-          </span>
-        </Link>
-
-        {/* Desktop nav links */}
-        <div className="hidden md:flex items-center" style={{ gap: "0.25rem" }}>
-          {navLinks.map(link => (
-            <a
-              key={link.label}
-              href={link.href}
-              style={{
-                color: "rgba(255,255,255,0.75)",
-                textDecoration: "none",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                padding: "0.5rem 0.875rem",
-                borderRadius: "10px",
-                transition: "all 0.2s ease",
-                display: "block",
-              }}
-              onMouseEnter={e => {
-                e.target.style.color = "#fff";
-                e.target.style.background = "rgba(255,255,255,0.08)";
-              }}
-              onMouseLeave={e => {
-                e.target.style.color = "rgba(255,255,255,0.75)";
-                e.target.style.background = "transparent";
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
         </div>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center" style={{ gap: "0.75rem" }}>
-          {token ? (
-            <>
-              <Link to="/dashboard" style={{
-                color: "rgba(255,255,255,0.85)",
-                textDecoration: "none",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                padding: "0.5rem 1rem",
-                borderRadius: "10px",
-                transition: "all 0.2s ease",
-              }}
-                onMouseEnter={e => e.target.style.color = "#fff"}
-                onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.85)"}
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={() => { localStorage.removeItem("token"); window.location.href = "/"; }}
-                style={{
-                  background: "rgba(255,255,255,0.1)",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  color: "#fff",
-                  borderRadius: "12px",
-                  padding: "0.55rem 1.2rem",
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  backdropFilter: "blur(8px)",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={e => {
-                  e.target.style.background = "rgba(255,255,255,0.18)";
-                }}
-                onMouseLeave={e => {
-                  e.target.style.background = "rgba(255,255,255,0.1)";
-                }}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" style={{
-                color: "rgba(255,255,255,0.85)",
-                textDecoration: "none",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                padding: "0.55rem 1rem",
-                borderRadius: "10px",
-                transition: "all 0.2s ease",
-              }}>
-                Login
-              </Link>
-              <Link to="/signup" style={{ textDecoration: "none" }}>
-                <button style={{
-                  background: "linear-gradient(135deg, #3B82F6, #06B6D4)",
-                  border: "none",
-                  color: "#fff",
-                  borderRadius: "12px",
-                  padding: "0.6rem 1.3rem",
-                  fontSize: "0.875rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  boxShadow: "0 4px 14px rgba(59,130,246,0.4)",
-                  transition: "all 0.2s ease",
-                }}
-                  onMouseEnter={e => {
-                    e.target.style.transform = "translateY(-1px)";
-                    e.target.style.boxShadow = "0 6px 20px rgba(59,130,246,0.5)";
+        <div className="flex flex-1 justify-end gap-3">
+          <div className="hidden items-center gap-3 md:flex">
+            {token ? (
+              <>
+                <Link to="/dashboard" className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${scrolled ? "text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "text-white/85 hover:bg-white/10 hover:text-white"}`}>
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    window.location.href = "/";
                   }}
-                  onMouseLeave={e => {
-                    e.target.style.transform = "translateY(0)";
-                    e.target.style.boxShadow = "0 4px 14px rgba(59,130,246,0.4)";
-                  }}
+                  className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${scrolled ? "border-slate-300 bg-white text-slate-700 hover:bg-slate-100" : "border-white/20 bg-white/10 text-white hover:bg-white/20"}`}
                 >
-                  Get Started
+                  Logout
                 </button>
-              </Link>
-            </>
-          )}
-        </div>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${scrolled ? "text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "text-white/85 hover:bg-white/10 hover:text-white"}`}>
+                  Login
+                </Link>
+                <Link to="/signup" className="rounded-lg bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-500/30 transition hover:translate-y-[-1px]">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden"
-          onClick={() => setMobileOpen(v => !v)}
-          style={{
-            background: "rgba(255,255,255,0.1)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            borderRadius: "10px",
-            padding: "0.5rem",
-            cursor: "pointer",
-            color: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backdropFilter: "blur(8px)",
-          }}
-          aria-label="Toggle mobile menu"
-        >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+          <button
+            className={`flex h-10 w-10 items-center justify-center rounded-lg border backdrop-blur-md md:hidden ${scrolled ? "border-slate-300 bg-white/90 text-slate-700" : "border-white/15 bg-white/10 text-white"}`}
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </nav>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: "72px",
-            left: 0,
-            right: 0,
-            zIndex: 49,
-            background: "rgba(15,23,42,0.95)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
-            padding: "1rem 1.5rem 1.5rem",
-            animation: "fadeInDown 0.2s ease",
-          }}
-        >
-          {navLinks.map(link => (
-            <a key={link.label} href={link.href}
-              onClick={() => setMobileOpen(false)}
-              style={{
-                display: "block",
-                color: "rgba(255,255,255,0.8)",
-                textDecoration: "none",
-                fontSize: "1rem",
-                fontWeight: 500,
-                padding: "0.75rem 0",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-            {token ? (
-              <Link to="/dashboard" onClick={() => setMobileOpen(false)}
-                style={{
-                  display: "block",
-                  background: "linear-gradient(135deg, #3B82F6, #06B6D4)",
-                  color: "#fff",
-                  textDecoration: "none",
-                  borderRadius: "12px",
-                  padding: "0.75rem 1.25rem",
-                  fontWeight: 700,
-                  fontSize: "0.9rem",
-                  textAlign: "center",
-                  boxShadow: "0 4px 14px rgba(59,130,246,0.4)",
-                }}
+        <div className="fixed left-0 right-0 top-16 z-40 border-b border-white/10 bg-slate-950/95 px-4 py-4 pb-6 backdrop-blur-xl md:hidden">
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl px-3 py-3 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
               >
+                {link.label}
+              </a>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-col gap-2">
+            {token ? (
+              <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white">
                 Go to Dashboard
               </Link>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMobileOpen(false)}
-                  style={{
-                    display: "block",
-                    color: "rgba(255,255,255,0.8)",
-                    textDecoration: "none",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(255,255,255,0.15)",
-                    padding: "0.75rem 1.25rem",
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    textAlign: "center",
-                  }}
-                >
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="rounded-xl border border-white/15 px-4 py-3 text-center text-sm font-semibold text-white/85">
                   Login
                 </Link>
-                <Link to="/signup" onClick={() => setMobileOpen(false)}
-                  style={{
-                    display: "block",
-                    background: "linear-gradient(135deg, #3B82F6, #06B6D4)",
-                    color: "#fff",
-                    textDecoration: "none",
-                    borderRadius: "12px",
-                    padding: "0.75rem 1.25rem",
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                    textAlign: "center",
-                    boxShadow: "0 4px 14px rgba(59,130,246,0.4)",
-                  }}
-                >
+                <Link to="/signup" onClick={() => setMobileOpen(false)} className="rounded-xl bg-gradient-to-r from-sky-500 to-cyan-400 px-4 py-3 text-center text-sm font-semibold text-white">
                   Get Started
                 </Link>
               </>
