@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import API from "../../services/api";
 import {
@@ -432,8 +432,8 @@ export default function Dashboard() {
           className="grid gap-6 mb-8 grid-cols-1 lg:grid-cols-[2.1fr_1.1fr]"
         >
           {featuredTrip ? (
-            <div
-              onClick={() => navigate(`/planner/${featuredTrip.id}`)}
+            <Link
+              to={`/planner/${featuredTrip.id}`}
               className="relative rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] cursor-pointer overflow-hidden
                 p-8 flex flex-col justify-between md:flex-row md:items-center gap-6
                 hover:border-[var(--accent)]/55 hover:shadow-md transition-all duration-200"
@@ -461,7 +461,7 @@ export default function Dashboard() {
               <div className="w-40 h-28 rounded-xl overflow-hidden shrink-0 border border-[var(--border)]/40 shadow-sm">
                 <TripImage trip={featuredTrip} className="w-full h-full" />
               </div>
-            </div>
+            </Link>
           ) : (
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-8 flex flex-col justify-center items-center text-center gap-3">
               <Compass size={32} className="text-[var(--text-dim)]/40 animate-spin-slow" />
@@ -617,9 +617,9 @@ export default function Dashboard() {
               >
                 {visibleTrips.map((trip, i) => {
                   return (
-                    <div
+                    <Link
                       key={trip.id}
-                      onClick={() => navigate(`/planner/${trip.id}`)}
+                      to={`/planner/${trip.id}`}
                       className="card card-hover cursor-pointer group flex flex-col gap-4 text-left relative overflow-hidden"
                       style={{ padding: "0" }}
                     >
@@ -652,16 +652,18 @@ export default function Dashboard() {
 
                         {trip.role === "admin" && (
                           <button
-                            onClick={(e) =>
-                              handleDelete(e, trip.id, trip.name)
-                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDelete(e, trip.id, trip.name);
+                            }}
                             className="w-7 h-7 border-none rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-red-500 hover:bg-red-50/10 transition-colors cursor-pointer bg-transparent"
                           >
                             <Trash2 size={12} />
                           </button>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
 
@@ -687,9 +689,9 @@ export default function Dashboard() {
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] divide-y divide-[var(--border)]/65 overflow-hidden">
                 {visibleTrips.map((trip, i) => {
                   return (
-                    <div
+                    <Link
                       key={trip.id}
-                      onClick={() => navigate(`/planner/${trip.id}`)}
+                      to={`/planner/${trip.id}`}
                       className="flex items-center gap-4 px-5 py-4 cursor-pointer group hover:bg-[var(--bg-subtle)]/50 transition-colors"
                     >
                       <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-[var(--border)]/40">
@@ -718,7 +720,11 @@ export default function Dashboard() {
 
                       {trip.role === "admin" && (
                         <button
-                          onClick={(e) => handleDelete(e, trip.id, trip.name)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDelete(e, trip.id, trip.name);
+                          }}
                           className="w-8 h-8 border-none rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-red-500 hover:bg-red-50/10 transition-colors cursor-pointer shrink-0 bg-transparent"
                         >
                           <Trash2 size={13} />
@@ -729,7 +735,7 @@ export default function Dashboard() {
                         size={15}
                         className="text-[var(--text-dim)] group-hover:text-[var(--accent)] group-hover:translate-x-0.5 transition-all shrink-0"
                       />
-                    </div>
+                    </Link>
                   );
                 })}
               </div>

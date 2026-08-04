@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "./components/Sidebar";
 import { Menu, Globe, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
+import NotificationsBell from "../components/common/NotificationsBell";
 
 function DashboardLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -37,6 +38,7 @@ function DashboardLayout({ children }) {
           </button>
 
           <div className="flex items-center gap-3">
+            <NotificationsBell />
             <button
               onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
               title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}

@@ -107,6 +107,88 @@ Format with clear sections and emojis.`,
   }
 });
 
+// Generate Final Recommendation for the group
+router.post("/final-recommendation", verifyToken, async (req, res) => {
+  const { tripId, tripName, members, preferences } = req.body;
+
+  if (!preferences?.length || !members?.length) {
+    return res.status(400).json({ error: "Missing required data" });
+  }
+
+  try {
+    // 1. Set status to ai_processing
+    await pool.query(`UPDATE trips SET status = 'ai_processing' WHERE id = $1`, [tripId]);
+
+    const prefSummary = preferences.map((p) => `
+Member: ${p.name}
+- Budget: ${p.budget ? `Rs. ${Number(p.budget).toLocaleString()}` : "Not specified"}
+- Trip Type: ${Array.isArray(p.trip_types) && p.trip_types.length ? p.trip_types.join(", ") : "Not specified"}
+- Food: ${p.food_preference || "Not specified"}
+- Accommodation: ${p.accommodation || "Not specified"}
+- Notes: ${p.notes || "None"}
+    `).join("\n---\n");
+
+    const prompt = `You are YatraVerse AI, an expert Nepal travel planner.
+You are finalizing a group trip called "${tripName}" for ${members.length} people.
+Here are the preferences for each member:
+${prefSummary}
+
+Analyze all preferences and choose ONE ultimate final destination in Nepal that best balances everyone's needs.
+You MUST reply with a VALID JSON object (and absolutely nothing else) in the following format:
+{
+  "destination": "Name of the place",
+  "matchScores": [
+    { "memberName": "...", "score": 95, "reason": "..." }
+  ],
+  "whyChosen": "Detailed explanation of why this destination balances the group's preferences",
+  "budget": "Estimated budget per person in Rs",
+  "weather": "Expected weather summary",
+  "bestDates": "Suggested time of year or dates",
+  "itinerary": [
+    { "day": 1, "plan": "..." }
+  ],
+  "alternatives": [
+    { "name": "...", "reason": "..." }
+  ]
+}
+`;
+
+    const response = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: "You are a travel AI that strictly outputs JSON data." },
+        { role: "user", content: prompt },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 3000,
+    });
+
+    const aiData = JSON.parse(response.choices[0].message.content);
+
+    // 2. Save recommendation and update status
+    await pool.query(
+      `UPDATE trips SET status = 'recommendation_ready', final_destination_data = $1 WHERE id = $2`,
+      [aiData, tripId]
+    );
+
+    // 3. Notify all members
+    const membersList = await pool.query(`SELECT user_id FROM trip_members WHERE trip_id = $1`, [tripId]);
+    for (const m of membersList.rows) {
+      await pool.query(
+        `INSERT INTO notifications (user_id, trip_id, type, message, link) 
+         VALUES ($1, $2, 'recommendation_ready', '🎉 Your group''s AI trip recommendation is ready!', '/planner/${tripId}')`,
+        [m.user_id, tripId]
+      );
+    }
+
+    res.json({ message: "Final recommendation generated successfully", data: aiData });
+  } catch (err) {
+    console.error("FINAL REC ERROR:", err.message);
+    await pool.query(`UPDATE trips SET status = 'planning' WHERE id = $1`, [tripId]);
+    res.status(500).json({ error: "Failed to generate recommendation", details: err.message });
+  }
+});
+
 // Get chat history
 router.get("/history", verifyToken, async (req, res) => {
   const { trip_id } = req.query;

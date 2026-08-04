@@ -1,81 +1,91 @@
-# Implementation Plan - Visual Polish and AI Map Integration
+# Final Recommendation & Collaboration Workflow
 
-Enhance the YatraVerse collaborative travel recommendation system to look, feel, and function like a high-end, responsive web application.
-
-This includes:
-1. **Fixing Theme Bugs**: Correcting stylesheet class variables so the layout handles light/dark transitions smoothly without visual anomalies.
-2. **Theme Switcher**: Adding a toggle widget in the dashboard layout to let users toggle between Light and Dark modes.
-3. **AI Travel Assistant Map Integration**: Converting the AI Assistant page into a responsive split-pane layout with chat on the left and an interactive Google Map widget on the right. When the AI recommends destinations (bold text, e.g., `**Pokhara**`), clicking the text automatically pans the map and offers an "Add to Trip" option.
-
----
+This plan outlines the architecture and changes required to implement the end-to-end "Final Recommendation & Collaboration" workflow. This will introduce new group collaboration features, real-time-like notifications, AI-driven consensus building, and a premium UI to track the group's progress.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> The application uses a custom-embedded Google Map iframe component (`MapComponent.js`) which does not require an active billing setup or Google Maps API token to load local maps. This keeps the deployment extremely lightweight.
->
-> We will introduce a theme selector button (Sun/Moon icons) at the top right of the dashboard header.
-
----
+> Since the terminal command tool is currently encountering permission errors, I will implement a self-executing database migration script or a temporary `/api/migrate-workflow` endpoint to apply the database schema changes. Please let me know if you have a preference.
 
 ## Proposed Changes
 
-### 1. Global Layout & Theme Polish
+---
 
-#### [MODIFY] [index.css](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/index.css)
-- Ensure basic styling classes are properly set up for body background color transition.
+### Database Schema Migration
+We will create a script `backend/migrate_workflow.js` to add the necessary columns and tables.
 
-#### [MODIFY] [DashboardLayout.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/layouts/DashboardLayout.js)
-- Use theme CSS variables (`var(--bg)`, `var(--bg-card)`, `var(--border)`, `var(--text)`) instead of hardcoded background colors (e.g. `#F8FAF9`, `rgba(255, 255, 255, 0.8)`).
-- Implement a Dark/Light mode theme state.
-- Add a Sun/Moon toggle button in the dashboard top navigation header.
-
-#### [MODIFY] [Sidebar.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/layouts/components/Sidebar.js)
-- Replace hardcoded background colors (`#ffffff`) and borders (`rgba(0,0,0,0.06)`) with CSS variables (`var(--bg-card)`, `var(--border)`).
-- Replace hardcoded NavLink colors with `var(--text)` and `var(--text-dim)`.
-- Use `var(--bg-subtle)` for the active navigation menu item background.
+#### [NEW] backend/migrate_workflow.js
+- **Alter `trips` Table**:
+  - Add `status` column (VARCHAR, default `'planning'`). Valid states: `planning`, `ai_processing`, `recommendation_ready`, `destination_confirmed`.
+  - Add `final_destination_data` column (JSONB) to store the rich AI recommendation output.
+- **Alter `trip_members` Table**:
+  - Add `has_accepted_recommendation` column (BOOLEAN DEFAULT false).
+- **Create `trip_comments` Table**:
+  - For group discussions on the trip. (`id`, `trip_id`, `user_id`, `content`, `created_at`).
+- **Create `notifications` Table**:
+  - To alert users of new events. (`id`, `user_id`, `trip_id`, `message`, `type`, `is_read`, `created_at`).
 
 ---
 
-### 2. Login, Signup, and Joining Feature Polish
+### Backend API Updates
 
-#### [MODIFY] [Verify.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/features/auth/Verify.js)
-- Fix the bug on line 48: change `bg-[var(--card)]` to `bg-[var(--bg-card)]` to restore the card's background.
+#### [MODIFY] backend/server.js
+- Mount new routes: `/api/notifications` and `/api/comments`.
 
-#### [MODIFY] [CreateTrip.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/features/trip/CreateTrip.js)
-- Replace hardcoded Tailwind classes (`bg-white`, `border-gray-200`, `text-gray-900`) with theme-safe classes (`bg-[var(--bg-card)]`, `border-[var(--border)]`, `text-[var(--text)]`).
+#### [MODIFY] backend/routes/trips.js
+- Fetch `status` and `final_destination_data` when retrieving a trip.
+- Fetch `has_accepted_recommendation` in the members list.
+- **New Endpoint**: `POST /:id/accept-recommendation` to mark a member as having accepted. If > 50% accept, automatically update trip `status` to `destination_confirmed`.
 
-#### [MODIFY] [JoinTrip.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/features/trip/JoinTrip.js)
-- Replace hardcoded background colors and gray text colors with appropriate CSS variables to make the invite portal responsive in dark mode.
+#### [MODIFY] backend/routes/preferences.js
+- **Check Completion**: When saving a preference, compare total preferences with total members. If they match, create a notification for the trip admin: "All members have submitted their preferences!"
 
-#### [MODIFY] [DestinationPage.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/features/explore/DestinationPage.js)
-- Update inline styles to use `var(--bg-card)`, `var(--bg-subtle)`, `var(--border)`, `var(--text)`, and `var(--text-dim)`.
+#### [MODIFY] backend/routes/ai.js
+- **New Endpoint**: `POST /final-recommendation`
+  - Gathers all preferences.
+  - Sends a specialized prompt to Groq (Llama-3.3-70b-versatile) to generate a structured JSON containing: recommended destination, match scores for each member, why chosen, weather, budget estimate, itinerary, and alternative options.
+  - Saves result to `trips.final_destination_data`.
+  - Updates `status` to `recommendation_ready`.
+  - Creates "Group Recommendation Ready" notifications for all members.
+
+#### [NEW] backend/routes/notifications.js
+- **New Endpoint**: `GET /` to fetch user's notifications.
+- **New Endpoint**: `PUT /:id/read` to mark as read.
+
+#### [NEW] backend/routes/comments.js
+- **New Endpoints**: `GET /trips/:id/comments` and `POST /trips/:id/comments` for the discussion board.
 
 ---
 
-### 3. AI Assistant Split-Screen & Click-to-Map Integration
+### Frontend Features & UI Updates
 
-#### [MODIFY] [Assistant.js](file:///c:/Users/hp/Desktop/ai-trip-recommendation/frontend/src/features/assistant/Assistant.js)
-- Adjust layout: transform the general chat into a split screen (60% Chat, 40% Map) on desktop screens (`md:` sizes and up).
-- Replace the raw HTML/dangerouslySetInnerHTML `renderText` parsing function with a safe React node parser:
-  - Find all occurrences of bolded text (`**Pokhara**`, `**Lumbini**`, `**Everest Base Camp**`).
-  - Render them as interactive badges/links that update a new `mapQuery` state on click.
-- Import and render `<MapComponent selectedDestination={mapQuery} />` in the right panel.
-- If a specific trip is active (`selectedId`), display an "Add to Trip" button in the map card to let users directly add the selected destination to their active trip.
+#### [MODIFY] frontend/src/features/trip/Planner.js
+- **Progress Tracker**: Add an animated progress bar at the top (Preferences Submitted → AI Processing → Recommendation Ready → Members Reviewing → Destination Confirmed).
+- **Final Recommendation UI**: If `status === 'recommendation_ready'` or `destination_confirmed`, reveal a beautiful "Final Destination" section.
+  - Display AI selected destination, explanation, match scores, budget, weather, and itinerary using premium glassmorphism and gradient styles.
+- **Action Buttons**: Add Share (generates shareable view or copies link), Accept Recommendation, Start Discussion.
+- **Admin Tools**: An admin button to trigger "Generate Final Recommendation" once all members submit.
 
----
+#### [NEW] frontend/src/components/common/NotificationsBell.js
+- A notification bell in the Navbar/DashboardLayout that fetches from `/api/notifications`.
+- Triggers a beautiful "Group Recommendation Ready" modal if an unread notification of that type is detected.
+
+#### [NEW] frontend/src/components/trip/DiscussionBoard.js
+- A comment section where members can debate and chat about the AI's recommendation before voting to accept.
+
+#### [MODIFY] frontend/src/layouts/DashboardLayout.js
+- Integrate the `NotificationsBell` and handle showing global modals (like the Recommendation Ready celebration).
 
 ## Verification Plan
 
-### Automated Verification
-- Run a static check/lint of all updated files to ensure no syntax errors.
+### Automated Tests
+- N/A
 
 ### Manual Verification
-1. **Theme Switcher**: Open the dashboard, click the theme selector (Sun/Moon). Verify the sidebar, dashboard background, buttons, and inputs transition smoothly between light and dark styling without color conflicts.
-2. **Verification Page**: Open `/verify` and confirm the confirmation card has a clear card background instead of transparent.
-3. **AI Assistant Map Link**:
-   - Select a trip and click **Send to AI Planner**.
-   - Generate a trip plan.
-   - Click any bolded city/location in the chat bubbles (e.g. **Pokhara**).
-   - Verify the Google Map on the right immediately updates to show that location.
-   - Verify the "Add to Trip" button works to save that destination to the trip.
+1. Ensure the DB migration endpoint correctly creates tables and columns.
+2. Complete preferences for multiple test users.
+3. Verify admin receives the "All preferences submitted" notification.
+4. Admin generates recommendation; verify AI response is structured, saved to DB, and trip status updates.
+5. Verify members receive the festive "Group Recommendation Ready" modal.
+6. Verify users can discuss in the comments section and vote to accept.
+7. Verify trip status updates to "Destination Confirmed" upon majority vote.

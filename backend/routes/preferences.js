@@ -22,6 +22,33 @@ router.post("/:id/preferences", verifyToken, checkTripMembership, async (req, re
        DO UPDATE SET budget=$3, trip_types=$4, food_preference=$5, accommodation=$6, notes=$7, submitted_at=NOW()`,
       [id, req.userId, budget, trip_types, food_preference, accommodation, notes]
     );
+
+    // Check if all members have submitted
+    const memberCountRes = await pool.query(`SELECT COUNT(*) FROM trip_members WHERE trip_id = $1`, [id]);
+    const prefCountRes = await pool.query(`SELECT COUNT(*) FROM trip_preferences WHERE trip_id = $1`, [id]);
+    
+    if (parseInt(memberCountRes.rows[0].count) === parseInt(prefCountRes.rows[0].count)) {
+      // Find admin
+      const adminRes = await pool.query(`SELECT user_id FROM trip_members WHERE trip_id = $1 AND role = 'admin'`, [id]);
+      if (adminRes.rows.length > 0) {
+        const adminId = adminRes.rows[0].user_id;
+        
+        // Ensure we don't spam notifications, check if one already exists
+        const existingNotif = await pool.query(
+          `SELECT id FROM notifications WHERE trip_id = $1 AND type = 'preferences_complete'`,
+          [id]
+        );
+        
+        if (existingNotif.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO notifications (user_id, trip_id, type, message, link) 
+             VALUES ($1, $2, 'preferences_complete', 'All members have submitted their preferences! Generate the final recommendation now.', '/planner/${id}')`,
+            [adminId, id]
+          );
+        }
+      }
+    }
+
     res.json({ message: "Preferences saved" });
   } catch (err) {
     console.error(err);

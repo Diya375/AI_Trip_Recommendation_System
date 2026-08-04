@@ -117,7 +117,7 @@ router.get("/:id", verifyToken, checkTripMembership, async (req, res) => {
   try {
     const trip = await pool.query("SELECT * FROM trips WHERE id=$1", [id]);
     const members = await pool.query(
-      `SELECT users.id, users.name, users.email, trip_members.role
+      `SELECT users.id, users.name, users.email, trip_members.role, trip_members.has_accepted_recommendation
        FROM trip_members
        JOIN users ON trip_members.user_id = users.id
        WHERE trip_members.trip_id = $1`,
@@ -142,6 +142,52 @@ router.delete("/:id", verifyToken, checkTripMembership, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete trip" });
+  }
+});
+
+// Accept the final AI recommendation
+router.post("/:id/accept-recommendation", verifyToken, checkTripMembership, async (req, res) => {
+  const { id } = req.params;
+  try {
+    // 1. Mark the user as having accepted
+    await pool.query(
+      `UPDATE trip_members SET has_accepted_recommendation = true 
+       WHERE trip_id = $1 AND user_id = $2`,
+      [id, req.userId]
+    );
+
+    // 2. Check if the majority of members have accepted
+    const membersRes = await pool.query(
+      `SELECT COUNT(*) as total, 
+       SUM(CASE WHEN has_accepted_recommendation THEN 1 ELSE 0 END) as accepted 
+       FROM trip_members WHERE trip_id = $1`,
+      [id]
+    );
+    
+    const { total, accepted } = membersRes.rows[0];
+    const isMajority = parseInt(accepted) > parseInt(total) / 2;
+
+    if (isMajority) {
+      await pool.query(
+        `UPDATE trips SET status = 'destination_confirmed' WHERE id = $1 AND status != 'destination_confirmed'`,
+        [id]
+      );
+      
+      // Notify all members
+      const membersList = await pool.query(`SELECT user_id FROM trip_members WHERE trip_id = $1`, [id]);
+      for (const m of membersList.rows) {
+        await pool.query(
+          `INSERT INTO notifications (user_id, trip_id, type, message, link) 
+           VALUES ($1, $2, 'destination_confirmed', 'The majority has spoken! The destination for your trip is confirmed.', '/planner/${id}')`,
+          [m.user_id, id]
+        );
+      }
+    }
+
+    res.json({ message: "Recommendation accepted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to accept recommendation" });
   }
 });
 

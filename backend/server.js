@@ -10,6 +10,9 @@ const placesRoutes = require("./routes/places");
 const expensesRoutes = require("./routes/expenses");
 const aiRoutes = require("./routes/ai");
 const tripPlanRoutes = require("./routes/tripPlan");
+const notificationsRoutes = require("./routes/notifications");
+const commentsRoutes = require("./routes/comments");
+const migrateWorkflow = require("./migrate_workflow");
 
 const app = express();
 
@@ -68,6 +71,18 @@ app.use("/api/trips", expensesRoutes);
 app.use("/api/trips", tripPlanRoutes);
 
 app.use("/api/ai", aiRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/trips", commentsRoutes); // Will handle /api/trips/:id/comments
+
+// Temporary endpoint for DB migration
+app.get("/api/migrate-workflow", async (req, res) => {
+  try {
+    const result = await migrateWorkflow();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.use((req, res) => res.status(404).json({ error: "Route not found" }));
 
