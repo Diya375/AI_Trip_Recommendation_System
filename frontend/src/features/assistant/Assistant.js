@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import API from "../../services/api";
 import MapComponent from "../../components/destinations/MapComponent";
@@ -153,6 +153,7 @@ function HistorySkeleton() {
 
 export default function Assistant() {
   const location  = useLocation();
+  const navigate  = useNavigate();
   const tripData  = location.state;
   const endRef    = useRef(null);
   const textareaRef = useRef(null);
@@ -226,29 +227,46 @@ export default function Assistant() {
   };
 
   const [planShared,     setPlanShared]     = useState(false);
+  const [genError,       setGenError]       = useState(null);
 
+  // Generates the ONE shareable final plan — not the free-text chat reply.
+  // This calls /ai/final-recommendation directly, which produces the full
+  // structured trip (destination, itinerary, budget, match scores, etc.),
+  // saves it on the trip, and notifies every member. Once it's done, everyone
+  // — not just the admin who clicked this — can open the same page from
+  // Planner's "View Final Destination" button, so there's nothing separate
+  // to "send": the page itself is the shareable artifact.
   const generatePlan = async () => {
-    if (!tripData?.preferences?.length) return;
+    if (!tripData?.preferences?.length || !selectedId) return;
     setGenerating(true);
-    const userMsg = `Generate a detailed group trip plan for **"${tripData.tripName}"** based on all members' submitted preferences.`;
+    setGenError(null);
+
+    const userMsg = `Generate the final AI trip recommendation for **"${tripData.tripName}"** based on all members' submitted preferences.`;
     setMessages(p => [...p, { sender: "user", text: userMsg }]);
     await persist("user", userMsg);
-    try {
-      const res = await API.post("/ai/trip-plan", { tripName: tripData.tripName, members: tripData.members, preferences: tripData.preferences });
-      const planText = res.data.plan;
-      setMessages(p => [...p, { sender: "ai", text: planText }]);
-      await persist("ai", planText);
 
-      // Share with all trip members via trip_plans table
-      if (selectedId) {
-        try {
-          await API.post(`/trips/${selectedId}/plan`, { plan: planText });
-          setPlanShared(true);
-          setTimeout(() => setPlanShared(false), 4000);
-        } catch { /* non-fatal */ }
-      }
-    } catch { setMessages(p => [...p, { sender: "ai", text: "Failed to generate plan." }]); }
-    finally { setGenerating(false); }
+    try {
+      await API.post("/ai/final-recommendation", {
+        tripId: selectedId,
+        tripName: tripData.tripName,
+        members: tripData.members,
+        preferences: tripData.preferences,
+      });
+
+      const doneMsg = "Your group's final destination is ready! Taking you there now — every member can open the same page.";
+      setMessages(p => [...p, { sender: "ai", text: doneMsg }]);
+      await persist("ai", doneMsg);
+
+      setPlanShared(true);
+      // Brief pause so the confirmation message is actually readable before navigating away
+      setTimeout(() => navigate(`/planner/${selectedId}/destination`), 900);
+    } catch (err) {
+      const errMsg = err.response?.data?.error || "Failed to generate the final destination. Please try again.";
+      setGenError(errMsg);
+      setMessages(p => [...p, { sender: "ai", text: errMsg }]);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const clearHistory = async () => {
@@ -400,21 +418,25 @@ export default function Assistant() {
             </div>
           </div>
 
-          {/* Generate Plan Banner */}
+          {/* Generate Final Destination Banner */}
           {showBanner && tripData?.preferences?.length > 0 && selectedId === tripData?.tripId && (
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 shrink-0">
               <div className="min-w-0">
                 <p className="text-sm font-bold text-[var(--text)] truncate">{tripData.tripName}</p>
-                <p className="text-xs text-[var(--text-dim)]">{tripData.preferences.length} of {tripData.members?.length} members have submitted preferences</p>
+                <p className="text-xs text-[var(--text-dim)]">
+                  {tripData.preferences.length} of {tripData.members?.length} members have submitted preferences
+                  {genError && <span className="text-red-500 font-semibold"> · {genError}</span>}
+                </p>
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-auto">
                 <button
                   onClick={generatePlan}
                   disabled={generating}
+                  title="Generates one final destination page every member can view and accept"
                   className="btn btn-primary flex items-center gap-2 px-4 py-2 text-xs"
                 >
                   <Sparkles size={13} />
-                  {generating ? "Generating…" : "Generate Plan"}
+                  {generating ? "Generating…" : "Generate Final Destination"}
                 </button>
                 <button
                   onClick={() => setShowBanner(false)}

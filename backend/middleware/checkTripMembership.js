@@ -3,11 +3,13 @@ const pool = require("../config/db");
 module.exports = async function checkTripMembership(req, res, next) {
   const { id } = req.params;
   try {
+    console.log(`checkTripMembership: verifying user ${req.userId} for trip ${id}`);
     const membership = await pool.query(
       "SELECT * FROM trip_members WHERE trip_id=$1 AND user_id=$2",
       [id, req.userId]
     );
     if (membership.rows.length === 0) {
+      console.log(`checkTripMembership: no membership rows for user ${req.userId} trip ${id}`);
       return res.status(403).json({ error: "You are not a member of this trip" });
     }
     req.membership = membership.rows[0]; // { role, ... } — avoids re-querying for role checks

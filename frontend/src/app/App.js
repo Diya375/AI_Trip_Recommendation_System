@@ -25,6 +25,7 @@ import CreateTrip from "../features/trip/CreateTrip";
 import JoinTrip from "../features/trip/JoinTrip";
 import Expenses from "../features/expenses/Expenses";
 import Assistant from "../features/assistant/Assistant";
+import FinalDestinationView from "../features/trip/FinalDestinationView";
 
 export default function AppRoutes() {
   return (
@@ -57,6 +58,7 @@ export default function AppRoutes() {
         <Route path="/assistant" element={<Assistant />} />
         <Route path="/assistant/:tripId" element={<Assistant />} />
       </Route>
+      <Route path="/planner/:id/destination" element={<FinalDestinationView />} />
 
       {/* 404 */}
       <Route path="*" element={<Home />} />

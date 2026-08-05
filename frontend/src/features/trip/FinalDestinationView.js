@@ -1,152 +1,185 @@
-import React, { useState } from 'react';
-import { Share2, Download, CheckCircle, Navigation, MapPin, Calendar, Cloud, DollarSign } from 'lucide-react';
-import API from '../../services/api';
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import DashboardLayout from "../../layouts/DashboardLayout";
+import API from "../../services/api";
+// ⚠️ Adjust this import path to wherever FinalDestinationView actually lives in your project
+import FinalDestinationView from "../../components/trip/FinalDestinationView";
+import { Sparkles, Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
 
-export default function FinalDestinationView({ trip, data, members, onAccept, hasAccepted }) {
-  const [downloading, setDownloading] = useState(false);
+export default function FinalDestination() {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const handleShare = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    alert("Link copied to clipboard!");
+  const [user, setUser] = useState(null);
+  const [trip, setTrip] = useState(null);
+  const [members, setMembers] = useState([]);
+  const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState(null);
+  const [accepting, setAccepting] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const [userRes, tripRes, prefRes] = await Promise.all([
+        API.get("/auth/me"),
+        API.get(`/trips/${id}`),
+        API.get(`/trips/${id}/preferences`),
+      ]);
+      setUser(userRes.data);
+      setTrip(tripRes.data.trip);
+      setMembers(tripRes.data.members);
+      setRole(prefRes.data.role);
+      setLoadError(null);
+    } catch (err) {
+      console.error("FinalDestination: failed to load", err);
+      const status = err?.response?.status;
+      setLoadError(
+        status === 404
+          ? "This trip couldn't be found."
+          : status === 403
+          ? "You don't have access to this trip."
+          : "Something went wrong while loading this page."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => { load(); }, [load]);
+
+  // If the AI is mid-generation (someone else may have triggered it), poll until it's done
+  useEffect(() => {
+    if (trip?.status !== "ai_processing") return;
+    const interval = setInterval(load, 4000);
+    return () => clearInterval(interval);
+  }, [trip?.status, load]);
+
+  const handleGenerate = async () => {
+    setGenerating(true);
+    setGenError(null);
+    try {
+      const prefRes = await API.get(`/trips/${id}/preferences`);
+      const allPreferences = prefRes.data.preferences;
+      if (!allPreferences?.length) {
+        setGenError("No members have submitted preferences yet.");
+        return;
+      }
+      await API.post("/ai/final-recommendation", {
+        tripId: parseInt(id),
+        tripName: trip?.name,
+        members,
+        preferences: allPreferences,
+      });
+      await load();
+    } catch (err) {
+      console.error("Failed to generate recommendation", err);
+      setGenError(err.response?.data?.error || "Failed to generate a recommendation. Please try again.");
+    } finally {
+      setGenerating(false);
+    }
   };
 
-  const handleDownload = () => {
-    setDownloading(true);
-    // In a real app, this would generate a PDF. For now, simulate it.
-    setTimeout(() => {
-      alert("PDF downloaded successfully!");
-      setDownloading(false);
-    }, 1500);
+  const handleAccept = async () => {
+    setAccepting(true);
+    try {
+      await API.post(`/trips/${id}/accept-recommendation`);
+      await load();
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to accept recommendation");
+    } finally {
+      setAccepting(false);
+    }
   };
 
-  if (!data) return null;
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <p className="text-[var(--text-dim)] text-sm animate-pulse">Loading final destination...</p>
+      </DashboardLayout>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle size={20} />
+          </div>
+          <p className="text-[var(--text)] font-semibold mb-6">{loadError}</p>
+          <button
+            onClick={() => navigate(`/planner/${id}`)}
+            className="btn btn-primary px-5 py-2.5 text-xs font-bold"
+          >
+            Back to Planner
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const hasAccepted = !!members.find((m) => m.id === user?.id)?.has_accepted_recommendation;
+  const status = trip?.status || "planning";
 
   return (
-    <div className="flex flex-col gap-8 animate-fade-in">
-      {/* Hero Section */}
-      <div className="relative rounded-3xl overflow-hidden border border-[var(--border)] bg-[var(--bg-card)] shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/10 to-transparent"></div>
-        <div className="p-8 md:p-10 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--accent)] text-white text-xs font-bold uppercase tracking-widest mb-4">
-            <CheckCircle size={14} /> Final Destination
-          </div>
-          <h1 className="cinzel text-4xl md:text-5xl font-bold text-[var(--accent)] mb-4">{data.destination}</h1>
-          <p className="text-[var(--text)] text-sm md:text-base max-w-2xl mx-auto leading-relaxed opacity-90">
-            {data.whyChosen}
-          </p>
-        </div>
-      </div>
+    <DashboardLayout>
+      <div className="fade-up max-w-5xl mx-auto px-4 sm:px-0 text-left">
+        <button
+          onClick={() => navigate(`/planner/${id}`)}
+          className="flex items-center gap-1 text-xs text-[var(--text-dim)] bg-transparent border-none
+            cursor-pointer hover:text-[var(--text)] transition-colors mb-6 p-0 font-semibold"
+        >
+          <ArrowLeft size={12} /> Back to Planner
+        </button>
 
-      {/* Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-[var(--bg-subtle)] p-4 rounded-2xl border border-[var(--border)]">
-        <div className="flex gap-2">
-          <button onClick={handleShare} className="btn bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-subtle)] text-xs font-semibold py-2 px-4 rounded-xl flex items-center gap-2">
-            <Share2 size={14} /> Share
-          </button>
-          <button onClick={handleDownload} disabled={downloading} className="btn bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--bg-subtle)] text-xs font-semibold py-2 px-4 rounded-xl flex items-center gap-2">
-            <Download size={14} /> {downloading ? 'Downloading...' : 'Save PDF'}
-          </button>
-        </div>
-        
-        {trip.status !== 'destination_confirmed' && (
-          <button 
-            onClick={onAccept}
-            disabled={hasAccepted}
-            className={`btn py-2 px-6 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2 ${
-              hasAccepted 
-                ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30 cursor-not-allowed' 
-                : 'bg-[var(--accent)] text-white hover:opacity-90 hover:-translate-y-0.5'
-            }`}
-          >
-            {hasAccepted ? <><CheckCircle size={14} /> Accepted</> : 'Accept Recommendation'}
-          </button>
+        {status === "ai_processing" ? (
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] text-center py-20">
+            <Loader2 size={28} className="animate-spin text-[var(--accent)] mx-auto mb-4" />
+            <p className="text-[var(--text)] font-semibold text-sm mb-1">
+              YatraVerse AI is picking the final destination…
+            </p>
+            <p className="text-[var(--text-dim)] text-xs">
+              This usually takes under a minute. This page updates automatically.
+            </p>
+          </div>
+        ) : trip?.final_destination_data ? (
+          <FinalDestinationView
+            trip={trip}
+            data={trip.final_destination_data}
+            members={members}
+            onAccept={handleAccept}
+            hasAccepted={hasAccepted || accepting}
+          />
+        ) : (
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] text-center py-20 px-6">
+            <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] mx-auto mb-4">
+              <Sparkles size={20} />
+            </div>
+            <p className="text-[var(--text)] font-semibold text-sm mb-1">No final destination yet</p>
+            <p className="text-[var(--text-dim)] text-xs mb-6 max-w-sm mx-auto">
+              {role === "admin"
+                ? "Once everyone has submitted their preferences, generate the AI's final pick for the group."
+                : "The trip organizer hasn't generated a final recommendation yet. Check back soon."}
+            </p>
+            {role === "admin" && (
+              <button
+                onClick={handleGenerate}
+                disabled={generating}
+                className="btn btn-primary px-5 py-2.5 text-xs font-bold flex items-center gap-2 mx-auto"
+              >
+                {generating ? (
+                  <><Loader2 size={14} className="animate-spin" /> Generating…</>
+                ) : (
+                  <><Sparkles size={14} /> Generate Final Destination</>
+                )}
+              </button>
+            )}
+            {genError && <p className="text-xs text-red-500 mt-3 font-semibold">{genError}</p>}
+          </div>
         )}
       </div>
-
-      {/* Details Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <DetailCard icon={<MapPin className="text-blue-500"/>} title="Location" value={data.destination} />
-        <DetailCard icon={<DollarSign className="text-emerald-500"/>} title="Est. Budget" value={`Rs. ${data.budget}`} />
-        <DetailCard icon={<Cloud className="text-cyan-500"/>} title="Weather" value={data.weather} />
-        <DetailCard icon={<Calendar className="text-purple-500"/>} title="Best Dates" value={data.bestDates} />
-      </div>
-
-      {/* Match Scores & Alternatives */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border)]">
-          <h3 className="cinzel text-lg font-bold text-[var(--text)] mb-4 border-b border-[var(--border)] pb-2 flex items-center gap-2">
-            <CheckCircle size={18} className="text-[var(--accent)]" /> 
-            Member Match Scores
-          </h3>
-          <div className="flex flex-col gap-4 mt-4">
-            {data.matchScores?.map((match, idx) => (
-              <div key={idx} className="flex flex-col gap-1">
-                <div className="flex justify-between text-sm">
-                  <span className="font-semibold text-[var(--text)]">{match.memberName}</span>
-                  <span className="font-bold text-[var(--accent)]">{match.score}%</span>
-                </div>
-                <div className="h-2 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden">
-                  <div className="h-full bg-[var(--accent)] rounded-full" style={{ width: `${match.score}%` }}></div>
-                </div>
-                <p className="text-[10px] text-[var(--text-dim)] mt-0.5">{match.reason}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border)]">
-          <h3 className="cinzel text-lg font-bold text-[var(--text)] mb-4 border-b border-[var(--border)] pb-2 flex items-center gap-2">
-            <Navigation size={18} className="text-[var(--accent)]" /> 
-            Alternative Options
-          </h3>
-          <div className="flex flex-col gap-3 mt-4">
-            {data.alternatives?.map((alt, idx) => (
-              <div key={idx} className="p-3 bg-[var(--bg-subtle)] rounded-xl border border-[var(--border)]">
-                <h4 className="font-bold text-sm text-[var(--text)]">{alt.name}</h4>
-                <p className="text-[11px] text-[var(--text-dim)] mt-1">{alt.reason}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Proposed Itinerary */}
-      <div className="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border)]">
-        <h3 className="cinzel text-xl font-bold text-[var(--text)] mb-6 border-b border-[var(--border)] pb-3">
-          Suggested Itinerary
-        </h3>
-        <div className="flex flex-col gap-4">
-          {data.itinerary?.map((item, idx) => (
-            <div key={idx} className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center font-bold text-sm shrink-0 border border-[var(--accent)]/20">
-                  {item.day}
-                </div>
-                {idx !== data.itinerary.length - 1 && <div className="w-px h-full bg-[var(--border)] my-1"></div>}
-              </div>
-              <div className="pb-4 pt-1">
-                <h4 className="font-bold text-sm text-[var(--text)] mb-1">Day {item.day}</h4>
-                <p className="text-xs text-[var(--text-dim)] leading-relaxed">{item.plan}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DetailCard({ icon, title, value }) {
-  return (
-    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 flex items-center gap-4">
-      <div className="w-10 h-10 rounded-xl bg-[var(--bg-subtle)] flex items-center justify-center">
-        {icon}
-      </div>
-      <div>
-        <p className="text-[10px] text-[var(--text-dim)] uppercase tracking-widest font-bold">{title}</p>
-        <p className="text-sm font-bold text-[var(--text)] mt-0.5">{value}</p>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }

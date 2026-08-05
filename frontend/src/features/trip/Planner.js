@@ -4,7 +4,8 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import API from "../../services/api";
 import {
   Copy, Check, Link2, ChevronDown, ChevronUp, ArrowLeft, X, ClipboardList,
-  CalendarDays, CheckSquare, Plus, Trash2, ListTodo, MapPin, Compass, Award
+  CalendarDays, CheckSquare, Plus, Trash2, ListTodo, MapPin, Compass, Award,
+  AlertTriangle, Sparkles,
 } from "lucide-react";
 
 const TRIP_TYPES = ["Adventure", "Hiking", "Trekking", "Relaxing", "Cultural", "Beach", "Wildlife", "Road Trip"];
@@ -33,6 +34,7 @@ export default function Planner() {
   const [preferences, setPreferences] = useState(null);
   const [allPreferences, setAllPreferences] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null); // NEW — real error surfaced to the user
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -58,14 +60,30 @@ export default function Planner() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { navigate("/login", { state: { redirectTo: location.pathname } }); return; }
-    if (!id) { navigate("/planner"); return; }
+    if (!id) {
+      console.error("Planner: route matched with no :id param — check the <Route path> for this page.");
+      navigate("/planner");
+      return;
+    }
 
+    let cancelled = false;
+    setLoading(true);
+    setLoadError(null);
+
+    // Trip + preferences are essential — if either fails, we genuinely can't render this page.
+    // Places is treated as "nice to have": if that one endpoint hiccups, we still show the trip
+    // instead of bouncing the user all the way back to the dashboard.
     Promise.all([
       API.get(`/trips/${id}`),
       API.get(`/trips/${id}/preferences`),
-      API.get(`/trips/${id}/places`)
+      API.get(`/trips/${id}/places`).catch((err) => {
+        console.warn(`Planner: /trips/${id}/places failed, continuing without linked places.`, err);
+        return { data: { places: [] } };
+      }),
     ])
       .then(([tripRes, prefRes, placesRes]) => {
+        if (cancelled) return;
+
         setTrip(tripRes.data.trip);
         setMembers(tripRes.data.members);
         setRole(prefRes.data.role);
@@ -73,11 +91,7 @@ export default function Planner() {
 
         // Load schedule itinerary state
         const savedItinerary = localStorage.getItem(`trip_itinerary_${id}`);
-        if (savedItinerary) {
-          setItineraryDays(JSON.parse(savedItinerary));
-        } else {
-          setItineraryDays({});
-        }
+        setItineraryDays(savedItinerary ? JSON.parse(savedItinerary) : {});
 
         // Load checklists state
         const savedChecklist = localStorage.getItem(`trip_checklist_${id}`);
@@ -118,8 +132,29 @@ export default function Planner() {
           }
         }
       })
-      .catch(() => navigate("/dashboard"))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (cancelled) return;
+        // Log the real reason instead of swallowing it — check your console/network tab
+        // to see exactly which request and status code caused this.
+        console.error(`Planner: failed to load trip ${id}`, err);
+
+        const status = err?.response?.status;
+        if (status === 404) {
+          setLoadError("This trip couldn't be found. It may have been deleted.");
+        } else if (status === 401) {
+          navigate("/login", { state: { redirectTo: location.pathname } });
+          return;
+        } else if (status === 403) {
+          setLoadError("You don't have access to this trip.");
+        } else {
+          setLoadError("Something went wrong while loading this trip. Please try again.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
   }, [id, navigate, location.pathname]);
 
   const inviteLink = trip ? `${window.location.origin}/join/${trip.invite_code}` : "";
@@ -221,6 +256,29 @@ export default function Planner() {
     );
   }
 
+  // NEW — show the real problem instead of silently bouncing back to /dashboard
+  if (loadError) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle size={20} />
+          </div>
+          <p className="text-[var(--text)] font-semibold mb-1">{loadError}</p>
+          <p className="text-[var(--text-dim)] text-xs mb-6">
+            Open your browser console for the full error if this keeps happening.
+          </p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="btn btn-primary px-5 py-2.5 text-xs font-bold"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   const membersWithoutPrefs = members.filter(
     (m) => !allPreferences.find((p) => p.user_id === m.id)
   );
@@ -270,6 +328,15 @@ export default function Planner() {
 
   const ITINERARY_DAYS_LIST = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Unscheduled"];
 
+  // NEW — whether it's worth showing the "View Final Destination" shortcut:
+  // once the AI has produced (or is producing) a recommendation, or the destination
+  // is already confirmed, everyone benefits from a direct link there.
+  const hasFinalDestinationActivity =
+    !!trip?.final_destination_data ||
+    trip?.status === "ai_processing" ||
+    trip?.status === "recommendation_ready" ||
+    trip?.status === "destination_confirmed";
+
   return (
     <DashboardLayout>
       <div className="fade-up max-w-5xl mx-auto px-4 sm:px-0 text-left">
@@ -292,23 +359,39 @@ export default function Planner() {
             </p>
           </div>
 
-          {role === "admin" && (
-            <button
-              onClick={() =>
-                navigate(`/assistant/${id}`, {
-                  state: {
-                    tripId: parseInt(id),
-                    tripName: trip?.name,
-                    members: members,
-                    preferences: allPreferences,
-                  },
-                })
-              }
-              className="btn btn-primary shadow-md hover:-translate-y-0.5 transition-all text-xs font-bold py-2.5 px-4 flex items-center gap-2"
-            >
-              <Award size={14} /> Send to AI Planner
-            </button>
-          )}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* NEW — jump straight to the AI's final pick once there's something to see there.
+                Shown to everyone (not just admins) since members need to view/accept it too. */}
+            {hasFinalDestinationActivity && (
+              <button
+                onClick={() => navigate(`/planner/${id}/destination`)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30
+                  bg-[var(--accent)]/5 text-[var(--accent)] text-xs font-bold hover:bg-[var(--accent)]/10
+                  transition-colors cursor-pointer"
+              >
+                <Sparkles size={14} />
+                {trip?.status === "ai_processing" ? "AI is choosing…" : "View Final Destination"}
+              </button>
+            )}
+
+            {role === "admin" && (
+              <button
+                onClick={() =>
+                  navigate(`/assistant/${id}`, {
+                    state: {
+                      tripId: parseInt(id),
+                      tripName: trip?.name,
+                      members: members,
+                      preferences: allPreferences,
+                    },
+                  })
+                }
+                className="btn btn-primary shadow-md hover:-translate-y-0.5 transition-all text-xs font-bold py-2.5 px-4 flex items-center gap-2"
+              >
+                <Award size={14} /> Send to AI Planner
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Invite & Roster section */}
