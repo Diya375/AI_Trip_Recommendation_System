@@ -1,4 +1,5 @@
 const Groq = require("groq-sdk");
+
 const pool = require("../config/db");
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -16,7 +17,7 @@ exports.chat = async (req, res) => {
 
   try {
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: message },
@@ -82,7 +83,7 @@ Be specific, practical, and exciting!`;
 
   try {
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages: [
         {
           role: "system",
@@ -146,7 +147,7 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
 `;
 
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       messages: [
         { role: "system", content: "You are a travel AI that strictly outputs JSON data." },
         { role: "user", content: prompt },
@@ -155,7 +156,23 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
       max_tokens: 3000,
     });
 
-    const aiData = JSON.parse(response.choices[0].message.content);
+    const rawContent = response.choices[0].message.content;
+    let aiData;
+    try {
+      aiData = JSON.parse(rawContent);
+    } catch (parseErr) {
+      console.warn("Direct JSON.parse failed. Attempting regex extraction. Raw content:", rawContent);
+      const match = rawContent.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          aiData = JSON.parse(match[0]);
+        } catch (regexParseErr) {
+          throw new Error("Failed to parse JSON even after regex extraction. Raw text: " + rawContent);
+        }
+      } else {
+        throw new Error("No JSON found in response. Raw text: " + rawContent);
+      }
+    }
 
     await pool.query(
       `UPDATE trips SET status = 'recommendation_ready', final_destination_data = $1 WHERE id = $2`,
