@@ -67,9 +67,9 @@ export default function TripPlaces({ tripId }) {
       if (!place.lat || !place.lng) return;
       const position = { lat: parseFloat(place.lat), lng: parseFloat(place.lng) };
 
-      const marker = new window.google.maps.Marker({
-        position,
-        map: googleMapInstance.current,
+      const marker = new AdvancedMarkerElement({
+        position:{lat, lng},
+        map:  map,
         title: place.name,
       });
 
