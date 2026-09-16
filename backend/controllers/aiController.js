@@ -103,7 +103,7 @@ Format with clear sections and emojis.`,
 };
 
 exports.finalRecommendation = async (req, res) => {
-  const { tripId, tripName, members, preferences } = req.body;
+  const { tripId, tripName, members, preferences, chatHistory, overrideDestination } = req.body;
 
   if (!preferences?.length || !members?.length) {
     return res.status(400).json({ error: "Missing required data" });
@@ -121,12 +121,20 @@ Member: ${p.name}
 - Notes: ${p.notes || "None"}
     `).join("\n---\n");
 
+    const chatContextText = chatHistory && chatHistory.length > 0
+      ? `\nThe users also had the following recent discussion about their destination preferences. You MUST prioritize these specific requests in your final choice:\n${chatHistory.map(m => `${m.sender}: ${m.text}`).join('\n')}\n`
+      : "";
+
+    const overrideText = overrideDestination 
+      ? `\nCRITICAL INSTRUCTION: The user has EXPLICITLY chosen "${overrideDestination}" as the final destination. You MUST build the itinerary, budget, and details specifically for "${overrideDestination}". Ignore other preferences if they conflict with this choice.\n` 
+      : "";
+
     const prompt = `You are YatraVerse AI, an expert Nepal travel planner.
 You are finalizing a group trip called "${tripName}" for ${members.length} people.
 Here are the preferences for each member:
 ${prefSummary}
-
-Analyze all preferences and choose ONE ultimate final destination in Nepal that best balances everyone's needs.
+${chatContextText}${overrideText}
+Analyze all preferences and the chat discussion (if any), and generate the ultimate final destination in Nepal that best balances everyone's needs (or fulfills their specific requests).
 You MUST reply with a VALID JSON object (and absolutely nothing else) in the following format:
 {
   "destination": "Name of the place",
@@ -138,7 +146,7 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
   "weather": "Expected weather summary",
   "bestDates": "Suggested time of year or dates",
   "itinerary": [
-    { "day": 1, "plan": "..." }
+    { "day": 1, "plan": "...", "places": [{"name": "Name of Place", "details": "Brief details"}] }
   ],
   "alternatives": [
     { "name": "...", "reason": "..." }
