@@ -3,6 +3,9 @@ const Groq = require("groq-sdk");
 const pool = require("../config/db");
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const GROQ_MODEL = "llama3-70b-8192";
+
+console.log("[aiController] GROQ_API_KEY loaded:", process.env.GROQ_API_KEY ? `${process.env.GROQ_API_KEY.slice(0, 8)}...` : "MISSING!");
 
 const SYSTEM_PROMPT = `You are YatraVerse AI, a friendly and knowledgeable Nepal travel guide. 
 You help travelers plan trips in Nepal — covering destinations, trekking routes, budgets, 
@@ -17,7 +20,7 @@ exports.chat = async (req, res) => {
 
   try {
     const response = await groq.chat.completions.create({
-      model: "openai/gpt-oss-120b",
+      model: GROQ_MODEL,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: message },
@@ -83,7 +86,7 @@ Be specific, practical, and exciting!`;
 
   try {
     const response = await groq.chat.completions.create({
-      model: "openai/gpt-oss-120b",
+      model: GROQ_MODEL,
       messages: [
         {
           role: "system",
@@ -103,13 +106,22 @@ Format with clear sections and emojis.`,
 };
 
 exports.finalRecommendation = async (req, res) => {
+  console.log(">>> finalRecommendation CALLED");
   const { tripId, tripName, members, preferences, chatHistory, overrideDestination } = req.body;
 
+  console.log(">>> tripId:", tripId, "| tripName:", tripName, "| members:", members?.length, "| prefs:", preferences?.length);
+
+  if (!tripId) {
+    return res.status(400).json({ error: "tripId is required" });
+  }
+
   if (!preferences?.length || !members?.length) {
+    console.log(">>> REJECTED: missing prefs or members");
     return res.status(400).json({ error: "Missing required data" });
   }
 
   try {
+    console.log(">>> Step 1: Updating trip status to ai_processing...");
     await pool.query(`UPDATE trips SET status = 'ai_processing' WHERE id = $1`, [tripId]);
 
     const prefSummary = preferences.map((p) => `
@@ -154,8 +166,9 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
 }
 `;
 
+    console.log(`>>> Step 2: Calling Groq API (${GROQ_MODEL})...`);
     const response = await groq.chat.completions.create({
-      model: "openai/gpt-oss-120b",
+      model: GROQ_MODEL,
       messages: [
         { role: "system", content: "You are a travel AI that strictly outputs JSON data." },
         { role: "user", content: prompt },
@@ -163,6 +176,8 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
       response_format: { type: "json_object" },
       max_tokens: 3000,
     });
+    console.log(">>> Step 3: Groq API responded successfully");
+
 
     const rawContent = response.choices[0].message.content;
     let aiData;
@@ -182,25 +197,33 @@ You MUST reply with a VALID JSON object (and absolutely nothing else) in the fol
       }
     }
 
+    // NOTE: jsonb columns need a JSON string, not a raw JS object — pg will
+    // otherwise call .toString() on it and store "[object Object]".
     await pool.query(
       `UPDATE trips SET status = 'recommendation_ready', final_destination_data = $1 WHERE id = $2`,
-      [aiData, tripId]
+      [JSON.stringify(aiData), tripId]
     );
 
     const membersList = await pool.query(`SELECT user_id FROM trip_members WHERE trip_id = $1`, [tripId]);
-    for (const m of membersList.rows) {
-      await pool.query(
-        `INSERT INTO notifications (user_id, trip_id, type, message, link) 
-         VALUES ($1, $2, 'recommendation_ready', '🎉 Your group''s AI trip recommendation is ready!', '/planner/${tripId}')`,
-        [m.user_id, tripId]
-      );
-    }
+
+    // Parallelize independent inserts instead of awaiting sequentially.
+    await Promise.all(
+      membersList.rows.map((m) =>
+        pool.query(
+          `INSERT INTO notifications (user_id, trip_id, type, message, link) 
+           VALUES ($1, $2, 'recommendation_ready', '🎉 Your group''s AI trip recommendation is ready!', $3)`,
+          [m.user_id, tripId, `/planner/${tripId}`]
+        )
+      )
+    );
 
     res.json({ message: "Final recommendation generated successfully", data: aiData });
   } catch (err) {
-    console.error("FINAL REC ERROR:", err.message);
-    await pool.query(`UPDATE trips SET status = 'planning' WHERE id = $1`, [tripId]);
-    res.status(500).json({ error: "Failed to generate recommendation", details: err.message });
+    console.error("FINAL REC ERROR:", err);
+    if (tripId) {
+      await pool.query(`UPDATE trips SET status = 'planning' WHERE id = $1`, [tripId]);
+    }
+    res.status(500).json({ error: `Failed to generate: ${err.message || "Unknown error"}`, details: err.message });
   }
 };
 
