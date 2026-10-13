@@ -3,7 +3,7 @@ const Groq = require("groq-sdk");
 const pool = require("../config/db");
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const GROQ_MODEL = "llama3-70b-8192";
+const GROQ_MODEL = "openai/gpt-oss-120b";
 
 console.log("[aiController] GROQ_API_KEY loaded:", process.env.GROQ_API_KEY ? `${process.env.GROQ_API_KEY.slice(0, 8)}...` : "MISSING!");
 
