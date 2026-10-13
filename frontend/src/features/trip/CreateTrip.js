@@ -56,6 +56,10 @@ export default function CreateTrip() {
       });
 
       const trip = res.data.trip;
+      // Use the current origin so the link works for whoever opens it.
+      // IMPORTANT: If you are the admin, make sure YOU open the app via your
+      // LAN IP (e.g. http://192.168.100.130:3000) instead of localhost,
+      // so the generated link is reachable by other devices on the network.
       const link = `${window.location.origin}/join/${trip.invite_code}`;
       setInviteLink(link);
     } catch (err) {
